@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#F4F8FD" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0D1529" media="(prefers-color-scheme: dark)" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FEEN" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="icon" type="image/png" href="icon-192.png" />
+  <link rel="manifest" href="manifest.json" />
+  <title>FEEN · La sede</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    { "imports": { "three": "./vendor/three/build/three.module.js", "three/addons/": "./vendor/three/addons/" } }
+  </script>
+</head>
+<body>
+  <!-- the scene is for the eyes and the finger; the keyboard and the screen reader use the list in #a11y -->
+  <canvas id="scene" aria-hidden="true"></canvas>
+
+  <!-- the Percorso: the path of the stages, climbing like the building (28/10/2026) -->
+  <main class="view path" id="path" hidden aria-labelledby="path-title">
+    <header class="view-head">
+      <h1 id="path-title">Percorso</h1>
+      <p class="view-sub" id="path-sub"></p>
+    </header>
+    <div class="path-list" id="path-list"></div>
+  </main>
+
+  <!-- Tu: your character, the contract, the milestones, the settings -->
+  <main class="view me" id="me" hidden aria-labelledby="me-title">
+    <header class="view-head">
+      <h1 id="me-title">Tu</h1>
+      <p class="view-sub" id="me-sub"></p>
+    </header>
+    <div class="me-body" id="me-body"></div>
+  </main>
+
+  <!-- top: the floor you are on -->
+  <header class="top">
+    <div class="plate" id="plate">
+      <div class="plate-num" id="plate-num">1</div>
+      <div class="plate-body">
+        <div class="plate-title" id="plate-title">Direzione</div>
+        <div class="plate-progress">
+          <div class="pips" id="pips" aria-hidden="true"></div>
+          <span class="pips-count" id="pips-count">0 di 8</span>
+        </div>
+      </div>
+    </div>
+    <div class="top-right">
+      <button class="round" id="btn-sound" aria-label="Suoni" aria-pressed="true">
+        <svg viewBox="0 0 24 24" class="ic-on"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" /><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" /></svg>
+        <svg viewBox="0 0 24 24" class="ic-off"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" /><path d="M16 10l4 4M20 10l-4 4" /></svg>
+      </button>
+      <button class="round round-text" id="btn-demo" aria-label="Demo: comandi della prova">Demo</button>
+    </div>
+  </header>
+
+  <!-- the building without the finger: its floors and their objects, one button each; hidden until a button has the keyboard's focus -->
+  <nav class="a11y" id="a11y" aria-label="I piani della sede"></nav>
+
+  <button class="back" id="btn-back" hidden>
+    <svg viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6" /></svg><span>Sede</span>
+  </button>
+
+  <!-- bottom: next stage and the bar -->
+  <footer class="bottom">
+    <button class="cta" id="cta">
+      <span class="cta-play"><svg class="ic-play" viewBox="0 0 24 24"><path d="M9 6.5l9 5.5-9 5.5z" /></svg><svg class="ic-done" viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9.4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" /></svg></span>
+      <span class="cta-text"><span class="cta-tag" id="cta-tag">Lezione 6</span><span class="cta-title" id="cta-title">Quanto costa davvero</span></span>
+      <span class="cta-min">3 min</span>
+    </button>
+    <nav class="tabs">
+      <button class="tab" data-tab="percorso"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.4" /><circle cx="18" cy="6" r="2.4" /><path d="M8.4 17c6 0 2.2-9 7.2-10" /></svg><span>Percorso</span></button>
+      <button class="tab" data-tab="ufficio"><svg viewBox="0 0 24 24"><path d="M5.5 20.5v-15l6.5-3 6.5 3v15z" /><path d="M9.5 8.5h1.5M13 8.5h1.5M9.5 12.5h1.5M13 12.5h1.5M10.5 20.5v-4h3v4" /></svg><span>Ufficio</span></button>
+      <button class="tab" data-tab="tu"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8" /><path d="M4.5 20.5c1-4.6 4.2-6.6 7.5-6.6s6.5 2 7.5 6.6" /></svg><span>Tu</span></button>
+    </nav>
+  </footer>
+
+  <!-- the card of an object (and of a stage) -->
+  <div class="sheet-wrap" id="card-wrap" hidden>
+    <div class="sheet card" id="card" role="dialog" aria-modal="true" aria-labelledby="card-title">
+      <div class="handle"></div>
+      <h2 id="card-title" tabindex="-1">Dove sono finiti?</h2>
+      <div class="chips">
+        <span class="chip chip-stage"><i></i><span id="card-tag">Lezione 1</span></span>
+        <span class="chip"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.5 5.4 5.9.7-4.4 4 1.2 5.8L12 16.5l-5.2 2.9 1.2-5.8-4.4-4 5.9-.7z" /></svg><span id="card-object">Il porta carte vuoto</span></span>
+      </div>
+      <p class="card-idea" id="card-idea">…</p>
+      <div class="card-actions">
+        <button class="pill pill-light" id="card-review">Ripassa</button>
+        <button class="pill pill-dark" id="card-continue">Continua</button>
+      </div>
+      <button class="close" id="card-close" aria-label="Chiudi"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" /></svg></button>
+    </div>
+  </div>
+
+  <!-- the controls of the prova -->
+  <div class="sheet-wrap" id="demo-wrap" hidden>
+    <div class="sheet demo" role="dialog" aria-modal="true" aria-labelledby="demo-title">
+      <div class="handle"></div>
+      <h3 id="demo-title" tabindex="-1">Comandi della demo</h3>
+      <p>Nell’app vera le lezioni si fanno nel Percorso. Qui puoi fare finta di averle finite e vedere cosa succede in ufficio.</p>
+      <button class="pill pill-dark wide" data-act="next">Finisci la prossima tappa</button>
+      <button class="pill pill-light wide" data-act="floor">Finisci tutto il piano</button>
+      <button class="pill pill-light wide" data-act="night">Giorno / sera</button>
+      <button class="pill pill-light wide" data-act="glow">Alone sugli oggetti: sì</button>
+      <button class="pill pill-light wide" data-act="mode">Lezioni: si gioca la lezione di prova</button>
+      <button class="pill pill-light wide" data-act="lezione">Gioca la lezione di prova</button>
+      <button class="pill pill-light wide" data-act="avvio">Rifai il primo avvio</button>
+      <button class="pill pill-light wide" data-act="reset">Ricomincia dal piano 1</button>
+      <button class="pill pill-light wide" data-act="last">Salta all’ultimo piano, a metà</button>
+      <p class="small">Grafica di prova. Tutto è fatto nel codice per FEEN. Testi provvisori.</p>
+      <button class="close" data-act="close" aria-label="Chiudi"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" /></svg></button>
+    </div>
+  </div>
+
+  <div class="banner" id="banner" hidden>
+    <div class="banner-icon"><svg viewBox="0 0 24 24"><path d="M12 2.5l2.2 7.3 7.3 2.2-7.3 2.2L12 21.5l-2.2-7.3L2.5 12l7.3-2.2z" /></svg></div>
+    <div class="banner-title" id="banner-title">Lezione completata</div>
+    <div class="banner-sub" id="banner-sub">Tutte giuste al primo colpo</div>
+  </div>
+
+  <div class="fake-lesson" id="fake-lesson" hidden>
+    <div class="fake-card">
+      <div class="fake-title" id="fake-title">Quanto costa davvero</div>
+      <span class="chip chip-stage"><i></i><span id="fake-tag">Lezione 6</span></span>
+      <div class="fake-bar"><i id="fake-bar"></i></div>
+      <div class="fake-note" id="fake-note">Facciamo finta che tu l’abbia appena finita…</div>
+    </div>
+  </div>
+
+  <!-- the first start: welcome, test, reveal, choice, partner, contract, reminders (js/avvio.js, 07/11/2026) -->
+  <div class="avvio" id="avvio" hidden></div>
+
+  <!-- the lesson: the exercises of an approved card, full screen (js/lezione.js, 07/11/2026) -->
+  <div class="lezione" id="lezione" role="dialog" aria-modal="true" aria-label="Lezione" hidden></div>
+
+  <!-- the Caso: the story with the mentor, as a dialogue under the room (js/caso.js, 07/11/2026) -->
+  <div class="lezione caso" id="caso" role="dialog" aria-modal="true" aria-label="Il Caso" hidden></div>
+
+  <!-- a save that cannot be read: «Riprova», then «Riparti da capo» with an honest confirm (js/salva.js) -->
+  <div class="rotto" id="rotto" hidden></div>
+
+  <div class="toast" id="toast" hidden></div>
+  <div class="trophy-pop" id="trophy-pop" role="status" hidden></div>
+
+  <!-- what the toasts and the banner say, read aloud by the screen reader -->
+  <div class="sr-only" id="say" role="status" aria-live="polite"></div>
+
+  <div class="coach" id="coach" hidden>
+    <svg viewBox="0 0 24 24"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11l4.2.9c1.5.3 2.4 1.7 2.1 3.2l-.9 4c-.3 1.4-1.5 2.4-3 2.4h-3.6c-1 0-2-.5-2.6-1.4L5.3 16c-.8-1.1.4-2.6 1.7-2l2 1z" /></svg>
+    <span>Scorri su e giù · Tocca un piano per entrarci</span>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="logo">FEEN</div>
+    <div class="load-bar"><i id="load-bar"></i></div>
+    <div class="load-note">Apriamo la sede…</div>
+  </div>
+
+  <div class="rotate" id="rotate"><div>Gira il telefono in verticale</div></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,15 +1,21 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "FEEN",
+    "slug": "feen",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/feen/icon.png",
+    "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "it.buildinterest.feen",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "it.buildinterest.feen",
+      "allowBackup": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -20,6 +26,23 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#F4EFE7",
+          "dark": {
+            "backgroundColor": "#121110"
+          }
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4e047cf7-a68e-438e-81ba-04bc771f6df9"
+      }
     }
   }
 }
