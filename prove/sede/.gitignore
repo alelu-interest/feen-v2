@@ -1,2 +1,5 @@
 .vercel
 .env*
+
+# strumenti di design (note locali)
+.impeccable/
