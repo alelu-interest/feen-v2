@@ -2,15 +2,17 @@
  * The sede prova inside the app (CLAUDE.md §10, 28/10/2026): the web page of prove/sede/,
  * built into one file by scripts/build-sede.mjs, full screen and offline, for TestFlight.
  * The built file knows it is the app (no Demo, js/app.js); this screen gives it the phone's vibration and the size
- * of the text chosen in the phone (09/11/2026).
+ * of the text chosen in the phone (09/11/2026), and turns its reminders into the phone's notifications (reminders.ts).
  */
 
 import { Asset } from 'expo-asset';
 import * as Haptics from 'expo-haptics';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
-import { StyleSheet, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { AppState, StyleSheet, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
+
+import { planReminders, readPlan } from './reminders';
 
 const page = require('../../../assets/sede/sede.html');
 
@@ -36,10 +38,17 @@ function buzz(ms: number) {
   else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 }
 
-function onMessage(e: WebViewMessageEvent) {
+function onMessage(e: WebViewMessageEvent, page: WebView<object> | null) {
   try {
     const msg = JSON.parse(e.nativeEvent.data);
     if (typeof msg.buzz === 'number') buzz(msg.buzz);
+    const plan = readPlan(msg.avvisi);
+    if (plan) {
+      // the phone's answer to a permission request goes back to the page (js/avvisi.js)
+      planReminders(plan).then((answer) => {
+        if (answer) page?.injectJavaScript(`window.feenAvvisiRisposta && window.feenAvvisiRisposta(${JSON.stringify(answer)}); true;`);
+      });
+    }
   } catch {}
 }
 
@@ -62,6 +71,14 @@ export function SedeScreen() {
     return () => clearTimeout(fallback);
   }, []);
 
+  // FEEN back to the front: the reminders are planned again (a day may have passed, the permission may have changed)
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (st) => {
+      if (st === 'active') web.current?.injectJavaScript('window.feenAvvisiSync && window.feenAvvisiSync(); true;');
+    });
+    return () => sub.remove();
+  }, []);
+
   // the size changed in the phone's settings while FEEN was open: the page follows at once
   useEffect(() => {
     web.current?.injectJavaScript(`window.feenFontScale && window.feenFontScale(${JSON.stringify(fontScale)}); true;`);
@@ -77,7 +94,7 @@ export function SedeScreen() {
           allowFileAccess
           allowingReadAccessToURL={uri}
           injectedJavaScriptBeforeContentLoaded={before}
-          onMessage={onMessage}
+          onMessage={(e) => onMessage(e, web.current)}
           onLoadEnd={() => SplashScreen.hideAsync()}
           style={{ backgroundColor: bg }}
           // Android would scale the text by itself on top of the page's own scale: the page does it, once

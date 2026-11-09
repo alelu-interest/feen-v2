@@ -7,17 +7,20 @@
 
 import { IN_APP } from './app.js'; // first: the page knows at once whether it is the app (no Demo) or the prova
 import * as THREE from 'three';
-import { C, manager, updateTweens, tween, wait, ease, sfx, sound, buzz, sphere, canvasTexture, strokeText, rbox, mat, inkOn } from './kit.js';
+import { C, manager, updateTweens, tween, wait, ease, sfx, sound, buzz, haptics, motion, sphere, canvasTexture, strokeText, rbox, mat, inkOn } from './kit.js';
 import { B, FLOORS, floorY, makeSky, makeCampus, makeFloorShell, makeRoofSite } from './world.js';
 import { ROOMS, furnishRoom } from './office.js';
 import { makePath } from './path.js';
 import { makeMe } from './me.js';
 import { makeAvvio } from './avvio.js';
 import { makeLesson } from './lezione.js';
-import { LESSONS, CASES } from './lessons-data.js';
+import { LESSONS, CASES, TRAPS, FIELDS } from './lessons-data.js';
 import { makeCase } from './caso.js';
+import { makeField } from './campo.js';
 import { loadProgress, saveProgress, askBroken } from './salva.js';
-import { makeTrophies } from './trophies.js';
+import { reminders, syncReminders, canRemind } from './avvisi.js';
+import { makeTrophies, TROPHIES, emblem } from './trophies.js';
+import { PEOPLE } from './people.js';
 
 const $ = (id) => document.getElementById(id);
 const DEG = Math.PI / 180;
@@ -154,8 +157,11 @@ function go(name, arg, { instant = false, keepZoom = false } = {}) {
 /** From outside each floor shows only its number, big enough to read; from close, the plate with the name. */
 function showSigns() {
   const inside = state.view !== 'overview';
+  // close on an object (it lands, or floats in its card) the plate of the floor would be cut by the edge of the screen
+  // or half hidden behind the object: it steps aside until the room is seen whole again (09/11/2026, rule 7)
+  const close = rig.preset?.[0] === 'slot' || !!shown;
   for (const { shell } of built.values()) {
-    shell.userData.signName.visible = inside;
+    shell.userData.signName.visible = inside && !close;
     shell.userData.signNumber.visible = !inside;
   }
 }
@@ -181,10 +187,12 @@ function showProps(show, instant) {
   }
 }
 function updateCamera(dt) {
-  const k = 1 - Math.exp(-dt * 4.2);
+  // with «Movimento ridotto» the flights are about three times shorter; the glide after a swipe keeps its pace
+  const rate = motion.calm ? 14 : 4.2;
+  const k = 1 - Math.exp(-dt * rate);
   const c = rig.cur;
   const g = rig.goal;
-  const y = c.target.y + (g.target.y - c.target.y) * (1 - Math.exp(-dt * rig.yRate));
+  const y = c.target.y + (g.target.y - c.target.y) * (1 - Math.exp(-dt * (rig.yRate < 4.2 ? rig.yRate : rate)));
   c.target.lerp(g.target, k);
   c.target.y = y;
   c.az += (g.az - c.az) * k;
@@ -669,6 +677,29 @@ function showcase(n, i) {
   const office = built.get(n).office;
   const s = office.slotOf(i);
   go('interior', n); // the whole room stays behind the object, calm
+  const S = 1.25;
+  const from = s.obj.position.clone();
+  const me = (shown = { s });
+  showSigns();
+  sfx.whoosh();
+  // turned a little and seen from above, so it reads at a glance while it stands still
+  const [tilt, turn] = s.place.pose ?? [0, 0];
+  let to = null;
+  return tween(0.55, (k) => {
+    // the card closed while the object was still flying in: the way home takes over, or it would stay in mid-air
+    if (shown !== me) return;
+    // worked out on the first frame, when the card is open: the object floats in the room the card leaves above it
+    to ??= showSpot(office, s, S);
+    s.obj.position.lerpVectors(from, to, k);
+    s.obj.scale.setScalar(1 + (S - 1) * k);
+    s.obj.rotation.set(tilt * k, turn * k, 0);
+    lightShow(k);
+  }, { easing: ease.out });
+}
+/** Where the object of the card floats, in the room's coordinates: between the plate (and «Sede») at the top and the
+ *  card at the bottom, as big as a third of the screen when there is room, smaller on a short phone or with large text,
+ *  where the card is taller (09/11/2026: at 375×667 with the text at 1.35 the card covered half of it). */
+function showSpot(office, s, S) {
   const g = rig.goal;
   const az = g.az * DEG;
   const el = g.el * DEG;
@@ -677,30 +708,23 @@ function showcase(n, i) {
     g.target.y + Math.sin(el) * g.dist,
     g.target.z + Math.cos(az) * Math.cos(el) * g.dist,
   );
-  // far enough that the object fills about a third of the screen's height and never its width
-  const S = 1.25;
-  const size = new THREE.Box3().setFromObject(s.obj).getSize(new THREE.Vector3()).multiplyScalar(S);
+  const box = new THREE.Box3().setFromObject(s.obj);
+  const size = box.getSize(new THREE.Vector3()).multiplyScalar(S);
+  // from the object's origin up to its middle: at the bottom for what stands on a desk, in the middle for what hangs
+  // on a wall (taking it always as the bottom put the hanging ones half their height too low, onto the card)
+  const lift = (box.getCenter(new THREE.Vector3()).y - s.obj.getWorldPosition(new THREE.Vector3()).y) * S;
   const tanV = Math.tan((camera.fov * DEG) / 2);
-  const d = Math.max(size.y / (0.34 * 2 * tanV), size.x / (0.72 * 2 * tanV * camera.aspect), 1.2);
+  const H = window.innerHeight;
+  const top = Math.max($('plate').getBoundingClientRect().bottom, $('btn-back').hidden ? 0 : $('btn-back').getBoundingClientRect().bottom) + 12;
+  const bottom = Math.max(top + 80, ($('card-wrap').hidden ? H * 0.62 : $('card').offsetTop) - 16);
+  const q = Math.min(0.34, (0.8 * (bottom - top)) / H); // the object's height, as a part of the screen's
+  const d = Math.max(size.y / (q * 2 * tanV), size.x / (0.72 * 2 * tanV * camera.aspect), 1.2);
   const spot = cam.clone().addScaledVector(g.target.clone().sub(cam).normalize(), d);
-  spot.y += d * tanV * 0.3 - size.y / 2; // in the upper part of the screen, above the card
+  spot.y += (0.5 - (top + bottom) / 2 / H) * 2 * d * tanV - lift;
   // the evening light stands in front of the object, a little above it
-  showLight.position.copy(spot).setY(spot.y + size.y / 2).addScaledVector(cam.clone().sub(spot).normalize(), 1.5);
+  showLight.position.copy(spot).setY(spot.y + lift).addScaledVector(cam.clone().sub(spot).normalize(), 1.5);
   showLight.position.y += 0.7;
-  const to = office.room.worldToLocal(spot);
-  const from = s.obj.position.clone();
-  const me = (shown = { s });
-  sfx.whoosh();
-  // turned a little and seen from above, so it reads at a glance while it stands still
-  const [tilt, turn] = s.place.pose ?? [0, 0];
-  return tween(0.55, (k) => {
-    // the card closed while the object was still flying in: the way home takes over, or it would stay in mid-air
-    if (shown !== me) return;
-    s.obj.position.lerpVectors(from, to, k);
-    s.obj.scale.setScalar(1 + (S - 1) * k);
-    s.obj.rotation.set(tilt * k, turn * k, 0);
-    lightShow(k);
-  }, { easing: ease.out });
+  return office.room.worldToLocal(spot);
 }
 function unshow() {
   if (!shown) return Promise.resolve();
@@ -715,7 +739,7 @@ function unshow() {
     s.obj.rotation.set(r0.x * (1 - k), r0.y * (1 - k), 0);
     s.obj.scale.setScalar(sc + (1 - sc) * k);
     lightShow(1 - k);
-  });
+  }).then(showSigns); // the plate of the floor comes back with the object home
 }
 /** The light on the object in the card: `k` goes from 0 to 1 while the object comes forward; by day it stays off. */
 const SHOW_NIGHT = 10;
@@ -726,9 +750,33 @@ function lightShow(k = showK) {
 }
 
 let cardIndex = 0;
+let cardFloor = 1;
 let cardResolve = null;
-function openCard(n, i, fresh) {
+// The card at the end of a stage is the one thing that stays (partita 09/11/2026, punto 9): it says how the stage
+// went and shows the trophy taken on the way, which before only passed in the banner and in a pop during the flight
+// of the camera. Under the chips the line on the result, above the buttons the trophies (the name only: with its line
+// too, two trophies and large text filled the screen and hid the object; the line stays in the Tu); neither on a card
+// you open.
+$('card-idea').insertAdjacentHTML(
+  'beforebegin',
+  '<p class="card-result" id="card-result" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.2 7.3 7.3 2.2-7.3 2.2L12 21.5l-2.2-7.3L2.5 12l7.3-2.2z" /></svg><span id="card-result-text"></span></p>',
+);
+$('card-idea').insertAdjacentHTML('afterend', '<ul class="card-prizes" id="card-prizes" hidden></ul>');
+/** `result`: the line on how the stage went; `prizes`: the ids of the trophies just earned (fresh cards only). */
+function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   cardIndex = i;
+  cardFloor = n;
+  $('card-result-text').textContent = fresh ? result : '';
+  $('card-result').hidden = !fresh || !result;
+  const won = fresh ? prizes.map((id) => TROPHIES.find((t) => t.id === id)).filter(Boolean) : [];
+  $('card-prizes').innerHTML = won
+    .map((t) => {
+      const c = t.color ?? 'var(--achievement)';
+      const on = t.color ? inkOn(t.color) : '#ffffff';
+      return `<li class="card-prize" style="--c:${c};--on-c:${on}"><span class="trophy-emblem">${emblem(t.id)}</span><span><span class="card-prize-tag">Traguardo</span><b>${t.name}</b></span></li>`;
+    })
+    .join('');
+  $('card-prizes').hidden = !won.length;
   const s = built.get(n).office.stages[i];
   // the three objects of a floor, each opened by you (not the card that comes up by itself when it lands)
   if (!fresh && s.object) {
@@ -743,8 +791,8 @@ function openCard(n, i, fresh) {
   $('card-object').textContent = s.object ?? '';
   $('card-object').parentElement.hidden = !s.object; // a lesson without an object: no chip
   $('card-idea').textContent = s.idea;
-  // in the app «Ripassa» waits for the review (cubotto 8): a button that does nothing is not shown
-  $('card-review').hidden = fresh || IN_APP;
+  // «Ripassa» only where there is something to play again (the review, below): a lesson, a Caso, a Prova sul campo
+  $('card-review').hidden = fresh || !canReview(n, i);
   $('card-continue').hidden = !fresh;
   $('card-review').parentElement.hidden = $('card-review').hidden && $('card-continue').hidden;
   $('card-close').hidden = fresh;
@@ -797,17 +845,79 @@ $('card-continue').onclick = () => {
 };
 $('card-review').onclick = () => {
   sfx.tap();
-  toast('Il ripasso: 5 esercizi della lezione, prima quelli sbagliati. Nella prova non c’è.');
-  trophy('ripasso');
+  review(cardFloor, cardIndex);
 };
+
+// ---------- the review (CLAUDE.md §7 «Ripasso», cubotto 8, 09/11/2026) ----------
+// Only when you want it, from the card of a stage done (Percorso) or of an object (Ufficio). A lesson comes back short:
+// 5 of its exercises, the ones wrong at the first go first, with the answers in a new order (the lesson engine
+// shuffles them); nothing is new any more, so no «Idea nuova», no help line, no theory card. The X and the bar are the
+// lesson's. A Caso is played again from the start. No object lands and nothing changes in the Ufficio: at the end a
+// line on how it went, and you are back where you were.
+const REVIEW_SIZE = 5;
+/** True when stage i of floor n has something to play again: a lesson, a Caso, a Prova sul campo (CLAUDE.md §6:
+ *  «ripassarla vuol dire rigiocarla», 09/11/2026). */
+function canReview(n, i) {
+  const s = built.get(n)?.office?.stages[i];
+  return !!s && !!(lessonFor(n, s) || caseFor(n, s) || fieldFor(n, s));
+}
+/** The short lesson of the review: the wrong ones first, then others picked at random, in the lesson's order. */
+function reviewLesson(n, i, lesson) {
+  const wrong = new Set(missed.get(n)?.[i] ?? []);
+  const all = lesson.exercises;
+  const first = all.filter((e) => wrong.has(e.n));
+  const others = all.filter((e) => !wrong.has(e.n));
+  for (let k = others.length - 1; k > 0; k--) {
+    const j = Math.floor(Math.random() * (k + 1));
+    [others[k], others[j]] = [others[j], others[k]];
+  }
+  const more = new Set(others.slice(0, Math.max(0, REVIEW_SIZE - first.length)));
+  const pick = [...first, ...all.filter((e) => more.has(e))].slice(0, REVIEW_SIZE);
+  return { ...lesson, review: true, exercises: pick.map((e) => ({ ...e, idea: null, help: null })) };
+}
+const REVIEW_LINE = ['Ripasso fatto: tutte giuste al primo colpo.', 'Ripasso fatto: tutte giuste, qualcuna al secondo colpo.', 'Ripasso fatto: qualcuna da rivedere con calma.'];
+async function review(n, i) {
+  const s = built.get(n)?.office?.stages[i];
+  if (!s || state.busy || !canReview(n, i)) return;
+  state.busy = true;
+  closeCard();
+  const lesson = lessonFor(n, s);
+  let r;
+  if (lesson) r = await lezione.play(reviewLesson(n, i, lesson));
+  else {
+    // the object of the card flies home first, or the photo would have it floating in front of the room
+    await unshow();
+    // the photo of the room comes from the Ufficio's camera: from the Percorso it goes there for a moment, then back
+    const tab = state.tab;
+    const [name, arg] = rig.preset ?? ['overview'];
+    state.tab = 'ufficio';
+    const room = roomPhoto(n);
+    state.tab = tab;
+    go(name, arg, { instant: true });
+    if (tab === 'percorso') path.render(); // the garden draws itself again over the photo
+    // the Prova sul campo is played again whole, as the Caso: a new month from the start
+    const field = fieldFor(n, s);
+    r = field ? await campo.play(field, { room, floorName: FLOORS[n - 1].name }) : await caso.play(caseFor(n, s), { room, floorName: FLOORS[n - 1].name });
+    if (field && r.done) r.field = true;
+  }
+  state.busy = false;
+  if (!r.done) return; // left with the X: nothing changes
+  if (r.field) toast(`Prova rigiocata: ${FIELD_LINE[Math.min(r.outcome, 1)].replace(/^M/, 'm')}.`);
+  else toast(lesson ? REVIEW_LINE[r.outcome] : `Caso rigiocato: ${['tre scelte giuste al primo colpo', 'finale raggiunto, con qualche passo indietro'][Math.min(r.outcome, 1)]}.`);
+  trophy('ripasso');
+  if (r.fixed) setTimeout(() => trophy('riprovi'), 900);
+}
 $('card-wrap').addEventListener('click', (e) => {
   if (e.target === $('card-wrap') && !$('card-close').hidden) closeCard();
 });
 
-function banner(title, sub) {
+/** `sub` can be left out when the card that follows says it (the end of a stage): the screen reader still hears
+ *  `aloud`, so it learns how the stage went at the same moment as before. */
+function banner(title, sub = '', aloud = sub) {
   $('banner-title').textContent = title;
   $('banner-sub').textContent = sub;
-  say(`${title}. ${sub}`);
+  $('banner-sub').hidden = !sub;
+  say(aloud ? `${title}. ${aloud}` : title);
   const b = $('banner');
   b.hidden = false;
   b.style.animation = 'none';
@@ -851,6 +961,7 @@ function ring(pos) {
   fx.push(m);
 }
 function confetti(center, info, n = 60) {
+  if (motion.calm) return; // «Movimento ridotto»: the banner and the colour of the walls are the party
   const cols = [info.color, info.paint, C.gold, '#FFFFFF', C.cream];
   for (let i = 0; i < n; i++) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(0.09, 0.05), new THREE.MeshBasicMaterial({ color: cols[i % cols.length], side: THREE.DoubleSide, transparent: true }));
@@ -970,17 +1081,32 @@ function toggleNight() {
 
 // ---------- the flow: a stage is done, the floor is done ----------
 const FINE = ['Tutte giuste al primo colpo', 'Tutte giuste, con un paio di ripassi', 'Fatta: qualcuna da rivedere con calma'];
+// the Prova sul campo has no mark (CLAUDE.md §6): the month is closed either way; the line says only how the two key
+// moments went (provisional, Claude's, 09/11/2026)
+const FIELD_LINE = ['Mese chiuso, con le scelte migliori al primo colpo', 'Mese chiuso, e le alternative migliori le hai trovate'];
 /** The lesson to play for stage s of floor n (compito B7, 07/11/2026): the approved card of that lesson, or, until the
- *  real ones arrive, the test lesson («Lezioni» in DEMO). The Caso and the Prova sul campo are still pretend. */
+ *  real ones arrive, the test lesson («Lezioni» in DEMO). The Caso and the Prova sul campo have their own (below). */
 function lessonFor(n, s) {
   const m = s.tag.match(/^Lezione (\d+)$/);
   if (!m) return null;
   return LESSONS[`p${n}-l${m[1]}`] ?? (state.lessons === 'prova' ? LESSONS.prova : null);
 }
+/** After floor 1, in the app (cubotto 7.8, decided 09/11/2026): a floor without any approved card does not open; it
+ *  waits for an update of the app, honestly, instead of a pretend interview and the test lesson. Floor 1 keeps the
+ *  test lesson until its cards arrive; the prova with the Demo opens every floor as before. */
+function comingSoon(n) {
+  return IN_APP && n > 1 && !Object.keys(LESSONS).some((k) => k.startsWith(`p${n}-`));
+}
+const SOON = (n) => `Il piano ${n} è in costruzione. Arriva con il prossimo aggiornamento dell’app.`;
 /** The Caso of floor n (compito C1, 07/11/2026): its approved card or, until it arrives, the test Caso. */
 function caseFor(n, s) {
   if (s.tag !== 'Caso') return null;
   return CASES[`p${n}-caso`] ?? (state.lessons === 'prova' ? CASES.prova : null);
+}
+/** The Prova sul campo of floor n (09/11/2026): its approved card or, until it arrives, the test month. */
+function fieldFor(n, s) {
+  if (s.tag !== 'Prova sul campo') return null;
+  return FIELDS[`p${n}-campo`] ?? (state.lessons === 'prova' ? FIELDS.prova : null);
 }
 /** A still photo of the room of floor n, for the top of the Caso: the room as it is, without people. */
 function roomPhoto(n) {
@@ -1009,8 +1135,18 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   let fixed = outcome === 1;
   const lesson = real && pretend ? lessonFor(n, s) : null;
   const story = real && pretend && !lesson ? caseFor(n, s) : null;
+  const field = real && pretend && !lesson && !story ? fieldFor(n, s) : null;
   if (story) {
     const r = await caso.play(story, { room: roomPhoto(n), floorName: FLOORS[n - 1].name });
+    if (!r.done) {
+      state.busy = false;
+      return false;
+    }
+    outcome = r.outcome;
+    fixed = r.fixed;
+  } else if (field) {
+    // the Prova sul campo (campo.js): a month over the photo of the room; left with the X, nothing changes
+    const r = await campo.play(field, { room: roomPhoto(n), floorName: FLOORS[n - 1].name });
     if (!r.done) {
       state.busy = false;
       return false;
@@ -1078,29 +1214,41 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   const clean = outcome === 0;
   if (!played.has(n)) played.set(n, []);
   played.get(n)[i] = clean;
-  // the stage is done: saved now, so closing the app from here on loses nothing
+  // the trophies taken on the way: «Ci riprovi» made right, a stage done in the evening, a floor without a mistake
+  // (the stages skipped with «Finisci tutto il piano» count as done right)
+  const perfect = { 2: 'pin', 3: 'asso', 4: 'scudo' }[n];
+  const prizes = [fixed && 'riprovi', state.night && 'luci', perfect && state.earned === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false) && perfect].filter((id) => id && !trophies.has(id));
+  // a card follows (an object landed, or the stage was started from the Percorso: always so in the app): the line on
+  // the result and the trophies go into it, where they stay until «Continua», and the trophies are earned without the
+  // pop, which would pass during the flight. Without a card (the green pill on a stage without an object, only in the
+  // prova) the banner says the line and the pop comes as before.
+  const withCard = !!place || fromPath;
+  if (withCard) trophies.restore(prizes);
+  // the stage is done: saved now, so closing the app from here on loses nothing; no reminder today (avvisi.js)
+  reminders.stageDone();
   persist();
-  const title = s.tag === 'Caso' ? 'Caso risolto' : s.tag === 'Prova sul campo' ? 'Prova superata' : 'Lezione completata';
+  // the Prova sul campo has no mark (CLAUDE.md §6): «completata» as the lessons, not «superata» (09/11/2026)
+  const title = s.tag === 'Caso' ? 'Caso risolto' : s.tag === 'Prova sul campo' ? 'Prova completata' : 'Lezione completata';
   // the line on the result, never a number nor a mark; on a stage without an object, how far the colour got too
   // the Caso has its own line (provisional, Claude's): a story is not «all right», it reaches its end
   const caseLine = ['Tre scelte giuste al primo colpo', 'Finale raggiunto, con qualche passo indietro'][Math.min(outcome, 1)];
-  const line = story ? caseLine : lesson || place ? FINE[outcome] : `${cap(FLOORS[n - 1].the)} prende colore: ${i + 1} su 8`;
-  banner(title, lesson && !place ? `${FINE[outcome]} · ${i + 1} su 8` : line);
-  if (fixed) setTimeout(() => trophy('riprovi'), 900);
-  if (state.night) setTimeout(() => trophy('luci'), 900);
-  // a floor done without a single mistake (the stages skipped with «Finisci tutto il piano» count as done right)
-  const perfect = { 2: 'pin', 3: 'asso', 4: 'scudo' }[n];
-  if (perfect && state.earned === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false)) setTimeout(() => trophy(perfect), 1200);
+  const line = story ? caseLine : field ? FIELD_LINE[Math.min(outcome, 1)] : lesson || place ? FINE[outcome] : `${cap(FLOORS[n - 1].the)} prende colore: ${i + 1} su 8`;
+  if (withCard) banner(title, '', line); // the line once, in the card; the screen reader hears it now
+  else {
+    banner(title, lesson ? `${FINE[outcome]} · ${i + 1} su 8` : line);
+    prizes.forEach((id, k) => setTimeout(() => trophy(id), 900 + k * 300));
+  }
   sfx.reward();
   buzz(25);
   await wait(1.9);
   renderCta();
   state.busy = false;
+  const end = { result: line, prizes };
   if (place) {
     showcase(n, i);
-    await openCard(n, i, true);
+    await openCard(n, i, true, end);
     await unshow();
-  } else if (fromPath) await openCard(n, i, true);
+  } else if (fromPath) await openCard(n, i, true, end);
   if (state.earned === 8) await floorComplete();
   else go('interior', n);
   persist();
@@ -1180,6 +1328,8 @@ async function floorComplete() {
     await wait(2.6);
   }
   await wait(0.6);
+  // the partner speaks, over the finished floor, before what comes next (CLAUDE.md §4 and §7 «Fine piano»)
+  await partnerSays(floorDoneLine(n));
   // after the last floor no floor rises: the crane goes and the roof of the launch is built (27/10/2026). In the app
   // «Continua» goes up there, to the scene of the launch, and then to the card «Condividi».
   if (n === FLOORS.length) {
@@ -1197,6 +1347,16 @@ async function floorComplete() {
     renderCta();
     sfx.reward();
     toast(IN_APP ? 'Il tetto è pronto: il palco del lancio.' : 'Il tetto è pronto. Nell’app «Continua» porta qui, alla scena del lancio, e poi alla card «Condividi».', { low: true });
+    state.busy = false;
+    return;
+  }
+  // in the app, a floor whose lessons are not in the app yet does not open (cubotto 7.8, 09/11/2026): no pretend
+  // interview, no test lesson. The crane stays on the roof; the Percorso says it above the floor just finished.
+  if (comingSoon(n + 1)) {
+    renderPlate();
+    renderCta();
+    // the partner has just said it, and the plate above the floor on the Percorso says when: no toast, which went on
+    // to the Percorso and repeated the plate word for word (partita 09/11/2026, punto 14)
     state.busy = false;
     return;
   }
@@ -1226,6 +1386,55 @@ async function floorComplete() {
   sfx.reward();
   toast(`Si apre il piano ${n + 1} · ${FLOORS[n].name}`);
   state.busy = false;
+}
+
+// ---------- the end of a floor: the partner speaks (partita 09/11/2026, punto 14) ----------
+// In the prototype the end of floor 1 is the end of the game, and the partner said nothing. Now a line in the panel
+// of the empty company (avvio.js, the same look, the partner's bust), then «Continua». One line for every floor
+// (provisional, Claude's): it takes the floor done, and says what is above: the next floor being built (the crane,
+// when it waits for an update of the app), the next floor rising now, or after the last floor the roof. No dates,
+// no guilt, never what the launch is, nothing male or female about whoever plays (CLAUDE.md §4, §8).
+const toFloor = (f) => f.the.replace(/^la /, 'alla ').replace(/^il /, 'al '); // «alla Tesoreria», «al piano dei Soci»
+const agree = (f, fem, masc) => (f.the.startsWith('la ') ? fem : masc); // the Tesoreria is «finita», the Gaming «finito»
+function floorDoneLine(n) {
+  if (n === FLOORS.length) return 'Dodici piani, e portano tutti la tua firma. Manca solo il tetto: ci vediamo lassù.';
+  const next = FLOORS[n];
+  if (comingSoon(n + 1)) return `Un piano intero, e porta la tua firma. Intanto la gru lavora già ${toFloor(next)}: appena è ${agree(next, 'finita', 'finito')}, si sale.`;
+  return `Un piano intero, e porta la tua firma. Guarda su: arriva ${next.the}.`;
+}
+const panel = document.createElement('div');
+panel.className = 'fine-piano';
+panel.id = 'fine-piano';
+panel.hidden = true;
+document.body.append(panel);
+/** The partner's panel over the scene; resolves with «Continua». Without a partner yet (a phone that never finished
+ *  the first start) it lets the end go on. */
+function partnerSays(line) {
+  const who = avvio?.who();
+  if (!who) return Promise.resolve();
+  panel.innerHTML = `<div class="av-talk" role="dialog" aria-modal="true" aria-labelledby="fine-who">
+      <span class="av-face"><img src="${PEOPLE[who.partner]}" alt="" /></span>
+      <div class="av-talk-body">
+        <b id="fine-who">${who.partner}</b>
+        <p class="av-talk-line" tabindex="-1">${line}</p>
+      </div>
+      <button class="pill pill-dark wide">Continua</button>
+    </div>`;
+  $('banner').hidden = true; // the banner of the floor hands over to the partner
+  for (const sel of BEHIND) document.querySelector(sel).inert = true;
+  document.body.dataset.fine = '';
+  panel.hidden = false;
+  panel.querySelector('.av-talk-line').focus({ preventScroll: true });
+  return new Promise((resolve) => {
+    panel.querySelector('button').onclick = () => {
+      sfx.tap();
+      panel.hidden = true;
+      panel.innerHTML = '';
+      delete document.body.dataset.fine;
+      for (const sel of BEHIND) document.querySelector(sel).inert = false;
+      resolve();
+    };
+  });
 }
 
 /** A floor with its room; a floor whose room is not ready yet holds only boxes. */
@@ -1398,6 +1607,11 @@ for (const t of document.querySelectorAll('.tab')) {
     setTab(t.dataset.tab);
   };
 }
+// the ring of the focus on the bar is for the keyboard only (style.css, .tab:focus-visible). Some browsers still show
+// it after a tap that follows a key: the last way used decides (revisione UX 09/11, stanza 8)
+const NAV_KEYS = new Set(['Tab', 'Enter', ' ', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End']);
+addEventListener('pointerdown', () => document.documentElement.toggleAttribute('data-pointer', true), true);
+addEventListener('keydown', (e) => NAV_KEYS.has(e.key) && document.documentElement.removeAttribute('data-pointer'), true);
 
 // ---------- the bar: Percorso · Ufficio · Tu (28/10/2026) ----------
 let path = null;
@@ -1405,12 +1619,24 @@ let me = null;
 let avvio = null; // the first start (avvio.js, 07/11/2026)
 let lezione = null; // the lesson engine (lezione.js, 07/11/2026)
 let caso = null; // the Caso (caso.js, 07/11/2026)
+let campo = null; // the Prova sul campo (campo.js, 09/11/2026)
 // the trophies of the Tu (trophies.js) and what the prova has to remember to give them: how each pretend lesson went
 // («Lezioni finte» in DEMO), the surprises of the garden found, the objects looked at floor by floor
 let trophies = null;
 const played = new Map(); // n → [true if all right at the first go, …] for the stages done in this prova
 const missed = new Map(); // n → { stage: [exercises wrong at the first go] }, for the review (compito C5)
-const settings = { avvisi: true, vibrazione: true, movimento: false }; // the settings of the Tu
+// the settings of the Tu; `movimento` is null until the switch is touched, and meanwhile follows the phone
+const settings = { avvisi: true, vibrazione: true, movimento: null };
+/** Vibration and reduced motion act at once, everywhere (cubotto 9.7, 09/11/2026): kit.js reads them in buzz() and
+ *  tween(), the camera in updateCamera(), style.css under html[data-calm]. */
+const phoneCalm = matchMedia('(prefers-reduced-motion: reduce)');
+function applySettings() {
+  haptics.on = settings.vibrazione !== false;
+  motion.calm = settings.movimento ?? phoneCalm.matches;
+  document.documentElement.toggleAttribute('data-calm', motion.calm);
+}
+phoneCalm.addEventListener?.('change', applySettings);
+applySettings();
 const eggsFound = new Set();
 const looked = new Map(); // n → the stages whose object card you opened
 function trophy(id, n) {
@@ -1436,7 +1662,9 @@ function persist() {
     looked: Object.fromEntries([...looked].map(([n, s]) => [n, [...s]])),
     trophies: trophies.list(),
     settings: { ...settings, suoni: sound.on },
+    avvisi: reminders.save(),
   });
+  syncAvvisi();
 }
 /** Back as it was: the maps and the settings from a save (the floor and the stages go to setup()). */
 function restore(d) {
@@ -1444,8 +1672,52 @@ function restore(d) {
   for (const [n, o] of Object.entries(d.missed ?? {})) missed.set(Number(n), o);
   for (const n of d.eggs ?? []) eggsFound.add(n);
   for (const [n, a] of Object.entries(d.looked ?? {})) looked.set(Number(n), new Set(a));
-  Object.assign(settings, { avvisi: d.settings?.avvisi ?? true, vibrazione: d.settings?.vibrazione ?? true, movimento: d.settings?.movimento ?? false });
+  Object.assign(settings, { avvisi: d.settings?.avvisi ?? true, vibrazione: d.settings?.vibrazione ?? true, movimento: d.settings?.movimento ?? null });
+  applySettings();
   if (d.settings?.suoni === false && sound.on) toggleSound();
+  reminders.load(d.avvisi);
+}
+/** «Ricomincia da capo» (CLAUDE.md §7): everything FEEN saved goes, the settings and the time of the reminders too
+ *  (before, they survived the wipe). The reminders stay off until the first start asks again, after the first lesson. */
+function wipeAll() {
+  if (state.busy) return;
+  Object.assign(settings, { avvisi: false, vibrazione: true, movimento: null });
+  applySettings();
+  if (!sound.on) toggleSound();
+  reminders.load({ ora: '18:00', day: null });
+  reset();
+  avvio.restart();
+}
+
+// ---------- the reminders (avvisi.js; cubotto 9.4, 09/11/2026) ----------
+/** Sends the plan to the app. When the phone says no, the switch of the Tu goes off and the toast says why. */
+function syncAvvisi(opts) {
+  return syncReminders(settings.avvisi, opts).then((r) => {
+    if (!r || r.granted) return r;
+    // CLAUDE.md §8: refused, the app does not ask again; they come back from the Tu, or from the phone's settings
+    settings.avvisi = false;
+    persist();
+    if (state.tab === 'tu') me?.render();
+    toast(r.canAskAgain ? 'Niente promemoria. Si accendono dal Tu, nelle Impostazioni.' : 'Niente promemoria: le notifiche di FEEN sono spente nelle Impostazioni del telefono.');
+    return r;
+  });
+}
+/** The first start's choice, right after the first lesson: the phone asks its permission only now. */
+async function remind(time) {
+  if (time) reminders.time = time;
+  settings.avvisi = !!time;
+  if (!time) {
+    persist();
+    return toast('Niente promemoria. Si accendono dal Tu, nelle Impostazioni.');
+  }
+  if (!canRemind()) {
+    persist();
+    // in the browser there is no phone to ask (the prova says what the app does)
+    return toast(IN_APP ? `Promemoria alle ${time}.` : `Promemoria alle ${time}. Nell’app qui il telefono chiede il permesso.`);
+  }
+  const asked = syncAvvisi({ ask: true });
+  persist();
+  if ((await asked)?.granted) toast(`Promemoria alle ${time}.`);
 }
 let coachDone = false;
 /** Shows one of the three tabs. Away from the Ufficio the sede is not drawn: the phone rests. */
@@ -1478,6 +1750,7 @@ function setTab(t) {
 /** The stage to do now, started from the Percorso: the lesson, then its end in the Ufficio, then back. */
 async function play() {
   if (state.busy) return;
+  if (comingSoon(state.floor)) return toast(SOON(state.floor));
   setTab('ufficio');
   hideCoach();
   await completeNext({ fromPath: true, real: true });
@@ -1631,9 +1904,12 @@ async function start() {
   setTimeout(() => ($('loading').hidden = true), 450);
   trophies = makeTrophies({ sfx, onChange: () => state.tab === 'tu' && me?.render() });
   if (saved) trophies.restore(saved.trophies);
-  path = makePath({ renderer, state, earnedOn, built, DAY, NIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false) });
+  path = makePath({ renderer, state, earnedOn, built, DAY, NIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false), who: () => avvio?.who(), soon: comingSoon });
   path.applyDay(dayK);
-  me = makeMe({ state, earnedOn, toast, sfx, sound, toggleSound, trophies, settings, persist, who: () => avvio.who(), wipe: () => (reset(), avvio.restart()) });
+  me = makeMe({ state, earnedOn, toast, sfx, sound, toggleSound, trophies, settings, applySettings, persist, who: () => avvio.who(), wipe: wipeAll });
+  // the reminders are checked and scheduled again at every opening, and when FEEN comes back to the front
+  window.feenAvvisiSync = () => syncAvvisi({ force: true });
+  syncAvvisi({ force: true });
   // the first start (CLAUDE.md §5): on a phone that never finished it, the welcome; then always the Percorso
   avvio = makeAvvio({
     sfx,
@@ -1644,15 +1920,22 @@ async function start() {
       go('overview');
     },
     firstLesson: async () => {
+      // already done (the app was closed during its end, after it was saved): the first start goes on to the
+      // reminders, instead of playing the next stage as if it were the first lesson
+      if (state.floor > 1 || state.earned > 0) return true;
       setTab('ufficio');
       hideCoach();
       // false when you leave the first lesson with the X: the first start waits on it
       return completeNext({ fromPath: true, real: true });
     },
     done: () => setTab('percorso'),
+    remind,
   });
   lezione = makeLesson({ sfx, buzz, toast, who: () => avvio.who() });
-  caso = makeCase({ sfx, buzz, who: () => avvio.who() });
+  // the line on the trap after the third choice: only from an approved card (lezioni/piano-N/trappole.md), by type
+  caso = makeCase({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
+  // the same line on the trap, after the key moments of the Prova sul campo
+  campo = makeField({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
   if (avvio.done()) setTab(state.tab);
   else {
     // the Tu draws nothing: behind the screens of the test the phone rests

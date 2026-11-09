@@ -4,7 +4,7 @@
 :root {
   --ink: #14213d;
   --ink-2: #4e5d78;
-  --muted: #5b6a85; /* 4.5:1 also on the panels over the evening scene */
+  --muted: #4e5d78; /* the palette's «Secondario» (was #5b6a85, not in the palette): 6.6:1 on white, 6.2:1 on the page */
   --line: #dce5f0;
   --surface: #ffffff;
   --surface-2: #f4f8fd;
@@ -15,6 +15,40 @@
   --brand: #1f8bff;
   --reward: #ffc93c;
   --achievement: #9b6bff;
+  /* the whole palette as tokens (09/11/2026, `1. LAVORO/palette/LEGGIMI.md`): use these, never a colour picked by eye.
+     Brand and states (colori-base.png); the orange is the palette's «Streak», kept for warnings because FEEN has no streaks. */
+  --correct: #3dd68c;
+  --error: #ff5a65;
+  --orange: #ff8a2b;
+  /* the blue scale, sampled from the image; fixed in both themes (use it where the background does not flip) */
+  --blue-50: #eaf4fe;
+  --blue-100: #cee6fe;
+  --blue-200: #a3cffe;
+  --blue-300: #6fb3fe;
+  --blue-400: #3d9aff;
+  --blue-500: #1f8bff;
+  --blue-600: #0f70e0;
+  --blue-700: #0a57b3;
+  --blue-800: #0c3f80;
+  --blue-900: #0b295b;
+  /* «Uso nei contesti»: a soft background and the ink that reads on it (sampled; every pair 5.9:1 or more) */
+  --correct-soft: #e3f9ed;
+  --correct-ink: #0f6b47;
+  --error-soft: #fee8ea;
+  --achievement-soft: #f1e9ff;
+  --achievement-ink: #5431ba;
+  --reward-ink: #654a00;
+  --orange-soft: #fff1e4;
+  --orange-ink: #9a4502;
+  /* floor 1 · Direzione (colori-dei-piani.webp), fixed where the floor in progress does not count: the contract
+     and «you» on the little map of the four types */
+  --floor-1: #e97f4f;
+  --floor-1-light: #faeae1;
+  --floor-1-deep: #944219;
+  /* paper stays paper in the dark theme too (the contract): its own ink, second ink and lines, never flipped */
+  --paper-ink: #14213d;
+  --paper-ink-2: #4e5d78;
+  --paper-line: #dce5f0;
   --shadow: 0 10px 30px rgba(20, 33, 61, 0.1), 0 1px 3px rgba(20, 33, 61, 0.06);
   --shadow-sm: 0 4px 14px rgba(20, 33, 61, 0.08);
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
@@ -34,7 +68,7 @@
   --on-action-muted: #ffffff; /* any lighter white falls under 4.5:1 on the blue */
   --brand-soft: #eaf4fe;
   --brand-ink: #0a57b3;
-  --error-ink: #c42b3a;
+  --error-ink: #982a36; /* the palette's «Errore» ink (was #c42b3a): 7.7:1 on white, 6.6:1 on its soft red */
   --glass: rgba(255, 255, 255, 0.9);
   --reward-soft: #fff5dc;
   --scrim: rgba(20, 33, 61, 0.2);
@@ -57,10 +91,20 @@
     --page: #0d1529;
     --action-edge: #0c3f80;
     --brand-soft: #13294a;
-    --brand-ink: #8cc4ff;
-    --error-ink: #ff8a92;
+    --brand-ink: #6fb3fe; /* blue 300 of the palette (was #8cc4ff): 6.6:1 on its soft blue, 7.3:1 on the cards */
+    --error-ink: #ff949b;
     --glass: rgba(22, 33, 58, 0.9);
     --reward-soft: #3a3018;
+    /* the contexts in the dark: 18% of the state over the card, the state lightened with white; every pair 5.7:1 or
+       more, ink on the cards 7:1 or more. The coins keep the palette's yellow as their ink. */
+    --correct-soft: #1d4249;
+    --correct-ink: #81e4b4;
+    --error-soft: #402b42;
+    --achievement-soft: #2e2e5d;
+    --achievement-ink: #be9fff;
+    --reward-ink: #ffc93c;
+    --orange-soft: #3a2418;
+    --orange-ink: #ffb375;
     --scrim: rgba(0, 0, 0, 0.4);
     --veil: rgba(13, 21, 41, 0.72);
     /* the card stays light, so black suits do not sink into the navy */
@@ -507,6 +551,22 @@ svg {
   color: var(--brand-ink);
   background: var(--brand-soft);
 }
+/* the ring of the focus on the bar: for the keyboard only, never left behind by a touch (revisione UX, stanza 8) */
+.tab:focus {
+  outline: none;
+}
+.tab:focus-visible {
+  outline: 3px solid var(--action);
+  outline-offset: 2px;
+}
+:root[data-pointer] .tab:focus-visible {
+  outline: none;
+}
+/* the same everywhere: after a touch no ring stays on a row, a switch or a button; the keyboard brings it back
+   (data-pointer is set by a touch and removed by Tab or the arrows, main.js) */
+:root[data-pointer] :focus-visible {
+  outline: none;
+}
 
 /* ---------- sheets ---------- */
 .sheet-wrap {
@@ -634,7 +694,9 @@ svg {
 .banner {
   position: fixed;
   left: 50%;
-  top: 24%;
+  /* in the lower part of the screen, above the bar: the object lands in the middle and must stay in sight (at 24%
+     from the top, on a small phone or with big text, the banner covered it; 09/11/2026) */
+  bottom: calc(var(--safe-b) + 104px);
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
@@ -725,6 +787,11 @@ svg {
   transform: translate(-50%, 0);
   opacity: 1;
 }
+/* with a card open (the end of a stage), the trophy comes at the top, over the dimmed scene, not on the card */
+body:has(#card-wrap:not([hidden])) .trophy-pop {
+  top: calc(var(--safe-t) + 132px);
+  bottom: auto;
+}
 .trophy-pop b {
   display: block;
   font-family: var(--title);
@@ -741,7 +808,7 @@ svg {
 }
 .trophy-pop .trophy-emblem {
   background: var(--c);
-  color: #fff;
+  color: var(--on-c, #ffffff); /* dark on the light floors, as in the Tu (trophies.js sets it with inkOn) */
 }
 
 /* ---------- the pretend lesson ---------- */
@@ -930,14 +997,14 @@ svg {
     transform: translateY(-3px);
   }
 }
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+/* «Movimento ridotto» (cubotto 9.7, 09/11/2026): main.js sets html[data-calm] from the switch in the Tu, which at first
+   follows the phone's reduced motion; the switch decides, so it can also bring the movement back */
+:root[data-calm] *,
+:root[data-calm] *::before,
+:root[data-calm] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
 }
 
 /* ---------- the bar's tabs: away from the Ufficio the sede steps aside (28/10/2026) ---------- */
@@ -1151,6 +1218,20 @@ body[data-tab='percorso'] #scene {
 .path-a11y {
   position: absolute;
 }
+/* above a finished floor whose next floor is not in the app yet (cubotto 7.8): a card to read, not a button */
+.bubble.soon {
+  pointer-events: none !important;
+}
+.bubble.soon::after {
+  display: none;
+}
+.bubble-note {
+  margin-top: 4px;
+  max-width: 200px;
+  font-size: calc(14px * var(--fs));
+  line-height: 1.3;
+  color: var(--ink-2);
+}
 
 /* ---------- Tu: the character, the contract, the milestones, the settings ---------- */
 .me-body {
@@ -1275,8 +1356,8 @@ body[data-tab='percorso'] #scene {
   height: 92px;
   padding: 10px 9px;
   border-radius: 6px;
-  background: #fcfaf6;
-  border: 4px solid #d8a774;
+  background: var(--paper); /* the contract in the palette (09/11/2026): paper, floor 1's frame, the palette's lines */
+  border: 4px solid var(--floor-1);
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1286,7 +1367,7 @@ body[data-tab='percorso'] #scene {
   height: 4px;
   width: 100%;
   border-radius: 2px;
-  background: #ddd5c8;
+  background: var(--paper-line);
 }
 .contract-paper svg {
   margin-top: auto;
@@ -1443,6 +1524,9 @@ body[data-tab='percorso'] #scene {
   padding: 3px;
   border-radius: 999px;
   background: var(--line);
+  /* off, the switch is outlined in the palette's Secondario so its shape reads at 3:1 or more (WCAG 1.4.11, check
+     of 09/11/2026: the light track alone was about 1.3:1 on the card) */
+  box-shadow: inset 0 0 0 1.5px var(--muted);
   transition: background 0.15s var(--ease);
 }
 .switch i {
@@ -1454,11 +1538,33 @@ body[data-tab='percorso'] #scene {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   transition: transform 0.15s var(--ease);
 }
-.switch[aria-checked='true'] {
+.switch[aria-checked='true'],
+.set-row[aria-checked='true'] .switch {
   background: var(--action);
+  box-shadow: none;
 }
-.switch[aria-checked='true'] i {
+.switch[aria-checked='true'] i,
+.set-row[aria-checked='true'] .switch i {
   transform: translateX(20px);
+}
+/* the whole row is the switch (09/11/2026, revisione UX, stanza 10): the touch area is the row, 52 px or more */
+.set-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding: 6px 0;
+  text-align: left;
+  color: var(--ink);
+}
+.settings .set-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: inherit;
+  color: var(--ink);
 }
 .link {
   width: 100%;
@@ -1471,24 +1577,94 @@ body[data-tab='percorso'] #scene {
 .link.danger {
   color: var(--error-ink);
 }
+/* «Informazioni e privacy» opens under its row (cubotto 9.8, 09/11/2026) */
+.settings .privacy-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+.privacy-row .link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.privacy-row .link svg {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: var(--muted);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s var(--ease);
+}
+.privacy-row .link[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+.settings .privacy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0 0 16px;
+}
+.settings .privacy[hidden] {
+  display: none;
+}
+.privacy p {
+  margin: 0;
+  font-size: calc(14.5px * var(--fs));
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.privacy b {
+  font-size: inherit;
+  color: var(--ink);
+}
 
 /* ---------- the first start (07/11/2026, js/avvio.js): welcome, Dorigo's test, reveal, choice, partner, contract ---------- */
 :root {
   /* the scale of the test in the palette (the user's choice, 07/11/2026): blue towards «D'accordo», grey-blue towards
      «In disaccordo», the middle lighter; not the green and purple of the reference */
   --agree: #0f70e0;
-  --disagree: #5b6a85;
-  --mid: #aeb9cc;
-  --trap-ink: #b4552b;
+  --disagree: #4e5d78;
+  /* the middle stays lighter, between the palette's «Bordi» and «Secondario»: 3.1:1 on the page (was #aeb9cc, 1.9:1) */
+  --mid: #818ea3;
+  --trap-ink: var(--orange-ink); /* the trap in the palette's orange context (was #b4552b): 6.5:1 */
   --good-ink: #0a57b3;
+  /* the word «D'accordo» under the scale: the deeper blue of «Salta», 6.5:1 (the app's blue is 4.46:1, 09/11/2026) */
+  --agree-ink: #0a57b3;
+  /* the little map of the four types (reveal and Tu): light in the light theme, dark in the dark one (09/11/2026) */
+  --mm-bg: #ffffff;
+  --mm-edge: rgba(20, 33, 61, 0.08);
+  --mm-q: #f4f8fd;
+  --mm-other: #4e5d78; /* the other types, 6.2:1 on their quadrant (the palette's «Secondario») */
+  --mm-axis: #4e5d78;
+  --mm-me: var(--floor-1-light);
+  --mm-me-ink: #4e5d78;
+  --mm-me-name: #14213d;
+  --mm-chip: #14213d;
+  --mm-chip-ink: #ffffff;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --agree: #5aa9ff;
+    --agree: #6fb3fe; /* blue 300 of the palette */
     --disagree: #9aa9c0;
-    --mid: #4e5d78;
-    --trap-ink: #f5b596;
-    --good-ink: #8cc4ff;
+    --mid: #586782; /* 3.2:1 on the page (was #4e5d78, 2.7:1) */
+    --trap-ink: var(--orange-ink);
+    --good-ink: #6fb3fe;
+    --agree-ink: #6fb3fe;
+    --mm-bg: #16213a;
+    --mm-edge: #2c3b58;
+    --mm-q: #1f2c47;
+    --mm-other: #9aa9c0;
+    --mm-axis: #9aa9c0;
+    --mm-me: #3a2418;
+    --mm-me-ink: #f5d3c2;
+    --mm-me-name: #ffffff;
+    --mm-chip: #f4f8fd;
+    --mm-chip-ink: #14213d;
   }
 }
 body[data-avvio] .tabs,
@@ -1523,6 +1699,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   margin-right: auto;
 }
 .avvio.av-page > :not(.av-fill) {
+  flex-shrink: 0; /* never squeezed: on a small phone with big text the page scrolls (the contract was clipped) */
   animation: av-in 0.3s var(--ease) both;
 }
 @keyframes av-in {
@@ -1586,13 +1763,6 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-size: calc(22px * var(--fs-l));
   letter-spacing: -0.03em;
 }
-.av-skip {
-  min-height: 44px;
-  padding: 0 4px 0 16px;
-  font-size: calc(15px * var(--fs));
-  font-weight: 600;
-  color: var(--brand-ink);
-}
 .av-art {
   display: grid;
   place-items: center;
@@ -1632,7 +1802,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .av-art .slab {
   fill: #ffffff;
-  stroke: #dfe5ee;
+  stroke: var(--line);
 }
 .av-art .star {
   fill: var(--reward);
@@ -1735,6 +1905,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .av-dot::before {
   content: '';
+  box-sizing: border-box; /* the border inside the circle: the two end circles stay within the margins */
   width: var(--s);
   height: var(--s);
   border-radius: 50%;
@@ -1778,7 +1949,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   white-space: nowrap;
 }
 .av-ends span:first-child {
-  color: var(--agree);
+  color: var(--agree-ink);
 }
 .av-ends span:last-child {
   color: var(--disagree);
@@ -1812,14 +1983,19 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   box-shadow: 0 1px 0 var(--line);
 }
 
-/* the reveal */
-.av-motto {
-  margin: 0;
-  font-family: var(--title);
-  font-size: calc(21px * var(--fs-l));
+/* the reveal: the motto is the title, the two axes under it as a small label (09/11/2026, revisione UX, stanza 3) */
+.av-axes {
+  margin: -4px 0 0;
+}
+.av-axes span {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  font-size: calc(13px * var(--fs));
   font-weight: 700;
-  line-height: 1.25;
-  color: var(--brand-ink);
+  color: var(--ink-2);
 }
 .av-trait {
   display: grid;
@@ -1882,14 +2058,14 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   color: #ffffff;
 }
 
-/* the little map, with your point: on the light card in both themes, like the drawings */
+/* the little map, with your point: no drawings on it, so it follows the theme (--mm-*, 09/11/2026) */
 .mm {
   position: relative;
   padding: 26px;
   border-radius: 22px;
-  background: var(--paper);
-  color: #14213d;
-  box-shadow: inset 0 0 0 1px var(--paper-edge);
+  background: var(--mm-bg);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1px var(--mm-edge);
 }
 .mm-axis {
   position: absolute;
@@ -1897,7 +2073,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #4e5d78;
+  color: var(--mm-axis);
   white-space: nowrap;
 }
 .mm-axis.n {
@@ -1937,8 +2113,8 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   min-height: 116px;
   padding: 9px 8px;
   border-radius: 12px;
-  background: #f4f8fd;
-  color: #8592a8;
+  background: var(--mm-q);
+  color: var(--mm-other);
   text-align: center;
 }
 /* the lower quadrants carry their names at the bottom: the middle band is the point's */
@@ -1956,27 +2132,34 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   line-height: 1.2;
 }
 .mm-q.me {
-  background: #faeae1;
-  color: #4e5d78;
-  box-shadow: inset 0 0 0 2px #e97f4f;
+  background: var(--mm-me);
+  color: var(--mm-me-ink);
+  box-shadow: inset 0 0 0 2px var(--floor-1);
 }
 .mm-q.me b {
-  color: #14213d;
+  color: var(--mm-me-name);
+}
+/* the free field of your quadrant, between its names and the middle: the point lives here (avvio.js miniMap) */
+.mm-field {
+  position: relative;
+  display: block;
+  flex: 1 0 44px;
 }
 .mm-you {
   position: absolute;
-  left: var(--x);
-  top: var(--y);
+  /* the whole point (20px and its ring) stays inside the field */
+  left: clamp(13px, var(--x), calc(100% - 13px));
+  top: clamp(13px, var(--y), calc(100% - 13px));
   width: 20px;
   height: 20px;
   margin: -10px 0 0 -10px;
   border-radius: 50%;
-  background: #e97f4f;
+  background: var(--floor-1);
   border: 3px solid #ffffff;
-  box-shadow: 0 0 0 2px #e97f4f, 0 4px 10px rgba(148, 66, 25, 0.35);
+  box-shadow: 0 0 0 2px var(--floor-1), 0 4px 10px rgba(148, 66, 25, 0.35); /* floor 1's deep, see-through */
   animation: av-you 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both 0.2s;
 }
-/* «Tu» beside the point, on the side towards the middle */
+/* «Tu» beside the point, on the side towards the middle (or into its quadrant when the point is near it, avvio.js) */
 .mm-you span {
   position: absolute;
   left: 22px;
@@ -1984,9 +2167,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   transform: translateY(-50%);
   padding: 2px 7px;
   border-radius: 999px;
-  background: #14213d;
-  color: #ffffff;
+  background: var(--mm-chip);
+  color: var(--mm-chip-ink);
   font-size: calc(12px * var(--fs));
+  font-style: normal;
   font-weight: 800;
 }
 .mm-you.to-left span {
@@ -2093,37 +2277,132 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-size: calc(17px * var(--fs));
   line-height: 1.4;
   font-weight: 500;
+  outline: none; /* the line takes the focus for the screen reader (avvio.js), no ring around it */
 }
 .av-talk .pill {
   grid-column: 1 / -1;
 }
+/* under the second line: what the numbers on the empty stands mean (09/11/2026) */
+.av-talk-body .av-talk-note {
+  margin-top: 8px;
+  font-size: calc(14px * var(--fs));
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--muted);
+}
 
 /* the contract */
 .av-paper {
+  position: relative;
+  overflow: hidden; /* the stamp, big before it lands, never makes the page scroll sideways */
   margin-top: 6px !important;
-  padding: 24px 22px 18px;
+  padding: 22px 22px 14px;
   border-radius: 8px;
-  background: #fcfaf6;
-  color: #14213d;
-  border: 6px solid #d8a774;
+  /* in the palette (09/11/2026): the paper (light in both themes), framed in floor 1's base, the Direzione's colour */
+  background: var(--paper);
+  color: var(--paper-ink);
+  border: 6px solid var(--floor-1);
   box-shadow: var(--shadow);
 }
 .av-paper h1 {
   font-size: calc(26px * var(--fs-l));
-  margin-bottom: 14px;
+  margin-bottom: 12px;
 }
 .av-paper p {
   margin: 0 0 10px;
   font-size: calc(15.5px * var(--fs));
   line-height: 1.5;
 }
+/* a real contract (09/11/2026, the user: «migliora il contratto»): three short articles, the date, the partner's
+   signature already there, yours to draw, and a stamp that lands on the paper once signed */
+.av-articles {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.av-articles li {
+  margin: 0 0 9px;
+  font-size: calc(15px * var(--fs));
+  line-height: 1.45;
+}
+.av-articles b {
+  margin-right: 4px;
+  font-size: calc(12px * var(--fs));
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--floor-1-deep); /* floor 1's deep, 6.9:1 on the paper (6.2:1 on the dark theme's paper) */
+}
+.av-paper .av-date {
+  margin: 12px 0 8px;
+  font-size: calc(13px * var(--fs));
+  font-weight: 600;
+  color: var(--paper-ink-2);
+}
+.av-partner-sign {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1.5px solid var(--paper-ink);
+  font-size: calc(13px * var(--fs));
+  color: var(--paper-ink-2);
+}
+.av-partner-sign svg {
+  width: 84px;
+  height: 28px;
+  fill: none;
+  stroke: var(--paper-ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.av-partner-sign b {
+  color: var(--paper-ink);
+}
+.av-stamp {
+  position: absolute;
+  right: 18px;
+  bottom: 54px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: 104px;
+  height: 104px;
+  /* the stamp in floor 1's deep: at its 0.85 opacity 4.9:1 on the paper, 4.5:1 on the dark theme's paper */
+  border: 3px solid var(--floor-1-deep);
+  border-radius: 50%;
+  color: var(--floor-1-deep);
+  text-align: center;
+  line-height: 1.1;
+  opacity: 0;
+  transform: rotate(-14deg) scale(1.6);
+  pointer-events: none;
+}
+.av-stamp b {
+  font-family: var(--title);
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.av-stamp small {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.av-paper.stamped .av-stamp {
+  opacity: 0.85;
+  transform: rotate(-14deg) scale(1);
+  transition: opacity 0.18s ease-out, transform 0.26s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
 .av-sign {
   position: relative;
-  height: 120px;
-  margin-top: 14px;
+  height: 104px;
+  margin-top: 12px;
   border-radius: 12px;
   background: #ffffff;
-  box-shadow: inset 0 0 0 1.5px #e4dccf;
+  box-shadow: inset 0 0 0 1.5px var(--paper-line);
 }
 .av-sign canvas {
   position: absolute;
@@ -2139,11 +2418,24 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   display: grid;
   place-items: center;
   font-size: calc(15px * var(--fs));
-  color: #8a8170;
+  color: var(--paper-ink-2); /* the palette's «Secondario», 6.6:1 on the white pad */
   pointer-events: none;
 }
 .av-sign.drawn .av-sign-hint {
   display: none;
+}
+/* signed with one touch (09/11/2026): the name written on the line, in the pen's blue, the stamp beside it */
+.av-sign.typed canvas {
+  visibility: hidden;
+}
+.av-sign-typed {
+  position: absolute;
+  inset: 0 auto 0 18px;
+  display: flex;
+  align-items: center;
+  font: italic 600 calc(30px * var(--fs-l)) var(--text);
+  color: var(--blue-600);
+  pointer-events: none;
 }
 .av-sign-line {
   display: flex;
@@ -2151,36 +2443,30 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   align-items: center;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1.5px solid #14213d;
+  border-top: 1.5px solid var(--paper-ink);
   font-size: calc(13px * var(--fs));
   font-weight: 700;
 }
 .av-redo {
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 4px 0 14px;
   font-size: calc(14px * var(--fs));
   font-weight: 700;
-  color: #0a57b3;
+  color: var(--blue-700); /* the palette's deep blue: the paper does not flip, so neither does this */
 }
 .av-prov {
   text-align: center;
   font-size: calc(12.5px * var(--fs));
 }
-/* the way to sign without drawing: for VoiceOver and TalkBack, seen when the keyboard reaches it */
+/* the way to sign without drawing, for everyone who cannot draw with a finger (WCAG 2.5.1, revisione UX 09/11/2026):
+   always there under «Firmo», quieter than it, a full-width 44px target */
 .avvio .av-alt {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-}
-.avvio .av-alt:focus-visible {
-  position: static;
-  width: auto;
-  height: 44px;
-  clip: auto;
+  min-height: 44px;
+  margin-top: -6px;
+  font-size: calc(15px * var(--fs));
   font-weight: 700;
   color: var(--brand-ink);
+  text-align: center;
 }
 
 /* the reminders */
@@ -2205,7 +2491,8 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-weight: 600;
 }
 .av-time input {
-  font: 700 20px var(--title);
+  min-height: 44px;
+  font: 700 calc(20px * var(--fs-l)) var(--title);
   color: var(--ink);
   background: var(--surface-2);
   border: 0;
@@ -2306,6 +2593,14 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+/* signed with one touch: the name written on the paper, in the pen's blue, as on the contract (09/11/2026) */
+.contract-paper .contract-name {
+  stroke: none;
+}
+.contract-paper .contract-name text {
+  fill: var(--action);
+  font: italic 600 26px var(--text);
+}
 @media (prefers-reduced-motion: reduce) {
   .avvio.av-page > *,
   .mm-you,
@@ -2316,22 +2611,14 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 
 /* ---------- the lesson (07/11/2026, js/lezione.js, compito B2) ---------- */
 :root {
-  --ok: #266d2c;
-  --ok-soft: #e5f4e6;
-  --ok-line: #57b65c;
-  --no: #c42b3a;
-  --no-soft: #fdecee;
-  --no-line: #e8737f;
-}
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ok: #8fd694;
-    --ok-soft: #173a1d;
-    --ok-line: #57b65c;
-    --no: #ff8a92;
-    --no-soft: #3d1a20;
-    --no-line: #e8737f;
-  }
+  /* right and wrong in the palette's «Corretto» and «Errore» (09/11/2026; before, floor 5's green and a red by eye):
+     the soft background, the ink that reads on it, the state itself for the edges. They follow the theme with the tokens. */
+  --ok: var(--correct-ink);
+  --ok-soft: var(--correct-soft);
+  --ok-line: var(--correct);
+  --no: var(--error-ink);
+  --no-soft: var(--error-soft);
+  --no-line: var(--error);
 }
 .lezione {
   position: fixed;
@@ -2345,7 +2632,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .lezione[hidden] {
   display: none;
 }
-/* the definition of a hard word comes as a toast: above the lesson, not under it */
+/* a toast during a lesson (a trophy): above the lesson, not under it */
 body.in-lesson .toast {
   z-index: 31;
 }
@@ -2380,7 +2667,7 @@ body.in-lesson .toast {
 }
 /* five right in a row: the bar turns gold and says so; a mistake brings it back, nothing is taken away */
 .lz-bar.hot i {
-  background: linear-gradient(90deg, #f5a623, var(--reward));
+  background: var(--reward); /* the palette's coin yellow (was a gradient from an orange not in the palette) */
 }
 .lz-bar.hot {
   animation: lz-hot 0.6s var(--ease);
@@ -2397,7 +2684,7 @@ body.in-lesson .toast {
   padding: 2px 8px;
   border-radius: 999px;
   background: var(--reward-soft);
-  color: #8a5a00;
+  color: var(--reward-ink);
   font-size: calc(12px * var(--fs));
   font-weight: 800;
 }
@@ -2416,9 +2703,11 @@ body.in-lesson .toast {
   font-weight: 800;
 }
 /* a hard word: underlined, touched for its definition */
+/* the touch area is over 44 px tall (Apple), the line stays as it was: the padding is taken back by the margin */
 .lz-word {
   display: inline;
-  padding: 0;
+  padding: 12px 2px;
+  margin: -12px -2px;
   font: inherit;
   color: inherit;
   text-decoration: underline;
@@ -2427,6 +2716,59 @@ body.in-lesson .toast {
   text-underline-offset: 4px;
   text-decoration-color: var(--brand-ink);
   cursor: help;
+}
+/* open, or reached with the keyboard: a light blue under the word only, not under its whole touch area */
+.lz-word[aria-expanded='true'],
+.lz-word:focus-visible {
+  outline: none;
+  background: var(--brand-soft);
+  background-clip: content-box;
+}
+/* its definition: a small bubble pointing at the word, under it or over it (lezione.js, define) */
+.lz-defs {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.lz-def {
+  position: absolute;
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: var(--ink); /* like the toasts: a note, not an action */
+  color: var(--surface);
+  font-size: calc(15px * var(--fs));
+  line-height: 1.4;
+  box-shadow: var(--shadow);
+  pointer-events: auto;
+  animation: lz-def 0.16s var(--ease);
+}
+.lz-def::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--x) - 7px);
+  top: -6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+.lz-def.up::before {
+  top: auto;
+  bottom: -6px;
+}
+@keyframes lz-def {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lz-def {
+    animation: none;
+  }
 }
 /* the theory card, after the first mistake on a new idea */
 .lz-theory {
@@ -2437,15 +2779,15 @@ body.in-lesson .toast {
   background: var(--surface);
   border: 2px solid var(--reward);
 }
-.lz-theory span {
+.lz-theory > span {
   font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: #8a5a00;
+  color: var(--reward-ink);
 }
 @media (prefers-color-scheme: dark) {
-  .lz-theory span {
+  .lz-theory > span {
     color: var(--reward);
   }
 }
@@ -2500,7 +2842,7 @@ body.in-lesson .toast {
   padding: 5px 10px;
   border-radius: 8px;
   background: var(--reward-soft);
-  color: #8a5a00;
+  color: var(--reward-ink);
   font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.1em;
@@ -2741,12 +3083,12 @@ body.in-lesson .toast {
   font-weight: 800;
 }
 .lz-cell.right[data-pair]::after {
-  background: var(--ok-line);
-  color: #fff;
+  background: var(--ok); /* the ink of the context and its soft colour: 5.9:1 (white on the bright green was 1.9:1) */
+  color: var(--ok-soft);
 }
 .lz-cell.wrong[data-pair]::after {
-  background: var(--no-line);
-  color: #fff;
+  background: var(--no);
+  color: var(--no-soft);
 }
 /* put in order: the steps go up into the list as you touch them */
 .lz-seq {
@@ -2773,14 +3115,16 @@ body.in-lesson .toast {
   height: 26px;
   border-radius: 8px;
   background: var(--action);
-  color: #fff;
+  color: var(--on-action);
   font-size: calc(13px * var(--fs));
 }
 .lz-seq .lz-cell.right b {
-  background: var(--ok-line);
+  background: var(--ok);
+  color: var(--ok-soft);
 }
 .lz-seq .lz-cell.wrong b {
-  background: var(--no-line);
+  background: var(--no);
+  color: var(--no-soft);
 }
 .lz-empty {
   display: grid;
@@ -2849,6 +3193,10 @@ body.in-lesson .toast {
   border-radius: 26px 26px 0 0;
   box-shadow: 0 -10px 30px rgba(20, 33, 61, 0.12);
   animation: rise 0.28s var(--ease);
+  /* on a small phone, or with big text, the sheet scrolls under the X and the bar, it never covers them */
+  max-height: calc(100% - var(--safe-t) - 64px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .lz-sheet > * {
   width: 100%;
@@ -3036,10 +3384,36 @@ body.in-lesson .toast {
 }
 .cs-msg {
   animation: av-in 0.3s var(--ease);
-  transition: opacity 0.3s var(--ease);
 }
-.cs-msg.past {
+/* the older messages step back with the colour, never the opacity, so they still read at 4.5:1 or more (09/11/2026,
+   revisione UX, stanza 9: at 0.55 they fell to 1.63–3.71:1). The bubble goes flat, the text grey-blue, your answer
+   light blue; only the face, a picture, fades. */
+.cs-bubble,
+.cs-bubble p,
+.cs-scene p,
+.cs-mine {
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.cs-msg.past .cs-bubble {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.cs-msg.past .cs-bubble p {
+  color: var(--ink-2);
+}
+.cs-msg.past .cs-face {
   opacity: 0.55;
+}
+.cs-msg.past.cs-scene:not(.cs-end) p {
+  color: var(--muted);
+}
+.cs-msg.past.cs-mine {
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+/* a short phone or large text: while the choices wait, the room steps back so the question stays whole (caso.js) */
+.caso.cs-tight .cs-room {
+  height: min(14vh, 110px);
 }
 .cs-line {
   display: flex;
@@ -3082,10 +3456,13 @@ body.in-lesson .toast {
   font-weight: 600;
   line-height: 1.3;
 }
+/* the narration reads as a stage direction: italic, in line with the words of the dialogue, without a box or a
+   coloured bar (09/11/2026: the 3 px bar on the left read as a tic of generated interfaces, and its orange against
+   the red of a wrong choice's scene hardly told the two apart). A wrong choice's scene is told by where it stands,
+   between your answer and the mentor who covers you. */
 .cs-scene {
   margin-left: 54px;
-  padding: 2px 0 2px 12px;
-  border-left: 3px solid var(--accent);
+  padding: 2px 14px;
 }
 .cs-scene p {
   margin: 0;
@@ -3093,10 +3470,6 @@ body.in-lesson .toast {
   line-height: 1.45;
   font-style: italic;
   color: var(--ink-2);
-}
-/* what would have happened: the same line, in the colour of a mistake */
-.cs-scene.cs-what {
-  border-left-color: var(--no-line);
 }
 /* the told ending: «Un mese dopo», a little stronger */
 .cs-scene.cs-end {
@@ -3110,11 +3483,12 @@ body.in-lesson .toast {
   font-weight: 600;
 }
 @media (prefers-color-scheme: dark) {
+  /* from the floor's own colour, as the stage chip (before: floor 1's tones written by hand) */
   .cs-scene.cs-end {
-    background: #3a2318;
+    background: color-mix(in srgb, var(--accent) 22%, var(--surface));
   }
   .cs-scene.cs-end p {
-    color: #f5b596;
+    color: color-mix(in srgb, var(--accent) 45%, #ffffff);
   }
 }
 .cs-mine {
@@ -3150,4 +3524,297 @@ body.in-lesson .toast {
   .cs-msg {
     animation: none;
   }
+}
+
+/* ---------- the Prova sul campo (09/11/2026, js/campo.js): the Caso's dialogue with the balance of the month ---------- */
+/* the purse, always in sight on the photo of the room: at the top right, under the bar, away from the tag */
+.pv-purse {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  display: grid;
+  justify-items: end;
+  min-width: 112px;
+  padding: 6px 12px 7px;
+  border-radius: 14px;
+  background: var(--glass);
+  box-shadow: var(--shadow-sm);
+}
+.pv-purse small {
+  font-size: calc(12px * var(--fs));
+  font-weight: 700;
+  color: var(--muted);
+}
+.pv-amount {
+  font-family: var(--title);
+  font-size: calc(22px * var(--fs-l));
+  font-weight: 800;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+/* under zero: said by the number and by the mentor, without a red alarm */
+.pv-purse.below .pv-amount {
+  color: var(--trap-ink);
+}
+/* the change of a choice, for a moment under the purse */
+.pv-delta {
+  position: absolute;
+  right: 10px;
+  top: calc(100% + 6px);
+  padding: 3px 9px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-style: normal;
+  font-size: calc(13px * var(--fs));
+  font-weight: 800;
+  color: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+}
+.pv-delta.on {
+  animation: pv-delta 1.8s var(--ease);
+}
+@keyframes pv-delta {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  15%,
+  75% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+/* a short phone or large text: on the smaller room the purse goes on one line, clear of the tag below */
+.caso.cs-tight .pv-purse {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 10px 5px;
+}
+.caso.cs-tight .pv-amount {
+  font-size: calc(18px * var(--fs-l));
+}
+/* the weeks and the key moments, as dividers in the chat */
+.pv-week {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  font-size: calc(12.5px * var(--fs));
+  font-weight: 800;
+  color: var(--muted);
+}
+.pv-week::before,
+.pv-week::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+/* what an answer cost, in front of what happened */
+.pv-cost {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 1px 8px;
+  border-radius: 8px;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  font-style: normal;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.cs-msg.past .pv-cost {
+  background: transparent;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+/* the end of the month: how it closes */
+.cs-scene .pv-tally {
+  margin-top: 6px;
+  font-style: normal;
+}
+/* fewer animations (the Tu, or the phone): the change shows still, and campo.js takes it away */
+:root[data-calm] .pv-delta.on {
+  opacity: 1;
+}
+
+/* partita 09/11 · A: the choices of the Caso and of the Prova sul campo (js/caso.js and js/campo.js, hold) come where
+   «Avanti» was a moment before. They fade in a beat after the question, so the change shows, and for 0.5 s take no
+   touch: a second tap meant for «Avanti» does not pick an answer unread. The button that comes where the choices were
+   does the same, shorter. With «Movimento ridotto» they are just there, and the pause for the touch stays */
+.cs-foot .cs-in {
+  animation: av-in 0.3s var(--ease) 0.12s backwards;
+}
+.cs-foot .cs-in-short {
+  animation: av-in 0.2s var(--ease) backwards;
+}
+.cs-foot.cs-hold button {
+  pointer-events: none;
+}
+:root[data-calm] .cs-foot .cs-in {
+  animation: none;
+}
+
+/* partita 09/11 · C: the bubble of the Percorso goes beside its stage (js/path.js, placeBubble): above it, on its right
+   or left, or under it, where it covers neither the next stage nor the partner and their name. path.js gives the
+   place of its corner and of the tip (--tip-at, along the edge facing the stand); the width can be narrower or wider
+   than usual to fit. The look stays the same: colours, type, «Inizia · 3 min» in the floor's colour */
+.bubble.placed {
+  transform: none;
+  transform-origin: var(--tip-at, 50%) 100%;
+}
+.bubble.placed:active {
+  transform: scale(0.98);
+}
+.bubble.placed[data-side='below'] {
+  transform-origin: var(--tip-at, 50%) 0;
+}
+.bubble.placed[data-side='left'] {
+  transform-origin: 100% var(--tip-at, 50%);
+}
+.bubble.placed[data-side='right'] {
+  transform-origin: 0 var(--tip-at, 50%);
+}
+.bubble.placed[data-fit='narrow'] {
+  max-width: 168px;
+  min-width: min-content;
+}
+.bubble.placed[data-fit='wide'] {
+  max-width: min(304px, calc(100vw - 24px));
+}
+.bubble.placed::after {
+  left: var(--tip-at, 50%);
+  right: auto;
+  top: auto;
+  bottom: -7px;
+  transform: translateX(-50%) rotate(45deg);
+}
+.bubble.placed[data-side='below']::after {
+  top: -7px;
+  bottom: auto;
+}
+.bubble.placed[data-side='left']::after,
+.bubble.placed[data-side='right']::after {
+  top: var(--tip-at, 50%);
+  bottom: auto;
+  transform: translateY(-50%) rotate(45deg);
+}
+.bubble.placed[data-side='left']::after {
+  left: auto;
+  right: -7px;
+}
+.bubble.placed[data-side='right']::after {
+  left: -7px;
+}
+/* the short form, for where the way is crowded: what the stage is and «Inizia · 3 min», without the title (the
+   screen reader still hears it, from aria-label) */
+.bubble.placed[data-fit='mini'] {
+  padding: 8px 14px 10px;
+}
+.bubble.placed[data-fit='mini'] .bubble-title {
+  display: none;
+}
+.bubble.placed[data-fit='mini'] .bubble-go {
+  margin-top: 5px;
+}
+
+/* partita 09/11 · B: the stamp of the contract, the end of a stage in its card, the partner at the end of a floor
+   (js/avvio.js, js/main.js; 1. LAVORO/revisione-ux/partita-2026-11-09.md, punti 7, 9 e 14) */
+/* the stamp comes down a little slower, so it is seen landing; avvio.js keeps it on screen 2 s in all. With reduced
+   motion (data-calm, or the phone) it is simply there */
+.av-paper.stamped .av-stamp {
+  transition: opacity 0.25s ease-out, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25);
+}
+/* the line on the result, under the chips, with the banner's star */
+.card-result {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -2px 0 14px;
+  font-family: var(--title);
+  font-weight: 700;
+  font-size: calc(17px * var(--fs));
+  line-height: 1.3;
+  color: var(--ink);
+}
+.card-result svg {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 7px;
+  border-radius: 50%;
+  background: var(--reward-soft);
+  fill: var(--reward);
+  stroke: none;
+}
+/* the trophies taken during the stage: in the card until «Continua», never in a pop during the flight */
+.card-prizes {
+  display: grid;
+  gap: 8px;
+  margin: -6px 0 18px;
+  padding: 0;
+  list-style: none;
+}
+.card-prize {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px 10px 10px;
+  border-radius: 18px;
+  background: var(--surface-2);
+  animation: prize-in 0.4s var(--ease) 0.3s both;
+}
+.card-prize .trophy-emblem {
+  background: var(--c);
+  color: var(--on-c, #ffffff);
+}
+.card-prize b {
+  display: block;
+  font-family: var(--title);
+  font-size: calc(16px * var(--fs));
+  font-weight: 700;
+  line-height: 1.25;
+}
+.card-prize-tag {
+  display: block;
+  font-size: calc(12px * var(--fs));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+@keyframes prize-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+/* the partner at the end of a floor: the panel of the empty company (avvio.js, .av-scene), over the finished floor */
+.fine-piano {
+  position: fixed;
+  inset: 0;
+  z-index: 26;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(to top, var(--veil), transparent 55%);
+  animation: fade-in 0.3s var(--ease);
+}
+/* the pill and the bar step aside, as in the first start: the panel takes their place */
+body[data-fine] .bottom {
+  visibility: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-prize {
+    animation: none;
+  }
+}
+
+/* partita 09/11 · Claude: an elided article and its hard word stay on one line (js/lezione.js, words) */
+.lz-nowrap {
+  white-space: nowrap;
 }

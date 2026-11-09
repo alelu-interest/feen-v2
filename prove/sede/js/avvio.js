@@ -1,13 +1,15 @@
-// FEEN · la sede — the first start (07/11/2026, CLAUDE.md §5): welcome → test → pregio → trappola → map → the choice
+// FEEN · la sede — the first start (07/11/2026, CLAUDE.md §5): welcome → test → pregio → map → the choice
 // of the character → the empty company with the partner → the contract → the first lesson → the reminders → Percorso.
 // The test is Dorigo's (quiz.js); the user's choices of 07/11/2026: a touch on a circle moves on by itself, there is
-// no way back to the question before, the reveal goes pregio → trappola → map, no «Rifai il test». Every step is kept
+// no way back to the question before, no «Rifai il test». 09/11/2026, the user: no «Salta» on the welcome, and no
+// trappola screen in the reveal (it stays in the Tu and in the mentor's line of the Caso). Every step is kept
 // on the phone: closing the app brings you back to the step you reached. Welcome, partner and contract texts are
 // Claude's, provisional.
 import { QUESTIONS, SCALE, TIEBREAKS, PROFILES, score } from './quiz.js';
 import { PEOPLE } from './people.js';
 import { FLOORS } from './world.js';
 import { IN_APP } from './app.js';
+import { inkOn } from './kit.js';
 
 const KEY = 'feen-avvio';
 const ORDER = ['alto-innovativo', 'alto-tradizionale', 'basso-innovativo', 'basso-tradizionale'];
@@ -29,13 +31,19 @@ const ICONS = {
   risiko: '<path d="M12 3l8 3v5.5c0 6.5-8 9.5-8 9.5s-8-3-8-9.5V6z"/>',
   canzoni: '<path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
 };
-// what the partner says in the empty company, one line per touch (provisional, Claude's)
+// what the partner says in the empty company, one line per touch: two lines since 09/11/2026 (revisione UX, stanza 4),
+// the partner and the launch, then the contract. Provisional, Claude's: the product of the launch is never said.
 const PARTNER = [
-  (me, p) => `Eccoti, ${me}. Io sono ${p}: da oggi questa azienda è nostra, a metà.`,
-  () => 'Per ora è un piano solo. Ogni volta che impari qualcosa sui soldi, cresce di un pezzo.',
-  () => 'In cima ci aspetta il grande lancio. Cosa lanciamo? Lo scopri lassù.',
-  () => 'Prima però una firma. Niente paura: è un contrattino.',
+  (w) => `Eccoti, ${w.me}! Sono ${w.partner}, ${w.partnerWord}. Ogni lezione fa crescere l’azienda, fino al grande lancio. Cosa lanciamo? Segreto tra soci.`,
+  () => 'Prima però una firma. Niente paura: nessuna clausola scritta in piccolo.',
 ];
+// under the first line, while the room is on screen: what the numbers on the empty stands mean (Claude's, to confirm)
+const STANDS = 'Sui posti vuoti c’è il numero della tappa che porta l’oggetto.';
+// the contract (09/11/2026): today's date as it is written on paper, and the partner's signature, already there
+const today = () => new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+// from «Firmo» to the first lesson: the stamp lands (style.css, «partita 09/11 · B») and stays in sight (09/11/2026)
+const STAMP_PAUSE = 2000;
+const PARTNER_SIGN = '<svg viewBox="0 0 120 40" aria-hidden="true"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
 
 const fresh = () => ({ step: 'benvenuto', i: 0, answers: Array(QUESTIONS.length).fill(null), tie: {}, pick: null, line: 0, sign: null, avvisi: null });
 function load() {
@@ -47,6 +55,8 @@ function load() {
   }
 }
 const cap = (t) => t[0].toUpperCase() + t.slice(1);
+// «rischio basso · tradizionale»: the «·» stays with the word before it, so a line never starts with it
+const keep = (t) => t.replace(/ · /g, '\u00a0· ');
 const icon = (id) => `<svg class="av-icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[id]}</svg>`;
 
 /** The result of the test as the rest of the prova needs it, or null before the choice of the character. */
@@ -55,20 +65,30 @@ export function whoOf(s) {
   const r = score(s.answers, s.tie);
   const p = PROFILES[r.quadrant];
   const partner = p.names.find((n) => n !== s.pick);
-  return { ...r, profile: p, me: s.pick, partner, partnerWord: WOMEN.has(partner) ? 'la tua socia' : 'il tuo socio', sign: s.sign };
+  return { ...r, profile: p, me: s.pick, partner, partnerWord: WOMEN.has(partner) ? 'la tua socia' : 'il tuo socio', sign: s.sign, signed: s.signed };
 }
 
 /** The little map of the four types with your point (reveal and Tu). */
 export function miniMap(who, { label = true } = {}) {
-  // the names sit on the outer edge of each quadrant; the point stays in the band between them, still in proportion
-  const left = 4 + ((who.x + 1) / 2) * 92;
-  const top = 26 + ((1 - who.y) / 2) * 48;
-  const side = who.x > 0.3 ? ' to-left' : '';
-  const cells = ORDER.map((k) => `<div class="mm-q${k === who.quadrant ? ' me' : ''}"><b>${PROFILES[k].names.join(' · ')}</b><span>${PROFILES[k].what}</span></div>`).join('');
+  // The names sit on the outer edge of each quadrant; your point lives in the free field of your quadrant, between
+  // its names and the middle, so at any text size it never covers them (09/11/2026: at the far corners it used to
+  // sit on the description). Still in proportion: the further from the middle on the map, the further from the
+  // middle in the field; near the middle (an axis broken by the tie cards) it keeps a little way inside its quadrant,
+  // never on the crossing (revisione UX 09/11/2026, problema 7). quiz.js stays Dorigo's.
+  const sx = who.quadrant.endsWith('tradizionale') ? 1 : -1;
+  const sy = who.quadrant.startsWith('alto') ? 1 : -1;
+  // the distance from the middle line, as a share of the field (style.css keeps the point whole inside it)
+  const far = (v) => 12 + Math.min(1, Math.abs(v)) * 76;
+  const left = sx > 0 ? far(who.x) : 100 - far(who.x);
+  const top = sy > 0 ? 100 - far(who.y) : far(who.y);
+  // «Tu» beside the point, on the side of the quadrant with more room
+  const side = left > 50 ? ' to-left' : '';
+  const you = `<i class="mm-field"><i class="mm-you${side}" style="--x:${left.toFixed(1)}%;--y:${top.toFixed(1)}%">${label ? '<span>Tu</span>' : ''}</i></i>`;
+  const cells = ORDER.map((k) => `<div class="mm-q${k === who.quadrant ? ' me' : ''}"><b>${keep(PROFILES[k].names.join(' · '))}</b><span>${keep(PROFILES[k].what)}</span>${k === who.quadrant ? you : ''}</div>`).join('');
   return `<div class="mm" role="img" aria-label="La mappa dei quattro tipi: il tuo punto è nel quadrante ${who.profile.what}">
     <span class="mm-axis n">Rischio alto</span><span class="mm-axis s">Rischio basso</span>
     <span class="mm-axis w">Innovativo</span><span class="mm-axis e">Tradizionale</span>
-    <div class="mm-grid">${cells}<i class="mm-you${side}" style="--x:${left.toFixed(1)}%;--y:${top.toFixed(1)}%">${label ? '<span>Tu</span>' : ''}</i></div>
+    <div class="mm-grid">${cells}</div>
   </div>`;
 }
 
@@ -77,7 +97,7 @@ export function trapFloors(p) {
   return p.floors
     .map((f) => {
       const fl = FLOORS[f.n - 1];
-      return `<li class="av-floor"><i style="background:${fl.color}">${f.n}</i><span>Al piano ${f.n} · ${fl.name}: «${f.lesson.replace(/[«»]/g, '')}»</span></li>`;
+      return `<li class="av-floor"><i style="background:${fl.color};color:${inkOn(fl.color)}">${f.n}</i><span>Al piano ${f.n} · ${fl.name}: «${f.lesson.replace(/[«»]/g, '')}»</span></li>`;
     })
     .join('');
 }
@@ -121,7 +141,7 @@ export function makeAvvio(api) {
     const c = FLOORS[0].color;
     screen(
       'av-page av-welcome',
-      `<div class="av-head"><span class="av-brand">FEEN</span><button class="av-skip" data-act="skip">Salta</button></div>
+      `<div class="av-head"><span class="av-brand">FEEN</span></div>
       <div class="av-art" aria-hidden="true">
         <svg viewBox="0 0 220 200">
           <path class="g" d="M8 186h204"/>
@@ -189,24 +209,10 @@ export function makeAvvio(api) {
     screen(
       'av-page av-reveal',
       `<p class="av-eyebrow">Il tuo tipo</p>
-      <h1>${cap(p.what)}</h1>
-      <p class="av-motto">${p.motto}</p>
+      <h1>${p.motto}</h1>
+      <p class="av-axes"><span>${keep(p.what)}</span></p>
       <p class="av-lead">${p.portrait}</p>
       <div class="av-trait good"><b>Il tuo pregio</b>${p.pregio}</div>
-      <div class="av-fill"></div>
-      <button class="pill pill-dark wide" data-act="next">Avanti</button>`,
-    );
-  }
-
-  function trappola() {
-    const p = whoOf({ ...s, pick: '-' }).profile;
-    screen(
-      'av-page av-reveal',
-      `<p class="av-eyebrow">Il tuo tipo · ${p.what}</p>
-      <h1>La tua trappola</h1>
-      <div class="av-trait trap">${p.trappola}</div>
-      <p class="av-sub">Ne parliamo in due lezioni:</p>
-      <ul class="av-floors">${trapFloors(p)}</ul>
       <div class="av-fill"></div>
       <button class="pill pill-dark wide" data-act="next">Avanti</button>`,
     );
@@ -232,7 +238,7 @@ export function makeAvvio(api) {
       .join('');
     screen(
       'av-page av-reveal',
-      `<p class="av-eyebrow">${cap(p.what)}</p>
+      `<p class="av-eyebrow">${keep(cap(p.what))}</p>
       <h1>Chi ti somiglia di più?</h1>
       <p class="av-lead">Sono le due versioni del tuo tipo. Chi scegli è il tuo personaggio; l’altra versione fonda l’azienda con te.</p>
       <div class="av-people">${cards}</div>
@@ -243,18 +249,23 @@ export function makeAvvio(api) {
 
   function azienda() {
     const who = whoOf(s);
-    const last = s.line >= PARTNER.length - 1;
+    // a phone saved on a line of the old four keeps going from the last one
+    const line = Math.min(s.line, PARTNER.length - 1);
+    const last = line === PARTNER.length - 1;
     screen(
       'av-scene',
       `<div class="av-talk">
         <span class="av-face"><img src="${PEOPLE[who.partner]}" alt="" /></span>
         <div class="av-talk-body">
           <b>${who.partner}</b>
-          <p aria-live="polite">${PARTNER[s.line](who.me, who.partner)}</p>
+          <p class="av-talk-line" tabindex="-1">${PARTNER[line](who)}</p>
+          ${line === 0 ? `<p class="av-talk-note">${STANDS}</p>` : ''}
         </div>
-        <button class="pill pill-dark wide" data-act="line">${last ? 'Vediamo il contrattino' : 'Avanti'}</button>
+        <button class="pill pill-dark wide" data-act="line">${last ? 'Vediamo il contratto' : 'Avanti'}</button>
       </div>`,
     );
+    // no title on this screen: the screen reader starts from the partner's line, at every line
+    root.querySelector('.av-talk-line').focus({ preventScroll: true });
   }
 
   function contratto() {
@@ -262,17 +273,22 @@ export function makeAvvio(api) {
     screen(
       'av-page av-contract',
       `<div class="av-paper">
-        <h1>Contrattino tra soci</h1>
-        <p>Io, <b>${who.me}</b>, fondo questa azienda insieme a <b>${who.partner}</b>.</p>
-        <p>Mi impegno a una cosa sola: imparare come funzionano i soldi, una lezione alla volta.</p>
-        <p>Nessun obiettivo, nessuna scadenza. Se mi fermo, l’azienda mi aspetta com’è.</p>
+        <h1>Contratto tra soci</h1>
+        <ol class="av-articles">
+          <li><b>Art. 1</b> Io, ${who.me}, fondo questa azienda con ${who.partner}. Insieme prepariamo un grande lancio.</li>
+          <li><b>Art. 2</b> Mi impegno a una cosa sola: capire come funzionano i soldi, una lezione alla volta.</li>
+          <li><b>Art. 3</b> Niente scadenze, niente punteggi. Se mi fermo, l’azienda mi aspetta com’è.</li>
+        </ol>
+        <p class="av-date">${today()}</p>
+        <div class="av-partner-sign">${PARTNER_SIGN}<span><b>${who.partner}</b> ha già firmato</span></div>
         <div class="av-sign"><canvas id="av-pad" aria-hidden="true"></canvas><span class="av-sign-hint">Firma qui col dito</span></div>
         <div class="av-sign-line"><span>${who.me}</span><button class="av-redo" data-act="redo">Rifai</button></div>
+        <div class="av-stamp" aria-hidden="true"><b>FEEN</b><small>Soci<br />fondatori</small></div>
       </div>
       ${IN_APP ? '' : '<p class="av-note av-prov">Testo provvisorio.</p>'}
       <div class="av-fill"></div>
       <button class="pill pill-dark wide" data-act="sign" disabled>Firmo</button>
-      <button class="av-alt" data-act="sign-alt">Firma senza disegnare</button>`,
+      <button class="av-alt" data-act="sign-alt">Firmo con un tocco, senza disegnare</button>`,
     );
     pad();
   }
@@ -384,7 +400,8 @@ export function makeAvvio(api) {
     reach(s.step === 'lezione');
     lock = false;
     if (s.step === 'azienda') api.toSede();
-    const f = { benvenuto, prima, domande: question, spareggio: tie, pregio, trappola, mappa, scelta, azienda, contratto, lezione, avvisi }[s.step];
+    // a phone saved on the old trappola screen (until 09/11/2026) goes on from the map
+    const f = { benvenuto, prima, domande: question, spareggio: tie, pregio, trappola: mappa, mappa, scelta, azienda, contratto, lezione, avvisi }[s.step];
     if (f) return f();
     finish();
   }
@@ -427,10 +444,9 @@ export function makeAvvio(api) {
       return scelta();
     }
     if (act === 'lesson-again') return show();
-    if (act === 'skip') return go('domande', { i: 0 });
     if (act === 'start') return go('domande', { i: 0 });
     if (act === 'next') {
-      const after = { benvenuto: 'prima', pregio: 'trappola', trappola: 'mappa', mappa: 'scelta' }[s.step];
+      const after = { benvenuto: 'prima', pregio: 'mappa', trappola: 'scelta', mappa: 'scelta' }[s.step];
       return go(after);
     }
     if (act === 'pick') return go('azienda', { line: 0 });
@@ -439,15 +455,29 @@ export function makeAvvio(api) {
       return go('contratto');
     }
     if (act === 'sign' || act === 'sign-alt') {
+      // the stamp lands on the paper, then the first lesson (09/11/2026, the user: «migliora il contratto»)
+      const sign = act === 'sign' ? pad.take() : null;
+      if (act === 'sign-alt') {
+        // signed with one touch: your name goes on the line, written, instead of an empty pad under the stamp
+        const box = root.querySelector('.av-sign');
+        box?.classList.add('drawn', 'typed');
+        box?.insertAdjacentHTML('beforeend', `<span class="av-sign-typed">${s.pick}</span>`);
+      }
+      root.querySelector('.av-paper')?.classList.add('stamped');
+      root.querySelectorAll('[data-act]').forEach((x) => (x.disabled = true));
+      // the stamp in sight, even when the page had scrolled down to «Firmo» (a short phone, large text)
+      const calm = document.documentElement.hasAttribute('data-calm');
+      root.querySelector('.av-stamp')?.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' });
       api.sfx.reward?.();
       api.buzz(25);
-      return go('lezione', { sign: act === 'sign' ? pad.take() : null });
+      // the moment you become partners stays on screen long enough to read the stamp (partita 09/11/2026, punto 7:
+      // with 0.9 s in all it hardly showed); with reduced motion the stamp is just there, the pause is the same
+      return setTimeout(() => go('lezione', { sign, signed: today() }), STAMP_PAUSE);
     }
     if (act === 'remind' || act === 'no-remind') {
       const time = root.querySelector('#av-time')?.value || '18:00';
-      // the phone's own permission arrives with the real reminders (cubotto 9.4, stanza 6)
-      const on = IN_APP ? `Promemoria alle ${time}.` : `Promemoria alle ${time}. Nell’app qui il telefono chiede il permesso.`;
-      api.toast(act === 'remind' ? on : 'Niente promemoria. Si accendono dal Tu, nelle Impostazioni.');
+      // the phone asks its permission here, after the first lesson; the app schedules (main.js remind, avvisi.js)
+      api.remind(act === 'remind' ? time : false);
       return go('fatto', { avvisi: act === 'remind' ? time : false });
     }
   });

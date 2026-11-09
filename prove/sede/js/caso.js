@@ -6,18 +6,53 @@
 // Riprendiamola») and you choose again, with that answer turned off; the story always reaches the same end, told
 // as «Un mese dopo», then the line that opens the next lesson. The stories come from the approved cards.
 import { PEOPLE } from './people.js';
+import { motion } from './kit.js';
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const COVER = 'Capita anche ai migliori. Riprendiamola.';
 
+/** The indices 0…n−1 in a fair random order, the lessons' shuffle (lezione.js): the answers of a choice are mixed once
+ *  per moment of choice, so the right one is not always where the card wrote it (partita 09/11/2026). Shared with
+ *  campo.js. */
+export function shuffled(n) {
+  const a = [...Array(n).keys()];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** The choices come where «Avanti» was a moment before: a second tap meant for «Avanti» took an answer unread
+ *  (partita 09/11/2026). So what comes in the foot of the dialogue fades in (style.css, .cs-in; still with «Movimento
+ *  ridotto») and for a moment takes no touch: the choices for `HOLD.opts`, the button that comes where the choices were
+ *  for the shorter `HOLD.button`, so a double tap on an answer does not skip what it did. Shared with campo.js. */
+export const HOLD = { opts: 500, button: 300 };
+export function hold(foot, ms) {
+  foot.readyAt = performance.now() + ms;
+  foot.classList.add('cs-hold');
+  clearTimeout(foot.holdTimer);
+  foot.holdTimer = setTimeout(() => foot.classList.remove('cs-hold'), ms);
+}
+/** True while the foot still holds back the touches (a keyboard Enter too). */
+export const held = (foot) => !!foot && performance.now() < (foot.readyAt ?? 0);
+
 export function makeCase(api) {
   const root = document.getElementById('caso');
   let resolve = null;
+  // a step put off after an answer runs only while its game is still on: leaving with the X ends it (partita 09/11/2026)
+  let run = 0;
+  const later = (fn, ms) => {
+    const r = run;
+    return setTimeout(() => r === run && fn(), ms);
+  };
   let story = null;
   let at = 0; // the next beat of the story
   let solved = 0; // the choices got right, for the bar
   let anyWrong = false;
-  let off = new Set(); // the answers already wrong at this choice
+  let off = new Set(); // the answers already wrong at this choice (indices of the card)
+  let orders = new Map(); // a choice of the story → the order its answers show in, decided once per play
+  let fresh = false; // the foot holds choices, or held them last: the button that comes next is held back too
 
   function shell(room, floorName) {
     const n = story.story.filter((b) => b.kind === 'scelta').length;
@@ -39,24 +74,37 @@ export function makeCase(api) {
   }
   const nameOf = (who) => (who === 'mentore' ? api.who()?.partner ?? 'Il mentore' : 'Il collega');
 
-  /** One message more in the chat: the older ones fade, the newest is read aloud. */
+  /** One message more in the chat: the older ones step back (style.css, .cs-msg.past), the newest is read aloud. */
   function say(html, cls) {
     const c = chat();
-    c.querySelectorAll('.cs-msg').forEach((m, i, all) => m.classList.toggle('past', i < all.length - 1));
+    // every message already there becomes past: only the newest stays strong (before, the one just before it did too)
+    c.querySelectorAll('.cs-msg').forEach((m) => m.classList.add('past'));
     c.insertAdjacentHTML('beforeend', `<div class="cs-msg ${cls}">${html}</div>`);
-    c.scrollTo({ top: c.scrollHeight, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    c.scrollTo({ top: c.scrollHeight, behavior: motion.calm ? 'auto' : 'smooth' });
   }
-  const line = (who, text) => say(`${face(who)}<div class="cs-bubble"><b>${esc(nameOf(who))}</b><p>${esc(text)}</p></div>`, 'cs-line');
+  // `cls` cs-ask marks the line that holds the question, which has to stay in sight while the choices wait
+  const line = (who, text, cls = '') => say(`${face(who)}<div class="cs-bubble"><b>${esc(nameOf(who))}</b><p>${esc(text)}</p></div>`, `cs-line ${cls}`);
   const scene = (text, cls = '') => say(`<p>${esc(text)}</p>`, `cs-scene ${cls}`);
   const mine = (text) => say(`<p>${esc(text)}</p>`, 'cs-mine');
 
-  /** The choices or the button at the bottom take room from the chat: it goes back to the newest line. */
+  /** The choices or the button at the bottom take room from the chat: it goes back to the newest line. When the
+   *  choices leave too little room for the question (a short phone, large text), the room above steps back
+   *  (09/11/2026, revisione UX, stanza 9). */
   function settle() {
     const c = chat();
-    requestAnimationFrame(() => (c.scrollTop = c.scrollHeight));
+    requestAnimationFrame(() => {
+      root.classList.remove('cs-tight');
+      const ask = foot().querySelector('.cs-opts') && [...c.querySelectorAll('.cs-ask')].at(-1);
+      if (ask && ask.offsetHeight > c.clientHeight - 12) root.classList.add('cs-tight');
+      c.scrollTop = c.scrollHeight;
+    });
   }
   function button(label, act) {
-    foot().innerHTML = `<button class="pill pill-dark wide" data-act="${act}">${label}</button>`;
+    // where the choices were, the button fades in and waits a moment; after another button it is just there
+    const after = fresh;
+    fresh = false;
+    foot().innerHTML = `<button class="pill pill-dark wide${after ? ' cs-in cs-in-short' : ''}" data-act="${act}">${label}</button>`;
+    if (after) hold(foot(), HOLD.button);
     foot().querySelector('button').focus({ preventScroll: true });
     settle();
   }
@@ -71,14 +119,14 @@ export function makeCase(api) {
     if (b.kind === 'finale') scene(b.text, 'cs-end');
     if (b.kind === 'gancio') line('mentore', b.text);
     if (b.kind === 'trappola') {
-      // the 48 lines on the trap are still to be written (compito E2): until then the beat is skipped
+      // the line for your type, from the approved lezioni/piano-N/trappole.md (main.js, TRAPS): without one, skipped
       const t = api.trapLine?.(story.floor);
       if (!t) return step();
       line('mentore', t);
     }
     if (b.kind === 'scelta') {
       off = new Set();
-      line('mentore', b.text);
+      line('mentore', b.text, 'cs-ask');
       return choices(b);
     }
     // the next beat by your touch, so the story goes at your pace
@@ -87,9 +135,16 @@ export function makeCase(api) {
   }
 
   function choices(b) {
-    foot().innerHTML = `<div class="cs-opts">${b.options
-      .map((o, i) => `<button class="lz-opt" data-opt="${i}" ${off.has(i) ? 'disabled aria-disabled="true"' : ''}>${esc(o.text)}</button>`)
+    // the order is decided the first time this choice shows and kept after a rewind, so the wrong answer stays
+    // crossed out in its place; data-opt and `off` keep the indices of the card
+    if (!orders.has(b)) orders.set(b, shuffled(b.options.length));
+    // the group carries the question, so VoiceOver says what the answers answer
+    foot().innerHTML = `<div class="cs-opts cs-in" role="group" aria-label="${esc(b.text)}">${orders
+      .get(b)
+      .map((i) => `<button class="lz-opt" data-opt="${i}" ${off.has(i) ? 'disabled aria-disabled="true"' : ''}>${esc(b.options[i].text)}</button>`)
       .join('')}</div>`;
+    fresh = true;
+    hold(foot(), HOLD.opts);
     foot().querySelector('button:not([disabled])')?.focus({ preventScroll: true });
     settle();
   }
@@ -106,17 +161,18 @@ export function makeCase(api) {
       api.sfx.reward();
       api.buzz(18);
       foot().innerHTML = '';
-      return setTimeout(step, 450);
+      return later(step, 450);
     }
-    // what would have happened, the mentor covers you, the same choice again without that answer
+    // what would have happened, the mentor covers you, the same choice again without that answer. The mentor asks
+    // the question again: after the scene it had left the screen (09/11/2026, revisione UX, stanza 9)
     anyWrong = true;
     off.add(i);
     api.buzz([30, 60, 30]);
     foot().innerHTML = '';
-    setTimeout(() => {
+    later(() => {
       scene(o.scene, 'cs-what');
-      setTimeout(() => {
-        line('mentore', COVER);
+      later(() => {
+        line('mentore', `${COVER} ${b.text}`, 'cs-ask');
         choices(b);
       }, 700);
     }, 450);
@@ -141,6 +197,7 @@ export function makeCase(api) {
   }
 
   function finish(done) {
+    run++;
     root.hidden = true;
     root.innerHTML = '';
     document.body.classList.remove('in-lesson');
@@ -154,6 +211,8 @@ export function makeCase(api) {
   root.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
     if (!b || b.disabled) return;
+    // what just came in the foot does not take the tap meant for what was there before
+    if (b.closest('.cs-foot') && held(foot())) return;
     api.sfx.tap();
     const act = b.dataset.act;
     if (act === 'x') return ask();
@@ -171,6 +230,9 @@ export function makeCase(api) {
       at = 0;
       solved = 0;
       anyWrong = false;
+      orders = new Map(); // a new play, a new order
+      fresh = false;
+      root.classList.remove('cs-tight');
       root.hidden = false;
       document.body.classList.add('in-lesson');
       reach(false);

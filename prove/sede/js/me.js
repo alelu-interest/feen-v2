@@ -2,11 +2,12 @@
 // settings (CLAUDE.md §7). Since 07/11/2026 the character is the one of the test of the first start (avvio.js).
 import { ROOMS } from './office.js';
 import { FLOORS } from './world.js';
-import { inkOn } from './kit.js';
+import { inkOn, motion, buzz } from './kit.js';
 import { TROPHIES, emblem } from './trophies.js';
 import { PEOPLE } from './people.js';
 import { miniMap, trapFloors, signSvg } from './avvio.js';
 import { IN_APP } from './app.js';
+import { reminders } from './avvisi.js';
 
 const cap = (t) => t[0].toUpperCase() + t.slice(1);
 
@@ -25,6 +26,7 @@ export function makeMe(api) {
   // the settings live in main.js, saved with the progress (salva.js, 07/11/2026)
   const settings = api.settings;
   let wipeArmed = null;
+  let privacyOpen = false;
 
   function character() {
     const who = api.who();
@@ -74,15 +76,18 @@ export function makeMe(api) {
 
   function contract() {
     const who = api.who();
-    const drawn = who?.sign?.length ? signSvg(who.sign, 'contract-sign') : '<svg viewBox="0 0 120 40"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
-    const between = who ? `Tra ${who.me} e ${who.partner}, firmato al primo avvio` : 'Firmato al primo avvio';
+    // signed with one touch (avvio.js, sign-alt): the name written, as on the contract, not a squiggle you never drew
+    const typed = `<svg class="contract-name" viewBox="0 0 120 40"><text x="60" y="28" text-anchor="middle"${who?.me?.length > 6 ? ' textLength="112" lengthAdjust="spacingAndGlyphs"' : ''}>${who?.me ?? ''}</text></svg>`;
+    const drawn = who?.sign?.length ? signSvg(who.sign, 'contract-sign') : who ? typed : '<svg viewBox="0 0 120 40"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
+    const when = who?.signed ? `firmato il ${who.signed}` : 'firmato al primo avvio';
+    const between = who ? `Tra ${who.me} e ${who.partner}, ${when}` : `F${when.slice(1)}`;
     return `<section class="me-card contract">
       <div class="contract-paper" aria-hidden="true">
         <i></i><i></i><i style="width:70%"></i><i></i><i style="width:55%"></i>
         ${drawn}
       </div>
       <div>
-        <h2>Il contrattino</h2>
+        <h2>Il contratto tra soci</h2>
         <p class="me-note">${between}: ti impegni solo a imparare. Nessun obiettivo, nessuna conseguenza se ti fermi.</p>
       </div>
     </section>`;
@@ -108,7 +113,7 @@ export function makeMe(api) {
 
   /** The diary of what happened, in the order it happened. */
   function diary() {
-    const rows = [['Hai firmato il contrattino', 'Il primo giorno nell’azienda', null]];
+    const rows = [['Hai firmato il contratto tra soci', 'Il primo giorno nell’azienda', null]];
     for (let n = 1; n <= api.state.floor; n++) {
       if (HIRED[n]) rows.push([`Hai assunto ${HIRED[n]}`, `Il colloquio del piano ${n}`, null]);
       if (api.earnedOn(n) === 8) rows.push([FLOORS[n - 1].ready, `Piano ${n} · ${FLOORS[n - 1].name}`, ROOMS[n].share ? n : null, FLOORS[n - 1].color]);
@@ -127,19 +132,32 @@ export function makeMe(api) {
   }
 
   function settingsCard() {
+    // the whole row is the switch, at least 52 px high (09/11/2026, revisione UX, stanza 10: the switch alone was 30)
     const row = (key, label, on, note = '') =>
-      `<li><div><b>${label}</b>${note ? `<span>${note}</span>` : ''}</div><button class="switch" role="switch" aria-checked="${on}" data-set="${key}" aria-label="${label}"><i></i></button></li>`;
+      `<li><button class="set-row" role="switch" aria-checked="${on}" data-set="${key}" aria-label="${label}"${note ? ` aria-describedby="set-${key}"` : ''}><span class="set-text"><b>${label}</b>${note ? `<span id="set-${key}">${note}</span>` : ''}</span><span class="switch" aria-hidden="true"><i></i></span></button></li>`;
     return `<section class="me-card">
       <h2>Impostazioni</h2>
       <ul class="settings">
-        ${row('avvisi', 'Avvisi', settings.avvisi, 'Uno al giorno al massimo, alle 18:00')}
+        ${row('avvisi', 'Avvisi', settings.avvisi, `Uno al giorno al massimo, alle ${reminders.time}`)}
         ${row('suoni', 'Suoni', api.sound.on)}
         ${row('vibrazione', 'Vibrazione', settings.vibrazione)}
-        ${row('movimento', 'Movimento ridotto', settings.movimento)}
-        <li><button class="link" data-act="privacy">Informazioni e privacy</button></li>
+        ${row('movimento', 'Movimento ridotto', motion.calm, 'Meno animazioni e voli più brevi')}
+        <li class="privacy-row"><button class="link" data-act="privacy" aria-expanded="${privacyOpen}" aria-controls="privacy">Informazioni e privacy<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${privacy()}</li>
         <li><button class="link danger" data-act="wipe">Ricomincia da capo</button></li>
       </ul>
     </section>`;
+  }
+
+  /** What FEEN keeps and what it does not (cubotto 9.8, 09/11/2026; CLAUDE.md §1 and §8): open under its row. */
+  function privacy() {
+    return `<div class="privacy" id="privacy"${privacyOpen ? '' : ' hidden'}>
+      <p><b>Niente account.</b> FEEN non ti chiede nome, email, età o password.</p>
+      <p><b>Tutto resta qui.</b> Progressi, personaggio e firma stanno su questo telefono. Nessun dato esce: FEEN non ha un server e non raccoglie statistiche su chi gioca.</p>
+      <p><b>Il backup.</b> La tua azienda vive su questo telefono, e nel suo backup se è acceso. Il backup va al tuo iCloud o al tuo account Google, mai a FEEN.</p>
+      <p><b>Niente pubblicità né acquisti.</b> Nell’app non si compra niente e nessuno ti mostra annunci.</p>
+      <p><b>Open source.</b> Il codice è libero (licenza MIT); lezioni, testi e disegni sono in CC BY-SA 4.0; i caratteri in SIL OFL 1.1. Si trova su GitHub: alelu-interest/feen-v2.</p>
+      <p>«Ricomincia da capo», qui sotto, cancella tutto quello che FEEN ha salvato.</p>
+    </div>`;
   }
 
   function render() {
@@ -156,14 +174,24 @@ export function makeMe(api) {
     if (t.dataset.set) {
       const key = t.dataset.set;
       if (key === 'suoni') api.toggleSound();
+      // reduced motion starts from the phone's (settings.movimento null): the first touch turns over what you see
+      else if (key === 'movimento') settings.movimento = !motion.calm;
       else settings[key] = !settings[key];
-      const on = key === 'suoni' ? api.sound.on : settings[key];
+      // vibration and motion act at once (main.js applySettings → kit.js)
+      api.applySettings();
+      const on = key === 'suoni' ? api.sound.on : key === 'movimento' ? motion.calm : settings[key];
       t.setAttribute('aria-checked', String(on));
       api.persist();
-      if (key === 'avvisi') api.toast(on ? 'Avvisi accesi: alle 18:00, mai se oggi hai già fatto una lezione.' : 'Avvisi spenti. Si riaccendono da qui.');
+      if (key === 'vibrazione' && on) buzz(15);
+      if (key === 'avvisi') api.toast(on ? `Avvisi accesi: alle ${reminders.time}, mai se oggi hai già fatto una lezione.` : 'Avvisi spenti. Si riaccendono da qui.');
       return;
     }
-    if (t.dataset.act === 'privacy') return api.toast('Nessun account, niente dati che escono dal telefono. La tua azienda vive su questo telefono, e nel suo backup se è acceso.');
+    if (t.dataset.act === 'privacy') {
+      privacyOpen = !privacyOpen;
+      t.setAttribute('aria-expanded', String(privacyOpen));
+      body.querySelector('#privacy').hidden = !privacyOpen;
+      return;
+    }
     if (t.dataset.act === 'wipe') {
       // a double confirmation: the first touch only arms the button
       if (!wipeArmed) {

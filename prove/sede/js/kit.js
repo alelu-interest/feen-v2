@@ -228,12 +228,21 @@ export const ease = {
   },
 };
 
-export function tween(dur, update, { easing = ease.inOut, delay = 0 } = {}) {
+// «Movimento ridotto» in the Tu (cubotto 9.7, 09/11/2026; main.js applySettings sets it, and at first it follows the
+// phone's reduced motion): every movement becomes short and without bounces, the pauses (wait) keep their length
+export const motion = { calm: false };
+
+export function tween(dur, update, { easing = ease.inOut, delay = 0, keep = false } = {}) {
+  if (motion.calm && !keep) {
+    dur = Math.min(dur, 0.12);
+    delay = Math.min(delay, 0.05);
+    if (easing === ease.back || easing === ease.bounce) easing = ease.out;
+  }
   return new Promise((resolve) => {
     tweens.push({ t: -delay, dur, update, easing, resolve });
   });
 }
-export const wait = (s) => tween(s, () => {});
+export const wait = (s) => tween(s, () => {}, { keep: true });
 
 export function updateTweens(dt) {
   for (let i = tweens.length - 1; i >= 0; i--) {
@@ -288,7 +297,11 @@ export const sfx = {
   fanfare: () => [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.4, { gain: 0.13 })),
   build: () => [0, 0.18, 0.36, 0.54].forEach((s) => tone(180 + s * 200, s, 0.12, { type: 'square', gain: 0.05 })),
 };
+// «Vibrazione» in the Tu (cubotto 9.7, 09/11/2026; main.js applySettings): off, nothing buzzes, the phone included,
+// because the app's vibration only arrives through navigator.vibrate (sede-screen.tsx)
+export const haptics = { on: true };
 export const buzz = (ms = 15) => {
+  if (!haptics.on) return;
   // browsers refuse vibration before the first tap
   if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return;
   navigator.vibrate?.(ms);

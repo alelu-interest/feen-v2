@@ -40,7 +40,7 @@ export function makeLesson(api) {
   let wrong = []; // exercises wrong at the first go
   let still = []; // wrong again at «Ci riprovi»
   let streak = 0;
-  let theoryShown = false;
+  let theorySeen = new Set(); // the new ideas whose theory card has come already (once per idea)
   let doneCount = 0; // for the bar, which never goes back
 
   // ---------- the frame: X, the bar, the exercise, the button ----------
@@ -51,6 +51,7 @@ export function makeLesson(api) {
       ${hot ? `<span class="lz-streak" aria-live="polite">${streak} di fila</span>` : ''}`;
   }
   function frame(body, { foot = true } = {}) {
+    defWord = null;
     root.innerHTML = `<div class="lz-top">
         <button class="lz-x" data-act="x" aria-label="Esci dalla lezione"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="lz-barbox">${bar()}</div>
@@ -58,8 +59,43 @@ export function makeLesson(api) {
       <div class="lz-body">${body}</div>
       ${foot ? '<div class="lz-foot"><button class="pill pill-dark wide" data-act="check" disabled>Verifica</button></div>' : ''}
       <div class="lz-sheet" id="lz-sheet" hidden></div>
+      <div class="lz-defs" id="lz-defs" aria-live="polite"></div>
       <div class="lz-ask" id="lz-ask" hidden></div>`;
     root.querySelector('.lz-q, .lz-say')?.focus({ preventScroll: true });
+  }
+
+  // ---------- a hard word: its definition in a small bubble right under the word (over it when there is no room) ----------
+  let defWord = null;
+  function define(b, w, def) {
+    const box = root.querySelector('#lz-defs');
+    const same = defWord === b;
+    undefine();
+    if (same) return; // a second touch on the same word closes it
+    defWord = b;
+    b.setAttribute('aria-expanded', 'true');
+    box.innerHTML = `<p class="lz-def"><b>${esc(w[0].toUpperCase() + w.slice(1))}:</b> ${esc(def)}.</p>`;
+    const tip = box.firstElementChild;
+    // the text of the word, not its touch area (which is taller than the line)
+    const range = document.createRange();
+    range.selectNodeContents(b);
+    const r = range.getBoundingClientRect();
+    const W = root.clientWidth;
+    const H = root.clientHeight;
+    const width = Math.min(W - 32, 320);
+    tip.style.width = `${width}px`;
+    const left = Math.min(Math.max(16, r.left + r.width / 2 - width / 2), W - 16 - width);
+    tip.style.left = `${left}px`;
+    tip.style.setProperty('--x', `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
+    const h = tip.offsetHeight;
+    const below = r.bottom + 10 + h <= H - 12;
+    tip.classList.toggle('up', !below);
+    tip.style.top = `${below ? r.bottom + 10 : r.top - 10 - h}px`;
+  }
+  function undefine() {
+    defWord?.setAttribute('aria-expanded', 'false');
+    defWord = null;
+    const box = root.querySelector('#lz-defs');
+    if (box) box.innerHTML = '';
   }
   const redrawBar = () => (root.querySelector('.lz-barbox').innerHTML = bar());
 
@@ -73,16 +109,22 @@ export function makeLesson(api) {
   function words(text, e) {
     let html = esc(text);
     for (const [w] of e.words ?? []) {
-      const re = new RegExp(`(^|[^\\p{L}])(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}])`, 'iu');
-      html = html.replace(re, (_, pre, found) => `${pre}<button class="lz-word" data-word="${esc(w)}">${found}</button>`);
+      // an elided article before the word («un'entrata», «dell'IBAN») stays on its line with it (partita 09/11/2026)
+      const re = new RegExp(`(^|[^\\p{L}'’])(\\p{L}*['’])?(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}])`, 'iu');
+      html = html.replace(re, (_, pre, elided, found) => {
+        const button = `<button class="lz-word" data-word="${esc(w)}" aria-expanded="false">${found}</button>`;
+        return `${pre}${elided ? `<span class="lz-nowrap">${elided}${button}</span>` : button}`;
+      });
     }
     return html;
   }
 
   function mentorLine(e) {
+    // «Vero o falso?» in the bubble only when the help line under it does not say it already
+    const vf = e.type === 'vf' && !(e.help && !retry);
     return `<div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b>
       ${retry ? '<span class="lz-again">Ci riprovi</span>' : ''}
-      ${e.type === 'vf' ? `<span class="lz-vf">${TYPE_ASK.vf}</span>` : ''}
+      ${vf ? `<span class="lz-vf">${TYPE_ASK.vf}</span>` : ''}
       <h2 class="lz-q" tabindex="-1">${words(e.mentor, e)}</h2></div></div>`;
   }
 
@@ -117,10 +159,12 @@ export function makeLesson(api) {
     }
     if (e.type === 'slider') {
       const s = e.slider;
-      ex.value = s.min + Math.round((s.max - s.min) / 2 / s.step) * s.step;
+      // the thumb starts at the bottom end, never on the answer (the middle often is the answer); at the top end
+      // when the bottom one is right
+      ex.value = e.range[0] <= s.min ? s.max : s.min;
       answers = `<div class="lz-slider">
         <output class="lz-value" id="lz-value">${fmt(ex.value, s.unit)}</output>
-        <input type="range" id="lz-range" min="${s.min}" max="${s.max}" step="${s.step}" value="${ex.value}" aria-label="La tua stima" />
+        <input type="range" id="lz-range" min="${s.min}" max="${s.max}" step="${s.step}" value="${ex.value}" aria-label="La tua stima" aria-valuetext="${esc(fmt(ex.value, s.unit))}" />
         <div class="lz-ends"><span>${fmt(s.min, s.unit)}</span><span>${fmt(s.max, s.unit)}</span></div>
       </div>`;
     }
@@ -135,12 +179,19 @@ export function makeLesson(api) {
     if (e.type === 'ordina') drawOrder();
     if (e.type === 'slider') {
       const r = root.querySelector('#lz-range');
-      r.addEventListener('input', () => {
+      const moved = () => {
+        if (checked) return;
         ex.value = Number(r.value);
         ex.pick = true;
         root.querySelector('#lz-value').textContent = fmt(ex.value, e.slider.unit);
+        r.setAttribute('aria-valuetext', fmt(ex.value, e.slider.unit));
         ready();
-      });
+      };
+      r.addEventListener('input', moved);
+      // a touch on the thumb that leaves it where it was is an answer too
+      r.addEventListener('pointerup', moved);
+      // and so is Home or End on the end the thumb already sits on (keyboard and screen readers, no input event)
+      r.addEventListener('keyup', (ev) => /^(Home|End|Arrow|Page)/.test(ev.key) && moved());
     }
   }
 
@@ -158,6 +209,13 @@ export function makeLesson(api) {
       : '<li class="lz-empty">Il primo passo che tocchi va qui</li>';
     pool.innerHTML = ex.items.map((t, i) => (ex.seq.includes(t) ? '' : `<button class="lz-cell" data-seq="${i}">${esc(t)}</button>`)).join('');
     ex.pick = ex.seq.length === ex.items.length || null;
+  }
+
+  /** After a touch that redraws the steps, the focus stays in the list: on the step now at place i, or on «Verifica»
+   *  when none is left (the screen reader does not fall back to the top of the page). */
+  function keepFocus(i) {
+    const left = root.querySelectorAll('.lz-pool .lz-cell');
+    (left[Math.min(Math.max(i, 0), left.length - 1)] ?? root.querySelector('[data-act="check"]'))?.focus({ preventScroll: true });
   }
 
   function ready() {
@@ -205,9 +263,10 @@ export function makeLesson(api) {
     if (v.ok && streak !== STREAK) api.sfx.reward();
     if (!v.ok) api.sfx.tap();
     api.buzz(v.ok ? 18 : [30, 60, 30]);
-    // the theory card: only after the first mistake on a new idea, once a lesson
-    const theory = !v.ok && e.idea != null && !theoryShown;
-    if (theory) theoryShown = true;
+    // the theory card: only after the first mistake on a new idea, once for each idea (CLAUDE.md §6)
+    const idea = e.idea || `#${e.n}`;
+    const theory = !v.ok && e.idea != null && !theorySeen.has(idea);
+    if (theory) theorySeen.add(idea);
     // the answers stay on screen, but can no longer be changed
     root.querySelector('.lz-answers').inert = true;
     root.querySelector('.lz-foot').hidden = true;
@@ -308,13 +367,14 @@ export function makeLesson(api) {
   // ---------- touches ----------
   root.addEventListener('click', (ev) => {
     const b = ev.target.closest('button');
+    // any other touch closes the definition of a word, and goes on doing what it does
+    if (defWord && !b?.dataset.word) undefine();
     if (!b || b.disabled) return;
     const e = lesson.exercises[queue[0]];
     const act = b.dataset.act;
     if (b.dataset.word) {
       const [w, def] = e.words.find(([x]) => x === b.dataset.word);
-      api.toast(`${w[0].toUpperCase() + w.slice(1)}: ${def}.`);
-      return;
+      return define(b, w, def);
     }
     api.sfx.tap();
     if (act === 'x') return ask();
@@ -338,17 +398,25 @@ export function makeLesson(api) {
     }
     if (b.dataset.left !== undefined || b.dataset.right !== undefined) return matchTap(b);
     if (b.dataset.seq !== undefined) {
+      const at = [...root.querySelectorAll('.lz-pool .lz-cell')].indexOf(b);
       ex.seq.push(ex.items[Number(b.dataset.seq)]);
       drawOrder();
-      return ready();
+      ready();
+      return keepFocus(at);
     }
     if (b.dataset.unseq !== undefined) {
       // taking a step back out takes the ones after it too
       ex.seq = ex.seq.slice(0, Number(b.dataset.unseq));
       drawOrder();
-      return ready();
+      ready();
+      return keepFocus(0);
     }
   });
+
+  // the definition stays by its word: when the word moves (scrolling, a turned phone) or on Esc, it goes away
+  root.addEventListener('scroll', () => defWord && undefine(), true);
+  window.addEventListener('resize', () => defWord && undefine());
+  root.addEventListener('keydown', (ev) => ev.key === 'Escape' && defWord && undefine());
 
   /** Pairs: a left item, then a right one (or the other way round); touching a paired item undoes its pair. */
   function matchTap(b) {
@@ -391,7 +459,7 @@ export function makeLesson(api) {
       wrong = [];
       still = [];
       streak = 0;
-      theoryShown = false;
+      theorySeen = new Set();
       doneCount = 0;
       root.hidden = false;
       document.body.classList.add('in-lesson');

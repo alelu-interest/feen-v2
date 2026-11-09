@@ -25,9 +25,28 @@ const X = [-1.15, 0.7, 1.65, 0.2, -1.4, -0.2, 1.45, 0]; // where each stage stan
 const SIDE = 0.9; // the stand's side
 const TALL = 0.34;
 const NEXT_TALL = 0.5;
+const PAWN_H = 0.92; // the top of a pawn's head, where its name stands
 // the interviews (CLAUDE.md §4): the two candidates, beside the first stage of these floors
 const HIRES = { 2: ['Samir', 'Irene'], 5: ['Teo', 'Giada'], 8: ['Leo', 'Marta'], 10: ['Dario', 'Sofia'] };
-const MENTOR_SAYS = 'Il mentore ti aspetta al Caso: si decide insieme, con il collega del piano.';
+// the mentor is the version of your type you did not choose (CLAUDE.md §4): the pawn takes their name and their
+// clothes and hair (1. LAVORO/personaggi/: the two versions of a type wear the same clothes); before the choice, a
+// plain pawn. On floor 1 there is no colleague yet: only you and the mentor.
+const LOOKS = {
+  Elizabeth: ['#34363D', '#E2C27A'],
+  Leopold: ['#34363D', '#B88A55'],
+  Cathie: ['#3B414E', '#6B3F2A'],
+  Jordan: ['#3B414E', '#3A2A22'],
+  Christine: ['#EFE7D6', '#E2E2E6'],
+  Bill: ['#EFE7D6', '#8C8C8C'],
+  Jane: ['#5A6236', '#5C3A28'],
+  Warren: ['#5A6236', '#ECECEC'],
+};
+// once the Case is done the mentor no longer waits for it (provisional lines, Claude's: the mentor's lines are the
+// user's to write, CLAUDE.md §11)
+const mentorSays = (name, n, done) =>
+  done
+    ? `${name ?? 'Il mentore'}: il Caso è fatto. Il lancio si prepara un piano alla volta.`
+    : `${name ?? 'Il mentore'} ti aspetta al Caso: si decide insieme${n > 1 ? ', con il collega del piano' : ''}.`;
 
 const wallZ = (n) => -(n - 1) * L; // the front of terrace n
 const ground = (n) => n * H; // the lawn of terrace n
@@ -430,10 +449,12 @@ export function makePath(api) {
   let built3d = ''; // what the garden was built for
   let lampMats = [];
   let pools = [];
+  let glowMats = []; // the mentor's clothes, lit a little in the evening (their own copies: mat() is shared)
   let halo = null;
   let picks = []; // what a tap can touch
   let anims = []; // the surprises of the garden while they move
   let eggs = []; // the surprises built, for the keyboard and the screen reader
+  let people = []; // the people of the garden, for the keyboard and the screen reader
   let marks = []; // what the overlay follows: the bubble's stage, the names of the people
   let stages = []; // every stage built, in order from the bottom
   let dayK = 0;
@@ -493,10 +514,13 @@ export function makePath(api) {
     scene.add(garden);
     lampMats = [];
     pools = [];
+    for (const m of glowMats) m.dispose();
+    glowMats = [];
     picks = [];
     anims = [];
     plateMats.clear();
     eggs = [];
+    people = [];
     for (const m of marks) m.el?.remove();
     marks = [];
     stages = [];
@@ -567,6 +591,8 @@ export function makePath(api) {
         picks.push(g);
         const s = { n, i, st, x: X[i], y, z, top: y + 0.08 + tall, tall, info, tag: list[i].tag, title: list[i].title };
         stages.push(s);
+        // the room the stand takes in the garden, and below what it carries: the bubble keeps off them (placeBubble)
+        s.body = new THREE.Box3().setFromObject(g);
         // a lesson without an object shows its icon on a plate
         if (!slot) {
           const p = iconPlate(kind === 'lezione' ? iconOf(n, lessonNumber(list, i)) : 'foglio', st, info.deep);
@@ -587,6 +613,7 @@ export function makePath(api) {
           marks.push({ kind: 'bubble', s });
         }
         // the object it brings, the real one from the Ufficio, standing on top
+        let holder = null;
         if (slot) {
           const o = slot.obj.clone(true);
           o.position.set(0, 0, 0);
@@ -604,7 +631,7 @@ export function makePath(api) {
               if (!mine) m.material = Array.isArray(m.material) ? m.material.map(grey) : grey(m.material);
             }
           });
-          const holder = new THREE.Group();
+          holder = new THREE.Group();
           holder.add(o);
           const bb = new THREE.Box3().setFromObject(o);
           const size = bb.getSize(new THREE.Vector3());
@@ -618,20 +645,59 @@ export function makePath(api) {
           picks.push(holder);
           s.top += size.y * k;
         }
+        s.head = new THREE.Box3().setFromObject(holder ?? g.children[g.children.length - 1]);
       }
-      // the mentor waits beside the Case
+      // the mentor waits beside the Case, with your partner's name and clothes
       const caso = stages.find((s) => s.n === n && s.i === 3);
-      addPerson('Il mentore', '#2F3A4A', '#5A3A2A', caso.st !== 'locked' || earnedOn(n) >= 3, caso.x + 1.65, y, caso.z + 0.15, MENTOR_SAYS);
+      const partner = api.who?.()?.partner ?? null;
+      const [suit, hair] = LOOKS[partner] ?? ['#2F3A4A', '#5A3A2A'];
+      const reached = caso.st !== 'locked' || earnedOn(n) >= 3;
+      const mx = caso.x + 1.65;
+      const mz = caso.z + 0.15;
+      const mentor = addPerson(partner ?? 'Il mentore', suit, hair, reached, mx, y, mz, mentorSays(partner, n, earnedOn(n) > 3), api.who?.()?.partnerWord ?? 'il mentore');
+      mentor.userData.pick.mentor = true;
+      if (reached) {
+        // in the evening the pawn stands in a pool of light and its clothes glow a little: on the dark lawn a navy or
+        // black pawn disappeared (revisione UX 09/11, problem 11)
+        mentor.traverse((o) => {
+          if (!o.isMesh) return;
+          o.material = o.material.clone();
+          o.material.emissive.copy(o.material.color);
+          glowMats.push(o.material);
+        });
+        const pool = lightPool(mx, mz, 1.9, { pools: [] });
+        pool.position.y = y + 0.015;
+        pools.push(pool);
+      }
       // the two candidates beside the first stage of a floor with an interview
       const hire = HIRES[n];
       if (hire) {
         const say = `Il colloquio: prima della prima lezione scegli tra ${hire[0]} e ${hire[1]}.`;
         const z = -stageS(n, 0) + 0.7;
-        addPerson(hire[0], info.color, '#3B2A22', true, 0.4, y, z, say);
-        addPerson(hire[1], info.color, '#C9A06A', true, 1.4, y, z - 0.1, say);
+        addPerson(hire[0], info.color, '#3B2A22', true, 0.4, y, z, say, `il colloquio del piano ${n}`);
+        addPerson(hire[1], info.color, '#C9A06A', true, 1.4, y, z - 0.1, say, `il colloquio del piano ${n}`);
       }
       dress(n, y, z0);
       addEgg(n, y, z0);
+    }
+    // in the app, the floor after the one just finished may not be in the app yet (main.js, comingSoon; cubotto 7.8):
+    // above the finished floor an honest card says so, where its terrace will rise. Floor 1 stays there to review.
+    if (top < FLOORS.length && earnedOn(top) === 8 && api.soon?.(top + 1)) {
+      const n = top + 1;
+      const info = FLOORS[n - 1];
+      const card = document.createElement('div');
+      card.className = 'bubble soon';
+      card.style.setProperty('--c', info.color);
+      card.style.setProperty('--c-deep', info.deep);
+      card.innerHTML = `<span class="bubble-tag">Piano ${n} · ${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">Arriva con il prossimo aggiornamento dell’app.</span>`;
+      card.setAttribute('role', 'note');
+      card.setAttribute('aria-label', `Il piano ${n} è in costruzione. Arriva con il prossimo aggiornamento dell’app.`);
+      layer.append(card);
+      // anchored a little past the wall of the floor to come, so the card stands above the last stage and its object
+      // instead of covering them (with large text the card grows upwards, never down onto the stage)
+      const s = { n, i: 0, st: 'soon', x: 0, y: ground(top), z: wallZ(n) - 0.8, top: ground(top) + 0.1 };
+      stages.push(s);
+      marks.push({ kind: 'soon', el: card, s });
     }
     for (const p of pools) garden.add(p);
     applyDay(dayK);
@@ -663,25 +729,31 @@ export function makePath(api) {
     e.g.userData.pick = { type: 'egg', n, react: e.react };
     garden.add(e.g);
     picks.push(e.g);
-    eggs.push({ n, pick: e.g.userData.pick, y, z: z0 - egg.s });
+    eggs.push({ n, pick: e.g.userData.pick, y, z: z0 - egg.s, box: new THREE.Box3().setFromObject(e.g) });
   }
 
-  function addPerson(name, suit, hair, reached, x, y, z, say) {
+  /** `role`: who they are, for the screen reader («il tuo socio», «il colloquio del piano 2»). */
+  function addPerson(name, suit, hair, reached, x, y, z, say, role) {
     const p = person(suit, hair, reached);
     p.position.set(x, y, z);
     p.rotation.y = -0.35;
     p.userData.pick = { type: 'person', name, say };
     garden.add(p);
     picks.push(p);
-    marks.push(nameMark(name, x, y, z));
+    // the name stands over the head: at the feet it fell on the stage in front and hid its icon (09/11/2026)
+    marks.push(nameMark(name, x, y + PAWN_H, z, true, true));
+    people.push({ name, role, pick: p.userData.pick, x, y, z, box: new THREE.Box3().setFromObject(p) });
+    return p;
   }
-  function nameMark(name, x, y, z) {
+  /** `over`: the name sits above the point (a person's head) instead of under it (the stage of the launch).
+   *  `person`: the name of someone in the garden, which the bubble never covers. */
+  function nameMark(name, x, y, z, over = false, person = false) {
     const el = document.createElement('span');
     el.className = 'path-name';
     el.textContent = name;
     el.setAttribute('aria-hidden', 'true');
     layer.append(el);
-    return { kind: 'name', el, x, y, z };
+    return { kind: 'name', el, x, y, z, over, person };
   }
 
   /** Trees, hedges, lamps and a bench along the sides of a floor's stretch, always the same for the same floor. */
@@ -741,7 +813,8 @@ export function makePath(api) {
     marks.push(nameMark('Il lancio', 0, y, z0 - 1.4));
   }
 
-  const signature = () => `${state.floor}:${earnedOn(state.floor)}`;
+  // the garden is built again when a stage is done, and when the partner changes («Ricomincia da capo», a new choice)
+  const signature = () => `${state.floor}:${earnedOn(state.floor)}:${api.who?.()?.partner ?? ''}`;
 
   // ---------- day and evening, with the sede ----------
   function applyDay(k) {
@@ -757,6 +830,7 @@ export function makePath(api) {
     sun.color.copy(mix(DAY.sunCol, NIGHT.sunCol));
     fill.intensity = THREE.MathUtils.lerp(DAY.fill, NIGHT.fill, k);
     for (const m of lampMats) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.lamps, NIGHT.lamps, k);
+    for (const m of glowMats) m.emissiveIntensity = 0.45 * k;
     for (const p of pools) p.material.opacity = k * 0.85;
     if (halo) halo.material.opacity = THREE.MathUtils.lerp(0.55, 0.95, k);
     scene.background = mix('#CDE3B8', '#232A3D');
@@ -764,9 +838,9 @@ export function makePath(api) {
     dirty = true;
   }
 
-  // ---------- the overlay: the bubble over the stage to do now, the names of the people ----------
+  // ---------- the overlay: the bubble beside the stage to do now, the names of the people ----------
   const bubble = document.createElement('button');
-  bubble.className = 'bubble';
+  bubble.className = 'bubble placed';
   bubble.hidden = true;
   const plate = document.createElement('div');
   plate.className = 'path-plate';
@@ -780,27 +854,182 @@ export function makePath(api) {
     return [((v.x + 1) / 2) * W, ((1 - v.y) / 2) * Hs];
   };
   let plateFloor = 0;
+  const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  const overlapArea = (a, b) =>
+    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+  /** The screen rectangle of a box of the garden: its eight corners, projected. */
+  const corner = new THREE.Vector3();
+  function rectOf(box) {
+    const r = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
+    for (let k = 0; k < 8; k++) {
+      corner.set(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z).project(camera);
+      const x = ((corner.x + 1) / 2) * W;
+      const y = ((1 - corner.y) / 2) * Hs;
+      r.left = Math.min(r.left, x);
+      r.right = Math.max(r.right, x);
+      r.top = Math.min(r.top, y);
+      r.bottom = Math.max(r.bottom, y);
+    }
+    return r;
+  }
+
+  // ---------- where the bubble goes (partita 09/11/2026, punto 11) ----------
+  // The stages are 2.5 apart, about 80 px on the phone, and the bubble is taller than that: drawn always over its stage,
+  // it covered the next stage and the partner's pawn (at lesson 2 only the name showed, at lesson 3 not even that).
+  // Now, every frame, the bubble tries the four sides of its stage (above, right, left, below), four forms (as it is,
+  // narrow, wide, and a short one without the title, for where the way is crowded) and several points along its edge
+  // for the tip, which always points at the stand. It takes the place that stays on screen, clear of the plate, the
+  // round buttons and the bar, and covers the least: the next stage, the people and their names count most, by far;
+  // the other stages less, the surprises of the garden least. The garden moves all in one piece, so while it scrolls
+  // the choice stays the same, until the place it had leaves the screen; then it moves to the next best, like a
+  // tooltip near the edge of the screen.
+  const FITS = ['', 'narrow', 'wide', 'mini'];
+  const FIT_COST = [0, 260, 160, 2400]; // the short one only when the others would cover a good part of a stage
+  const SIDES = { above: 0, right: 320, left: 320, below: 900 };
+  const KEEP = 80; // a covered pixel of the next stage, of a person or a name: only when nothing else is left
+  const HEAD = 6; // of the icon or the object of another stage, what says what the stage is
+  const BODY = 1; // of the stand of another stage
+  const EGG = 0.6; // of a surprise of the garden
+  const TIP_GAP = 13; // from the edge of the bubble to the stand (the tip is 10 px long)
+  const TIP_IN = 24; // the tip keeps this far from the corners of the bubble (its radius is 18)
+  const STEPS = 8; // points along the edge for the tip
+  let sizes = null; // the bubble's [width, height] for each of FITS
+  let sizeKey = '';
+  let lastPlace = null; // the place of the last frame: kept while it fits, so the bubble does not jump
+  /** The bubble's size in each width; measured again only when its words, the screen or the text size change. */
+  function measure() {
+    const key = `${bubble.textContent}|${W}|${document.documentElement.style.getPropertyValue('--fs')}|${document.fonts?.status}`;
+    if (sizes && key === sizeKey) return sizes;
+    sizeKey = key;
+    sizes = FITS.map((f) => {
+      bubble.dataset.fit = f;
+      return [bubble.offsetWidth, bubble.offsetHeight];
+    });
+    return sizes;
+  }
+  /** The free part of the screen: under the plate and the round buttons, above the bar, with a margin. */
+  function band() {
+    const tr = document.querySelector('.top-right')?.getBoundingClientRect();
+    const top = Math.max(plate.getBoundingClientRect().bottom, tr?.bottom ?? 0) + 8;
+    const bar = document.querySelector('.tabs')?.getBoundingClientRect().top || Hs - 96;
+    return { left: 12, right: W - 12, top, bottom: bar - 8 };
+  }
+  /** What the bubble keeps off, and how much each covered pixel weighs: only what stands near its stage, so that
+   *  with twelve floors built the work of a frame stays small. */
+  function blockers(s) {
+    const list = [];
+    const at = stages.indexOf(s);
+    const near = (z) => Math.abs(z - s.z) < 14; // a little more than the bubble can reach, at the largest text
+    stages.forEach((o, k) => {
+      if (o === s || !o.body || !near(o.z)) return;
+      list.push({ r: rectOf(o.body), w: k === at + 1 ? KEEP : BODY });
+      list.push({ r: rectOf(o.head), w: k === at + 1 ? KEEP : HEAD });
+    });
+    for (const p of people) if (near(p.z)) list.push({ r: rectOf(p.box), w: KEEP });
+    for (const e of eggs) if (near(e.z)) list.push({ r: rectOf(e.box), w: EGG });
+    for (const m of marks) if (m.kind === 'name' && near(m.z) && !m.el.hidden && m.rect) list.push({ r: m.rect, w: m.person ? KEEP : EGG });
+    return list;
+  }
+  function placeBubble(s, bounds) {
+    const [cx, topY] = toScreen(s.x, s.top, s.z);
+    const [, footY] = toScreen(s.x, s.y, s.z + SIDE * 0.72);
+    const [, midY] = toScreen(s.x, s.y + 0.08 + s.tall, s.z);
+    const [leftX] = toScreen(s.x - SIDE * 0.72, s.y, s.z);
+    const [rightX] = toScreen(s.x + SIDE * 0.72, s.y, s.z);
+    // the stage itself off the free part of the screen: no bubble pointing at nothing
+    if (cx < 0 || cx > W || midY < bounds.top || midY > bounds.bottom) {
+      bubble.hidden = true;
+      lastPlace = null;
+      return;
+    }
+    bubble.hidden = false;
+    const sz = measure();
+    const list = blockers(s);
+    let best = null;
+    let kept = null;
+    sz.forEach(([w, h], fit) => {
+      for (const side in SIDES) {
+        const flat = side === 'above' || side === 'below';
+        const along = flat ? w : h;
+        if (along < 2 * TIP_IN) continue;
+        // the tip slides along the edge: evenly spaced, and also where the bubble meets the edge of the screen or
+        // just clears something in the way
+        const from = flat ? cx : midY;
+        const ts = [];
+        for (let k = 0; k <= STEPS; k++) ts.push(TIP_IN + ((along - 2 * TIP_IN) * k) / STEPS);
+        const lo0 = flat ? bounds.left : bounds.top;
+        const hi0 = flat ? bounds.right : bounds.bottom;
+        ts.push(from - lo0, from - (hi0 - along));
+        for (const b of list) {
+          const [a0, a1] = flat ? [b.r.left, b.r.right] : [b.r.top, b.r.bottom];
+          ts.push(from - (a1 + 2), from - (a0 - 2 - along));
+        }
+        for (const t0 of ts) {
+          if (t0 < TIP_IN || t0 > along - TIP_IN) continue;
+          const t = Math.round(t0); // where the tip is, along the edge
+          const x = flat ? cx - t : side === 'left' ? leftX - TIP_GAP - w : rightX + TIP_GAP;
+          const y = side === 'above' ? topY - TIP_GAP - h : side === 'below' ? footY + TIP_GAP : midY - t;
+          const r = { left: x, top: y, right: x + w, bottom: y + h };
+          if (r.left < bounds.left - 0.5 || r.right > bounds.right + 0.5 || r.top < bounds.top - 0.5 || r.bottom > bounds.bottom + 0.5) continue;
+          let cost = SIDES[side] + FIT_COST[fit] + Math.abs(t - along / 2) * 0.4;
+          for (const b of list) cost += b.w * overlapArea(r, b.r);
+          const c = { side, fit, t, x, y, cost, r };
+          if (!best || cost < best.cost) best = c;
+          if (lastPlace && lastPlace.side === side && lastPlace.fit === fit && Math.abs(lastPlace.t - t) < 1) kept = c;
+        }
+      }
+    });
+    if (kept && kept.cost <= best.cost + 400) best = kept;
+    if (!best) {
+      bubble.hidden = true;
+      lastPlace = null;
+      return;
+    }
+    lastPlace = best;
+    bubble.dataset.fit = FITS[best.fit];
+    bubble.dataset.side = best.side;
+    bubble.style.left = `${Math.round(best.x)}px`;
+    bubble.style.top = `${Math.round(best.y)}px`;
+    bubble.style.setProperty('--tip-at', `${Math.round(best.t)}px`);
+  }
+
   function overlay() {
     bubble.hidden = true;
+    const cards = [plate];
+    const bounds = band();
+    const bar = bounds.bottom + 8;
+    // the names first, where they stand: the bubble keeps off them; under a card they hide (below)
+    for (const m of marks) {
+      if (m.kind !== 'name') continue;
+      const [x, y] = toScreen(m.x, m.y, m.over ? m.z : m.z + 0.25);
+      m.el.hidden = false;
+      m.el.style.transform = m.over ? `translate(${x}px, ${y - 4}px) translate(-50%, -100%)` : `translate(${x}px, ${y + 4}px) translateX(-50%)`;
+      m.rect = m.el.getBoundingClientRect();
+      m.el.hidden = m.rect.bottom < 0 || m.rect.top > Hs;
+    }
     for (const m of marks) {
       if (m.kind === 'bubble') {
-        const s = m.s;
-        const [x, y] = toScreen(s.x, s.top, s.z);
-        bubble.hidden = y < -40 || y > Hs + 200;
+        placeBubble(m.s, bounds);
+        if (!bubble.hidden) cards.push(bubble);
+      } else if (m.kind === 'soon') {
+        const [x, y] = toScreen(m.s.x, m.s.top, m.s.z);
+        m.el.hidden = y < -40 || y > Hs + 200;
         const half = Math.min(118, W / 2 - 16);
-        const bx = THREE.MathUtils.clamp(x, half + 16, W - half - 16);
-        bubble.style.left = `${bx}px`;
-        bubble.style.top = `${y - 14}px`;
-        bubble.style.setProperty('--tip', `${x - bx}px`);
-      } else {
-        const [x, y] = toScreen(m.x, m.y, m.z + 0.25);
-        // never behind the bar at the bottom
-        m.el.hidden = y < -20 || y > Hs - 96;
-        m.el.style.transform = `translate(${x}px, ${y + 4}px) translateX(-50%)`;
+        m.el.style.left = `${THREE.MathUtils.clamp(x, half + 16, W - half - 16)}px`;
+        m.el.style.top = `${y}px`;
+        if (!m.el.hidden) cards.push(m.el);
       }
     }
+    // a name that would sit under the bubble, a card, the plate or the bar at the bottom is hidden, so it never covers
+    // them nor peeks out from under them (09/11/2026)
+    const blocks = cards.map((el) => el.getBoundingClientRect());
+    for (const m of marks) {
+      if (m.kind !== 'name') continue;
+      const r = m.rect;
+      m.el.hidden = r.top < 0 || r.bottom > bar - 4 || blocks.some((b) => overlaps(r, b));
+    }
     // the plate follows the floor in the middle of the screen
-    const mid = stages.filter((s) => s.n <= FLOORS.length).reduce((best, s) => {
+    const mid = stages.filter((s) => s.n <= FLOORS.length && s.st !== 'soon').reduce((best, s) => {
       const d = Math.abs(toScreen(s.x, s.y, s.z)[1] - Hs * 0.5);
       return !best || d < best.d ? { d, n: s.n } : best;
     }, null);
@@ -814,27 +1043,31 @@ export function makePath(api) {
   }
 
   function renderBubble() {
+    lastPlace = null;
     const m = marks.find((x) => x.kind === 'bubble');
     if (!m) return;
     const s = m.s;
     bubble.style.setProperty('--c', s.info.color);
     bubble.style.setProperty('--c-deep', s.info.deep);
     bubble.style.setProperty('--on-c', inkOn(s.info.color));
-    bubble.innerHTML = `<span class="bubble-tag">${s.tag}</span><span class="bubble-title">${s.title}</span><span class="bubble-go">Inizia · 3 min</span>`;
-    bubble.setAttribute('aria-label', `${s.tag}: ${s.title}. Inizia, 3 minuti`);
+    // a floor whose lessons are not in the app yet (main.js, comingSoon): the bubble says so, the tap explains
+    const soon = api.soon?.(s.n);
+    bubble.innerHTML = `<span class="bubble-tag">${s.tag}</span><span class="bubble-title">${s.title}</span><span class="bubble-go">${soon ? 'In arrivo' : 'Inizia · 3 min'}</span>`;
+    bubble.setAttribute('aria-label', `${s.tag}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
     bubble.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: 'next' });
   }
 
   function renderA11y() {
     a11y.replaceChildren();
     for (const s of stages) {
+      if (s.st === 'soon') continue; // the card reads by itself
       const b = document.createElement('button');
       b.className = 'sr-only';
       if (s.st === 'launch') {
         b.textContent = 'Il lancio, sul tetto';
         b.onclick = () => tap({ type: 'launch' });
       } else {
-        const what = s.st === 'done' ? 'fatta' : s.st === 'next' ? 'da fare adesso' : 'non ancora aperta';
+        const what = s.st === 'done' ? 'fatta' : s.st !== 'next' ? 'non ancora aperta' : api.soon?.(s.n) ? 'in arrivo con il prossimo aggiornamento' : 'da fare adesso';
         const obj = ROOMS[s.n].stages[s.i].object;
         b.textContent = `Piano ${s.n}, ${s.tag}: ${s.title}, ${what}${obj ? `. Porta ${obj.toLowerCase()}` : ''}`;
         b.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: s.st });
@@ -850,6 +1083,15 @@ export function makePath(api) {
       b.onfocus = () => show(e, 0.5);
       a11y.append(b);
     }
+    // the people of the garden answer the keyboard and the screen reader too, as they answer the finger
+    for (const p of people) {
+      const b = document.createElement('button');
+      b.className = 'sr-only';
+      b.textContent = `${p.name}, ${p.role}`;
+      b.onclick = () => tap(p.pick);
+      b.onfocus = () => show(p, 0.5);
+      a11y.append(b);
+    }
   }
 
   // ---------- the finger, the wheel ----------
@@ -857,7 +1099,10 @@ export function makePath(api) {
     const first = stages[0];
     const lastStage = stages[stages.length - 1];
     lo = offFor(first.y, -first.z, 0.74);
-    hi = Math.max(lo, offFor(lastStage.y, -lastStage.z, 0.34));
+    // the card of a floor still to come grows upwards from its point: lower on screen, so it clears the plate; so does
+    // the last stage when it is the one to do, so that its bubble fits above it whole, title too, on the smallest
+    // phones (partita 09/11/2026: at 34% of an iPhone SE only the short bubble fitted)
+    hi = Math.max(lo, offFor(lastStage.y, -lastStage.z, lastStage.st === 'soon' ? 0.45 : lastStage.st === 'next' ? 0.42 : 0.34));
   }
   const clampOff = (o) => THREE.MathUtils.clamp(o, lo, hi);
   function show(s, f, instant = true) {
@@ -935,7 +1180,7 @@ export function makePath(api) {
     if (state.busy) return;
     if (p.type === 'person') {
       sfx.tap();
-      if (p.name === 'Il mentore') api.trophy?.('mentore');
+      if (p.mentor) api.trophy?.('mentore');
       return api.toast(p.say);
     }
     if (p.type === 'egg') {

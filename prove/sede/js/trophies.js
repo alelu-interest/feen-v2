@@ -5,6 +5,7 @@
 // dates, nothing lost if you stop. The names never say «he» or «she» about whoever plays (CLAUDE.md §8): the user's
 // «Il baro» becomes «Asso nella manica», with the user's line.
 import { FLOORS } from './world.js';
+import { inkOn } from './kit.js';
 
 const tint = (n) => FLOORS[n - 1].color;
 export const TROPHIES = [
@@ -54,6 +55,7 @@ export function makeTrophies({ sfx, onChange }) {
     if (!t) return (showing = false);
     showing = true;
     pop.style.setProperty('--c', t.color ?? 'var(--achievement)');
+    pop.style.setProperty('--on-c', t.color ? inkOn(t.color) : '#ffffff'); // the icon reads on the light floors too
     pop.innerHTML = `<span class="trophy-emblem">${emblem(t.id)}</span><span><span class="trophy-pop-tag">Traguardo</span><b>${t.name}</b></span>`;
     pop.hidden = false;
     pop.classList.remove('in');
