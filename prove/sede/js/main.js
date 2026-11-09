@@ -5,6 +5,7 @@
 // 25/10/2026 pomeriggio, dopo il parere di Davide: niente zoom né giro intorno al palazzo;
 // l'angolo è fisso e il dito porta su e giù nel palazzo, da fuori e da vicino.
 
+import { IN_APP } from './app.js'; // first: the page knows at once whether it is the app (no Demo) or the prova
 import * as THREE from 'three';
 import { C, manager, updateTweens, tween, wait, ease, sfx, sound, buzz, sphere, canvasTexture, strokeText, rbox, mat, inkOn } from './kit.js';
 import { B, FLOORS, floorY, makeSky, makeCampus, makeFloorShell, makeRoofSite } from './world.js';
@@ -520,7 +521,8 @@ function onPick(pick) {
     go('interior', pick.n);
   }
 }
-const ROOF_SAYS = 'Il tetto del lancio. Nell’app qui sul palco salite tu, il mentore e i colleghi; il prodotto resta coperto.';
+// provisional, Claude's (the texts of the launch are open, CLAUDE.md §11)
+const ROOF_SAYS = 'Il tetto del lancio: sul palco salirete tu, il mentore e i colleghi.';
 /** What a stand says: which stage brings its object. The stage's title goes in quotes, as a title. */
 function arrives(st, i) {
   const by = st.tag === 'Caso' ? 'il Caso' : st.tag === 'Prova sul campo' ? 'la Prova sul campo' : 'la ' + st.tag.toLowerCase();
@@ -741,8 +743,10 @@ function openCard(n, i, fresh) {
   $('card-object').textContent = s.object ?? '';
   $('card-object').parentElement.hidden = !s.object; // a lesson without an object: no chip
   $('card-idea').textContent = s.idea;
-  $('card-review').hidden = fresh;
+  // in the app «Ripassa» waits for the review (cubotto 8): a button that does nothing is not shown
+  $('card-review').hidden = fresh || IN_APP;
   $('card-continue').hidden = !fresh;
+  $('card-review').parentElement.hidden = $('card-review').hidden && $('card-continue').hidden;
   $('card-close').hidden = fresh;
   openSheet($('card-wrap'));
   return new Promise((r) => (cardResolve = r));
@@ -1170,8 +1174,8 @@ async function floorComplete() {
   const from = new THREE.Color(C.cream);
   const to = new THREE.Color(info.room);
   await tween(1.4, (k) => wall.color.copy(from).lerp(to, k));
-  // the end of a colleague's stretch: in the app here comes «Condividi»
-  if (ROOMS[n].share) {
+  // the end of a colleague's stretch: in the app here comes «Condividi» (cubotto 9.14, after the MVP)
+  if (ROOMS[n].share && !IN_APP) {
     toast('Qui nell’app compare «Condividi»: la card con il palazzo com’è adesso.');
     await wait(2.6);
   }
@@ -1192,7 +1196,7 @@ async function floorComplete() {
     renderPlate();
     renderCta();
     sfx.reward();
-    toast('Il tetto è pronto. Nell’app «Continua» porta qui, alla scena del lancio, e poi alla card «Condividi».', { low: true });
+    toast(IN_APP ? 'Il tetto è pronto: il palco del lancio.' : 'Il tetto è pronto. Nell’app «Continua» porta qui, alla scena del lancio, e poi alla card «Condividi».', { low: true });
     state.busy = false;
     return;
   }
@@ -1357,7 +1361,9 @@ function reset(floor = 1, earned = 0) {
 }
 
 // ---------- wiring ----------
+// the pill pretends to finish the next stage: a control of the prova, like Demo; in the app it is not there
 $('cta').onclick = () => {
+  if (IN_APP) return;
   sfx.tap();
   completeNext();
 };
@@ -1371,6 +1377,7 @@ $('btn-back').onclick = (e) => {
   if (e.detail === 0) focusFloor(n);
 };
 $('btn-demo').onclick = () => {
+  if (IN_APP) return;
   sfx.tap();
   openSheet($('demo-wrap'));
 };
@@ -1669,7 +1676,7 @@ async function start() {
     else if (force || state.tab === 'ufficio') renderer.render(scene, camera);
   };
   // for checking the prova from the browser tools: advance the scene by n frames
-  Object.assign(window.__feen, { go, state, built, setup, completeNext, finishFloor, toggleNight, reset, tap, setTab, LAST });
+  Object.assign(window.__feen, { go, state, built, setup, completeNext, finishFloor, toggleNight, reset, tap, setTab, LAST, IN_APP });
   window.__feen.step = (n = 60) => {
     for (let i = 0; i < n; i++) frame(1 / 60, true);
   };
@@ -1703,5 +1710,5 @@ async function start() {
 
 start().catch((err) => {
   console.error(err);
-  $('loading').querySelector('.load-note').textContent = 'Qualcosa non ha caricato. Riprova ricaricando la pagina.';
+  $('loading').querySelector('.load-note').textContent = IN_APP ? 'Qualcosa non ha caricato. Chiudi FEEN e riaprila.' : 'Qualcosa non ha caricato. Riprova ricaricando la pagina.';
 });

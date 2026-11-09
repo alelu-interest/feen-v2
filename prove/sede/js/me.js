@@ -6,6 +6,7 @@ import { inkOn } from './kit.js';
 import { TROPHIES, emblem } from './trophies.js';
 import { PEOPLE } from './people.js';
 import { miniMap, trapFloors, signSvg } from './avvio.js';
+import { IN_APP } from './app.js';
 
 const cap = (t) => t[0].toUpperCase() + t.slice(1);
 
@@ -37,7 +38,7 @@ export function makeMe(api) {
     ).join('');
     return `<section class="me-card">
       <h2>Il tuo personaggio</h2>
-      <p class="me-note">Nell’app qui c’è il tipo che esce dal test, con il suo pregio, la sua trappola e il punto sulla mappa. Le 12 domande e le descrizioni sono ancora da scrivere.</p>
+      <p class="me-note">Il tuo personaggio arriva con il test del primo avvio: il tipo, il pregio, la trappola e il punto sulla mappa.</p>
       <div class="map" aria-label="La mappa dei quattro tipi: in alto chi rischia di più, a sinistra chi innova">
         <span class="axis axis-y">più rischio →</span>
         <span class="axis axis-x">← innovativo · tradizionale →</span>
@@ -117,7 +118,8 @@ export function makeMe(api) {
       .reverse()
       .map(([title, sub, share, color]) => {
         const dot = color ? `<i style="background:${color}"></i>` : '<i></i>';
-        const btn = share ? `<button class="share" data-share="${share}">Condividi</button>` : '';
+        // in the app «Condividi» waits for the card (cubotto 9.14, after the MVP; the first is at floor 4)
+        const btn = share && !IN_APP ? `<button class="share" data-share="${share}">Condividi</button>` : '';
         return `<li>${dot}<div><b>${title}</b><span>${sub}</span></div>${btn}</li>`;
       })
       .join('');
@@ -158,7 +160,7 @@ export function makeMe(api) {
       const on = key === 'suoni' ? api.sound.on : settings[key];
       t.setAttribute('aria-checked', String(on));
       api.persist();
-      if (key === 'avvisi') api.toast(on ? 'Avvisi accesi: alle 18:00, mai se oggi hai già fatto una lezione.' : 'Avvisi spenti. Nell’app si riaccendono solo da qui.');
+      if (key === 'avvisi') api.toast(on ? 'Avvisi accesi: alle 18:00, mai se oggi hai già fatto una lezione.' : 'Avvisi spenti. Si riaccendono da qui.');
       return;
     }
     if (t.dataset.act === 'privacy') return api.toast('Nessun account, niente dati che escono dal telefono. La tua azienda vive su questo telefono, e nel suo backup se è acceso.');

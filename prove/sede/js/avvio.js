@@ -7,6 +7,7 @@
 import { QUESTIONS, SCALE, TIEBREAKS, PROFILES, score } from './quiz.js';
 import { PEOPLE } from './people.js';
 import { FLOORS } from './world.js';
+import { IN_APP } from './app.js';
 
 const KEY = 'feen-avvio';
 const ORDER = ['alto-innovativo', 'alto-tradizionale', 'basso-innovativo', 'basso-tradizionale'];
@@ -268,7 +269,7 @@ export function makeAvvio(api) {
         <div class="av-sign"><canvas id="av-pad" aria-hidden="true"></canvas><span class="av-sign-hint">Firma qui col dito</span></div>
         <div class="av-sign-line"><span>${who.me}</span><button class="av-redo" data-act="redo">Rifai</button></div>
       </div>
-      <p class="av-note av-prov">Testo provvisorio.</p>
+      ${IN_APP ? '' : '<p class="av-note av-prov">Testo provvisorio.</p>'}
       <div class="av-fill"></div>
       <button class="pill pill-dark wide" data-act="sign" disabled>Firmo</button>
       <button class="av-alt" data-act="sign-alt">Firma senza disegnare</button>`,
@@ -444,7 +445,9 @@ export function makeAvvio(api) {
     }
     if (act === 'remind' || act === 'no-remind') {
       const time = root.querySelector('#av-time')?.value || '18:00';
-      api.toast(act === 'remind' ? `Promemoria alle ${time}. Nell’app qui il telefono chiede il permesso.` : 'Niente promemoria. Si accendono dal Tu, nelle Impostazioni.');
+      // the phone's own permission arrives with the real reminders (cubotto 9.4, stanza 6)
+      const on = IN_APP ? `Promemoria alle ${time}.` : `Promemoria alle ${time}. Nell’app qui il telefono chiede il permesso.`;
+      api.toast(act === 'remind' ? on : 'Niente promemoria. Si accendono dal Tu, nelle Impostazioni.');
       return go('fatto', { avvisi: act === 'remind' ? time : false });
     }
   });

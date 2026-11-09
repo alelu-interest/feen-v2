@@ -22,6 +22,10 @@
   --text: 'Hanken Grotesk', system-ui, sans-serif;
   --safe-t: env(safe-area-inset-top, 0px);
   --safe-b: env(safe-area-inset-bottom, 0px);
+  /* the size of the text chosen in the phone (js/app.js sets --fs, from 1 to 1.35, 09/11/2026): every font-size is
+     drawn × --fs; titles from 20 px up grow half as much (--fs-l), as on iOS. No size here goes under 12 px. */
+  --fs: 1;
+  --fs-l: calc(1 + (var(--fs) - 1) / 2);
   /* roles that flip in the dark theme */
   --on-accent: #14213d;
   --action: #0f70e0;
@@ -71,6 +75,12 @@
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
+html {
+  font-size: calc(16px * var(--fs));
+  /* the phone never inflates the text by itself: the size is --fs, with its maximum */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
 html,
 body {
   margin: 0;
@@ -105,6 +115,16 @@ button {
   padding: 0;
   cursor: pointer;
   touch-action: manipulation;
+}
+/* in the app (the file built for the phone, js/app.js) the controls of the prova are not there: Demo, and the pill that
+   pretends to finish the next stage. The pill keeps its room, so the framing of the building stays the same. */
+html[data-app] #btn-demo,
+html[data-app] #demo-wrap {
+  display: none !important;
+}
+html[data-app] #cta {
+  visibility: hidden;
+  pointer-events: none;
 }
 [hidden] {
   display: none !important;
@@ -159,13 +179,13 @@ svg {
   box-shadow: 0 2px 0 var(--accent-deep);
   font-family: var(--title);
   font-weight: 800;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   color: var(--on-accent);
 }
 .plate-title {
   font-family: var(--title);
   font-weight: 700;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   letter-spacing: -0.01em;
   line-height: 1;
   margin-bottom: 6px;
@@ -184,7 +204,7 @@ svg {
 .pips-count {
   flex: none;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 600;
   line-height: 1;
   color: var(--ink-2);
@@ -233,7 +253,7 @@ svg {
 .round-text {
   padding: 0 16px;
   font-weight: 600;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
 }
 /* the narrowest phones (320 px): plate, sound and Demo all fit, with a breath between them */
 @media (max-width: 359px) {
@@ -250,7 +270,7 @@ svg {
   }
   .round-text {
     padding: 0 10px;
-    font-size: 13px;
+    font-size: calc(13px * var(--fs));
   }
 }
 .round:active,
@@ -272,7 +292,7 @@ svg {
   backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
   font-weight: 600;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   transition: transform 0.15s var(--ease);
   animation: fade-in 0.25s var(--ease);
 }
@@ -313,7 +333,7 @@ svg {
   background: var(--action);
   color: var(--on-action);
   font-weight: 600;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   text-align: center;
   box-shadow: var(--shadow);
   outline: 3px solid var(--accent);
@@ -330,11 +350,11 @@ svg {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: 54px;
+  min-height: 54px; /* grows if a larger text needs two lines */
   padding: 0 22px;
   border-radius: 999px;
   font-weight: 700;
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   transition: transform 0.12s var(--ease), box-shadow 0.12s var(--ease), background 0.15s var(--ease);
 }
 /* the palette's buttons stand on a deeper edge and sink into it when pressed */
@@ -438,7 +458,7 @@ svg {
   min-width: 0;
 }
 .cta-tag {
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -447,13 +467,13 @@ svg {
 .cta-title {
   font-family: var(--title);
   font-weight: 700;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
 .cta-min {
   flex: none;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   font-weight: 600;
   color: var(--on-action-muted);
 }
@@ -538,7 +558,7 @@ svg {
   margin: 4px 48px 14px 0;
   font-family: var(--title);
   font-weight: 800;
-  font-size: 28px;
+  font-size: calc(28px * var(--fs-l));
   line-height: 1.08;
   letter-spacing: -0.025em;
 }
@@ -556,7 +576,7 @@ svg {
   border-radius: 999px;
   background: var(--surface-2);
   font-weight: 600;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   line-height: 1.2;
 }
 /* the stage's chip is the palette's «Completato»: the floor's light with its deep for the words */
@@ -584,7 +604,7 @@ svg {
 }
 .card-idea {
   margin: 0 0 20px;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   line-height: 1.45;
   color: var(--ink-2);
 }
@@ -597,7 +617,7 @@ svg {
 }
 .demo p {
   margin: 0 0 18px;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   line-height: 1.45;
   color: var(--ink-2);
 }
@@ -606,7 +626,7 @@ svg {
 }
 .demo .small {
   margin: 6px 0 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   color: var(--muted);
 }
 
@@ -650,11 +670,11 @@ svg {
 .banner-title {
   font-family: var(--title);
   font-weight: 800;
-  font-size: 24px;
+  font-size: calc(24px * var(--fs-l));
   letter-spacing: -0.02em;
 }
 .banner-sub {
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   color: var(--muted);
 }
 .toast {
@@ -670,7 +690,7 @@ svg {
   color: var(--surface);
   border-radius: 999px;
   font-weight: 500;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   text-align: center;
   box-shadow: var(--shadow);
   animation: fade-in 0.2s var(--ease);
@@ -708,12 +728,12 @@ svg {
 .trophy-pop b {
   display: block;
   font-family: var(--title);
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   font-weight: 700;
 }
 .trophy-pop-tag {
   display: block;
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -746,7 +766,7 @@ svg {
 .fake-title {
   font-family: var(--title);
   font-weight: 800;
-  font-size: 24px;
+  font-size: calc(24px * var(--fs-l));
   letter-spacing: -0.02em;
   line-height: 1.1;
   margin: 0 0 12px;
@@ -771,7 +791,7 @@ svg {
 .fake-note {
   margin-top: 12px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
 }
 
 /* ---------- coach, loading, rotate ---------- */
@@ -789,7 +809,7 @@ svg {
   border-radius: 999px;
   background: rgba(20, 33, 61, 0.86);
   color: #fff;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 500;
   pointer-events: none;
   animation: fade-in 0.3s var(--ease);
@@ -839,7 +859,7 @@ svg {
 }
 .load-note {
   color: var(--muted);
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
 }
 .rotate {
   display: none;
@@ -854,7 +874,7 @@ svg {
     background: var(--page);
     font-family: var(--title);
     font-weight: 700;
-    font-size: 22px;
+    font-size: calc(22px * var(--fs-l));
   }
 }
 
@@ -951,13 +971,13 @@ body[data-tab='tu'] #btn-sound {
   margin: 0;
   font-family: var(--title);
   font-weight: 800;
-  font-size: 30px;
+  font-size: calc(30px * var(--fs-l));
   letter-spacing: -0.02em;
   line-height: 1.1;
 }
 .view-sub {
   margin: 4px 0 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 600;
   color: var(--muted);
 }
@@ -1022,13 +1042,13 @@ body[data-tab='percorso'] #scene {
   box-shadow: 0 2px 0 var(--c-deep);
   font-family: var(--title);
   font-weight: 800;
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
 }
 .path-plate-name {
   display: block;
   font-family: var(--title);
   font-weight: 700;
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   line-height: 1.15;
   white-space: nowrap;
   overflow: hidden;
@@ -1081,7 +1101,7 @@ body[data-tab='percorso'] #scene {
   transform: translate(-50%, -100%) scale(0.98);
 }
 .bubble-tag {
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1096,7 +1116,7 @@ body[data-tab='percorso'] #scene {
 .bubble-title {
   font-family: var(--title);
   font-weight: 700;
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   line-height: 1.2;
 }
 /* «Inizia» in the floor's colour on its deep edge, as the palette's buttons of the 12 floors (30/10/2026); the words
@@ -1110,7 +1130,7 @@ body[data-tab='percorso'] #scene {
   color: var(--on-c);
   box-shadow: 0 3px 0 var(--c-deep);
   font-weight: 700;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   white-space: nowrap;
 }
 /* the names of the people, under their feet */
@@ -1122,7 +1142,7 @@ body[data-tab='percorso'] #scene {
   border-radius: 999px;
   background: var(--glass);
   box-shadow: var(--shadow-sm);
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   color: var(--ink-2);
   white-space: nowrap;
@@ -1146,7 +1166,7 @@ body[data-tab='percorso'] #scene {
   width: 20px;
   height: 20px;
   border-radius: 6px;
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
   vertical-align: -4px;
   margin-right: 4px;
@@ -1161,12 +1181,12 @@ body[data-tab='percorso'] #scene {
   margin: 0 0 6px;
   font-family: var(--title);
   font-weight: 700;
-  font-size: 19px;
+  font-size: calc(19px * var(--fs));
   letter-spacing: -0.01em;
 }
 .me-note {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   line-height: 1.45;
   color: var(--ink-2);
 }
@@ -1177,7 +1197,7 @@ body[data-tab='percorso'] #scene {
 }
 .axis {
   position: absolute;
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   color: var(--muted);
   letter-spacing: 0.02em;
@@ -1237,11 +1257,11 @@ body[data-tab='percorso'] #scene {
 }
 .quad b {
   font-family: var(--title);
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 700;
 }
 .quad span {
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   color: var(--muted);
 }
 .contract {
@@ -1279,7 +1299,7 @@ body[data-tab='percorso'] #scene {
 /* the Traguardi in two groups: the trophies, then the diary (28/10/2026) */
 .me-sub-h {
   margin: 14px 0 8px;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1304,13 +1324,13 @@ body[data-tab='percorso'] #scene {
 .trophy b {
   margin-top: 6px;
   font-family: var(--title);
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 700;
   line-height: 1.2;
   color: var(--muted);
 }
 .trophy span:last-child {
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   line-height: 1.35;
   color: var(--muted);
 }
@@ -1372,10 +1392,10 @@ body[data-tab='percorso'] #scene {
   gap: 1px;
 }
 .diary b {
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
 }
 .diary span {
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   color: var(--muted);
 }
 .share {
@@ -1383,7 +1403,7 @@ body[data-tab='percorso'] #scene {
   padding: 8px 12px;
   border-radius: 999px;
   background: var(--surface-2);
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   font-weight: 700;
   color: var(--ink);
 }
@@ -1409,11 +1429,11 @@ body[data-tab='percorso'] #scene {
   gap: 1px;
 }
 .settings b {
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   font-weight: 600;
 }
 .settings span {
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   color: var(--muted);
 }
 .switch {
@@ -1444,7 +1464,7 @@ body[data-tab='percorso'] #scene {
   width: 100%;
   min-height: 52px;
   text-align: left;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   font-weight: 600;
   color: var(--ink);
 }
@@ -1524,25 +1544,25 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   outline: none;
 }
 .avvio h1 {
-  font-size: 30px;
+  font-size: calc(30px * var(--fs-l));
   font-weight: 800;
   line-height: 1.05;
 }
 .av-lead {
   margin: 0;
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   line-height: 1.5;
   color: var(--ink-2);
 }
 .av-note {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   line-height: 1.45;
   color: var(--muted);
 }
 .av-eyebrow {
   margin: 0;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1563,13 +1583,13 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-brand {
   font-family: var(--title);
   font-weight: 800;
-  font-size: 22px;
+  font-size: calc(22px * var(--fs-l));
   letter-spacing: -0.03em;
 }
 .av-skip {
   min-height: 44px;
   padding: 0 4px 0 16px;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   font-weight: 600;
   color: var(--brand-ink);
 }
@@ -1669,7 +1689,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-progress span {
   min-width: 40px;
   text-align: right;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   font-weight: 700;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
@@ -1691,7 +1711,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   color: var(--brand-ink);
 }
 .av-q h2 {
-  font-size: 26px;
+  font-size: calc(26px * var(--fs-l));
   font-weight: 700;
   line-height: 1.2;
 }
@@ -1753,7 +1773,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-ends {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 700;
   white-space: nowrap;
 }
@@ -1767,7 +1787,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   margin-top: 30px !important;
 }
 .av-tie-q {
-  font-size: 26px;
+  font-size: calc(26px * var(--fs-l));
   font-weight: 700;
   line-height: 1.2;
 }
@@ -1780,7 +1800,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   min-height: 64px;
   padding: 16px 18px;
   text-align: left;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   font-weight: 700;
   border-radius: 20px;
   background: var(--surface);
@@ -1796,7 +1816,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-motto {
   margin: 0;
   font-family: var(--title);
-  font-size: 21px;
+  font-size: calc(21px * var(--fs-l));
   font-weight: 700;
   line-height: 1.25;
   color: var(--brand-ink);
@@ -1808,11 +1828,11 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   line-height: 1.45;
 }
 .av-trait b {
-  font-size: 11.5px;
+  font-size: calc(12px * var(--fs));
   letter-spacing: 0.1em;
   text-transform: uppercase;
 }
@@ -1823,13 +1843,13 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   color: var(--trap-ink);
 }
 .av-reveal .av-trait.trap {
-  font-size: 18px;
+  font-size: calc(18px * var(--fs));
   font-weight: 600;
   line-height: 1.4;
 }
 .av-sub {
   margin: 6px 0 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 700;
   color: var(--ink-2);
 }
@@ -1844,7 +1864,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   line-height: 1.35;
   color: var(--ink-2);
 }
@@ -1858,7 +1878,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-style: normal;
   font-family: var(--title);
   font-weight: 800;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   color: #ffffff;
 }
 
@@ -1873,7 +1893,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .mm-axis {
   position: absolute;
-  font-size: 10.5px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1927,12 +1947,12 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .mm-q b {
   font-family: var(--title);
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--fs));
   font-weight: 700;
   line-height: 1.15;
 }
 .mm-q span {
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   line-height: 1.2;
 }
 .mm-q.me {
@@ -1966,7 +1986,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border-radius: 999px;
   background: #14213d;
   color: #ffffff;
-  font-size: 11px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
 }
 .mm-you.to-left span {
@@ -1997,7 +2017,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border: 2.5px solid var(--line);
   box-shadow: 0 4px 0 var(--line);
   font-family: var(--title);
-  font-size: 18px;
+  font-size: calc(18px * var(--fs));
   font-weight: 800;
   transition: border-color 0.15s var(--ease), transform 0.12s var(--ease);
 }
@@ -2065,12 +2085,12 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .av-talk-body b {
   font-family: var(--title);
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   font-weight: 800;
 }
 .av-talk-body p {
   margin: 4px 0 0;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
   line-height: 1.4;
   font-weight: 500;
 }
@@ -2089,12 +2109,12 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   box-shadow: var(--shadow);
 }
 .av-paper h1 {
-  font-size: 26px;
+  font-size: calc(26px * var(--fs-l));
   margin-bottom: 14px;
 }
 .av-paper p {
   margin: 0 0 10px;
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   line-height: 1.5;
 }
 .av-sign {
@@ -2118,7 +2138,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   inset: 0;
   display: grid;
   place-items: center;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   color: #8a8170;
   pointer-events: none;
 }
@@ -2132,19 +2152,19 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   margin-top: 6px;
   padding-top: 6px;
   border-top: 1.5px solid #14213d;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   font-weight: 700;
 }
 .av-redo {
   min-height: 40px;
   padding: 0 4px 0 14px;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   font-weight: 700;
   color: #0a57b3;
 }
 .av-prov {
   text-align: center;
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--fs));
 }
 /* the way to sign without drawing: for VoiceOver and TalkBack, seen when the keyboard reaches it */
 .avvio .av-alt {
@@ -2181,7 +2201,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border-radius: 18px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   font-weight: 600;
 }
 .av-time input {
@@ -2228,20 +2248,20 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   padding: 4px 9px;
   border-radius: 999px;
   background: var(--surface-2);
-  font-size: 11.5px;
+  font-size: calc(12px * var(--fs));
   font-weight: 700;
   color: var(--ink-2);
 }
 .me-who .who-name h2 {
   margin: 0;
-  font-size: 28px;
+  font-size: calc(28px * var(--fs-l));
   font-weight: 800;
   line-height: 1;
 }
 .who-motto {
   margin: 0;
   font-family: var(--title);
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   font-weight: 700;
   line-height: 1.25;
   color: var(--brand-ink);
@@ -2268,10 +2288,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .who-partner b {
   font-family: var(--title);
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
 }
 .who-partner span {
-  font-size: 13.5px;
+  font-size: calc(13.5px * var(--fs));
   color: var(--muted);
 }
 .contract-paper .contract-sign {
@@ -2378,7 +2398,7 @@ body.in-lesson .toast {
   border-radius: 999px;
   background: var(--reward-soft);
   color: #8a5a00;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
 }
 @media (prefers-color-scheme: dark) {
@@ -2392,7 +2412,7 @@ body.in-lesson .toast {
   border-radius: 8px;
   background: var(--brand-soft);
   color: var(--brand-ink);
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
 }
 /* a hard word: underlined, touched for its definition */
@@ -2418,7 +2438,7 @@ body.in-lesson .toast {
   border: 2px solid var(--reward);
 }
 .lz-theory span {
-  font-size: 11.5px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2431,7 +2451,7 @@ body.in-lesson .toast {
 }
 .lz-theory p {
   margin: 0;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   line-height: 1.45;
   color: var(--ink);
 }
@@ -2443,7 +2463,7 @@ body.in-lesson .toast {
 .lz-say {
   margin: 0;
   font-family: var(--title);
-  font-size: 22px;
+  font-size: calc(22px * var(--fs-l));
   font-weight: 700;
   line-height: 1.25;
   outline: none;
@@ -2481,7 +2501,7 @@ body.in-lesson .toast {
   border-radius: 8px;
   background: var(--reward-soft);
   color: #8a5a00;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2522,18 +2542,18 @@ body.in-lesson .toast {
   box-shadow: var(--shadow-sm);
 }
 .lz-bubble b {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--fs));
   color: var(--muted);
 }
 .lz-vf {
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   font-weight: 700;
   color: var(--brand-ink);
 }
 .lz-q {
   margin: 0;
   font-family: var(--title);
-  font-size: 21px;
+  font-size: calc(21px * var(--fs-l));
   font-weight: 700;
   line-height: 1.25;
   letter-spacing: -0.01em;
@@ -2541,13 +2561,13 @@ body.in-lesson .toast {
 }
 .lz-source {
   margin: -4px 0 0 68px;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   color: var(--muted);
 }
 .lz-help,
 .lz-hint {
   margin: 0;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   line-height: 1.4;
   color: var(--ink-2);
 }
@@ -2594,7 +2614,7 @@ body.in-lesson .toast {
   border: 2px solid var(--line);
   box-shadow: 0 4px 0 var(--line);
   text-align: left;
-  font-size: 16.5px;
+  font-size: calc(16.5px * var(--fs));
   font-weight: 600;
   line-height: 1.3;
   transition: transform 0.1s var(--ease), border-color 0.12s var(--ease), background 0.12s var(--ease);
@@ -2602,7 +2622,7 @@ body.in-lesson .toast {
 .lz-two .lz-opt {
   text-align: center;
   font-family: var(--title);
-  font-size: 19px;
+  font-size: calc(19px * var(--fs));
   font-weight: 800;
 }
 .lz-opt:active,
@@ -2640,7 +2660,7 @@ body.in-lesson .toast {
   border-radius: 18px;
   background: var(--surface);
   font-family: var(--title);
-  font-size: 22px;
+  font-size: calc(22px * var(--fs-l));
   font-weight: 700;
   line-height: 1.5;
 }
@@ -2671,14 +2691,14 @@ body.in-lesson .toast {
 .lz-chips .lz-opt {
   min-height: 48px;
   padding: 10px 18px;
-  font-size: 17px;
+  font-size: calc(17px * var(--fs));
 }
 .lz-situation {
   margin: 0;
   padding: 14px 16px;
   border-radius: 18px;
   border: 2px dashed var(--line);
-  font-size: 16px;
+  font-size: calc(16px * var(--fs));
   line-height: 1.45;
   font-style: italic;
   color: var(--ink-2);
@@ -2698,7 +2718,7 @@ body.in-lesson .toast {
   position: relative;
   min-height: 64px;
   padding: 10px 12px;
-  font-size: 15px;
+  font-size: calc(15px * var(--fs));
   text-align: center;
 }
 .lz-cell[data-pair] {
@@ -2717,7 +2737,7 @@ body.in-lesson .toast {
   border-radius: 50%;
   background: var(--ink);
   color: var(--page);
-  font-size: 12px;
+  font-size: calc(12px * var(--fs));
   font-weight: 800;
 }
 .lz-cell.right[data-pair]::after {
@@ -2754,7 +2774,7 @@ body.in-lesson .toast {
   border-radius: 8px;
   background: var(--action);
   color: #fff;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
 }
 .lz-seq .lz-cell.right b {
   background: var(--ok-line);
@@ -2766,7 +2786,7 @@ body.in-lesson .toast {
   display: grid;
   place-items: center;
   min-height: 52px;
-  font-size: 14px;
+  font-size: calc(14px * var(--fs));
   color: var(--muted);
 }
 .lz-pool {
@@ -2791,7 +2811,7 @@ body.in-lesson .toast {
 .lz-value {
   justify-self: center;
   font-family: var(--title);
-  font-size: 40px;
+  font-size: calc(40px * var(--fs-l));
   font-weight: 800;
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
@@ -2804,7 +2824,7 @@ body.in-lesson .toast {
 .lz-ends {
   display: flex;
   justify-content: space-between;
-  font-size: 13px;
+  font-size: calc(13px * var(--fs));
   color: var(--muted);
 }
 .lz-foot {
@@ -2851,7 +2871,7 @@ body.in-lesson .toast {
 .lz-verdict h3 {
   margin: 0;
   font-family: var(--title);
-  font-size: 24px;
+  font-size: calc(24px * var(--fs-l));
   font-weight: 800;
   outline: none;
 }
@@ -2882,7 +2902,7 @@ body.in-lesson .toast {
 .lz-why,
 .lz-explain {
   margin: 0;
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   line-height: 1.45;
   color: var(--ink);
 }
@@ -2935,13 +2955,13 @@ body.in-lesson .toast {
 .lz-ask-card h3 {
   margin: 0;
   font-family: var(--title);
-  font-size: 22px;
+  font-size: calc(22px * var(--fs-l));
   font-weight: 800;
   outline: none;
 }
 .lz-ask-card p {
   margin: 0 0 6px;
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   line-height: 1.45;
   color: var(--ink-2);
 }
@@ -2998,7 +3018,7 @@ body.in-lesson .toast {
   padding: 5px 10px;
   border-radius: 10px;
   background: var(--glass);
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--fs));
   font-weight: 800;
   box-shadow: var(--shadow-sm);
 }
@@ -3052,13 +3072,13 @@ body.in-lesson .toast {
   box-shadow: var(--shadow-sm);
 }
 .cs-bubble b {
-  font-size: 12.5px;
+  font-size: calc(12.5px * var(--fs));
   color: var(--muted);
 }
 .cs-bubble p {
   margin: 0;
   font-family: var(--title);
-  font-size: 18px;
+  font-size: calc(18px * var(--fs));
   font-weight: 600;
   line-height: 1.3;
 }
@@ -3069,7 +3089,7 @@ body.in-lesson .toast {
 }
 .cs-scene p {
   margin: 0;
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   line-height: 1.45;
   font-style: italic;
   color: var(--ink-2);
@@ -3107,7 +3127,7 @@ body.in-lesson .toast {
 }
 .cs-mine p {
   margin: 0;
-  font-size: 15.5px;
+  font-size: calc(15.5px * var(--fs));
   font-weight: 600;
   line-height: 1.35;
 }

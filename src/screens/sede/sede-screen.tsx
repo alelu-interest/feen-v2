@@ -1,22 +1,26 @@
 /**
  * The sede prova inside the app (CLAUDE.md §10, 28/10/2026): the web page of prove/sede/,
  * built into one file by scripts/build-sede.mjs, full screen and offline, for TestFlight.
+ * The built file knows it is the app (no Demo, js/app.js); this screen gives it the phone's vibration and the size
+ * of the text chosen in the phone (09/11/2026).
  */
 
 import { Asset } from 'expo-asset';
 import * as Haptics from 'expo-haptics';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
-import { StyleSheet, View, useColorScheme } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 const page = require('../../../assets/sede/sede.html');
 
-// the page's own background (style.css), so nothing flashes white while it opens
-const BG = { light: '#F4EFE7', dark: '#121110' };
+// the page's own background (--page in style.css), the same as the splash in app.json: nothing flashes while it opens
+const BG = { light: '#F4F8FD', dark: '#0D1529' };
 
-// iOS has no navigator.vibrate: the page asks, the phone vibrates
-const bridge = `
+/** Runs before the page: the size of the text, and the vibration iOS does not give to a web page. */
+function bridge(fontScale: number) {
+  return `
+  window.FEEN_FONT_SCALE = ${JSON.stringify(fontScale)};
   navigator.vibrate = (ms) => {
     const total = [].concat(ms).reduce((a, b) => a + b, 0);
     window.ReactNativeWebView.postMessage(JSON.stringify({ buzz: total }));
@@ -24,6 +28,7 @@ const bridge = `
   };
   true;
 `;
+}
 
 function buzz(ms: number) {
   if (ms < 15) Haptics.selectionAsync();
@@ -40,7 +45,13 @@ function onMessage(e: WebViewMessageEvent) {
 
 export function SedeScreen() {
   const bg = useColorScheme() === 'dark' ? BG.dark : BG.light;
+  // iOS Dynamic Type, Android font size: the page grows its text with it, up to its own maximum (js/app.js)
+  const { fontScale } = useWindowDimensions();
   const [uri, setUri] = useState<string | null>(null);
+  // WebView<object>: the library's default type argument (undefined) would leave no props at all once there is a ref
+  const web = useRef<WebView<object>>(null);
+  // the script before the page is read once: the size of the text when the app opened
+  const [before] = useState(() => bridge(fontScale));
 
   useEffect(() => {
     Asset.fromModule(page)
@@ -51,18 +62,26 @@ export function SedeScreen() {
     return () => clearTimeout(fallback);
   }, []);
 
+  // the size changed in the phone's settings while FEEN was open: the page follows at once
+  useEffect(() => {
+    web.current?.injectJavaScript(`window.feenFontScale && window.feenFontScale(${JSON.stringify(fontScale)}); true;`);
+  }, [fontScale]);
+
   return (
     <View style={[styles.screen, { backgroundColor: bg }]}>
       {uri && (
         <WebView
+          ref={web}
           source={{ uri }}
           originWhitelist={['*']}
           allowFileAccess
           allowingReadAccessToURL={uri}
-          injectedJavaScriptBeforeContentLoaded={bridge}
+          injectedJavaScriptBeforeContentLoaded={before}
           onMessage={onMessage}
           onLoadEnd={() => SplashScreen.hideAsync()}
           style={{ backgroundColor: bg }}
+          // Android would scale the text by itself on top of the page's own scale: the page does it, once
+          textZoom={100}
           // the page moves, zooms and scrolls by itself: the web view stays still
           scrollEnabled={false}
           bounces={false}

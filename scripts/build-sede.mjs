@@ -114,6 +114,8 @@ const shell = html
   .replace('<link rel="stylesheet" href="style.css" />', '')
   .replace('<script type="module" src="js/main.js"></script>', '');
 if (/(src|href)="(?!#|data:)/.test(shell)) throw new Error('index.html still points to a file outside');
+// the file the phone carries is the app: no Demo, no line about the prova (js/app.js, 09/11/2026)
+html = swap(html, '<html lang="it">', '<html lang="it" data-app>');
 html = swap(html, '<link rel="stylesheet" href="style.css" />', `<style>\n${fonts}\n${css}\n</style>`);
 html = swap(html, '<script type="module" src="js/main.js"></script>', `<script type="module">${js}</script>`);
 
