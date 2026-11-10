@@ -212,8 +212,7 @@ svg {
   box-shadow: var(--shadow-sm);
 }
 /* the floor's colour as a short band inside the left edge, like the sign on the building (no number: Davide) */
-.plate::before,
-.path-plate::before {
+.plate::before {
   content: '';
   position: absolute;
   left: 10px;
@@ -222,9 +221,6 @@ svg {
   width: 4px;
   border-radius: 2px;
   background: var(--accent);
-}
-.path-plate::before {
-  background: var(--c, var(--line));
 }
 .plate.pop {
   animation: pop 0.4s var(--ease);
@@ -1080,20 +1076,26 @@ body:not([data-tab='ufficio']) :is(#scene, #plate, #btn-back, #cta, #coach, #a11
   color: var(--muted);
 }
 
-/* ---------- the Percorso: the garden of the sede, drawn on the canvas behind (28/10/2026, strada A) ---------- */
-/* the canvas stays on screen under the Percorso; the finger drags the garden, so the page itself never scrolls */
-body[data-tab='percorso'] #scene {
-  display: block !important;
+/* ---------- the Percorso, rifatto da capo il 10/11/2026 (js/path.js): the method of Duolingo, the look of FEEN ---------- */
+/* a plain page on the colour of the app, that scrolls like any page; the canvas of the sede stays off */
+:root {
+  --node-off: #e3eaf3;
+  --node-off-lip: #c9d4e2;
+  --node-off-ink: #8d9bb2;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --node-off: #24314d;
+    --node-off-lip: #16213a;
+    --node-off-ink: #6e7f9c;
+  }
 }
 .view.path {
-  overflow: hidden;
-  background: transparent;
-  padding: 0;
-  touch-action: none;
+  padding-top: 0;
   user-select: none;
   -webkit-user-select: none;
 }
-/* the title is read aloud; on screen the plate says where you are */
+/* the title is read aloud; on screen the floor's band says where you are */
 .view.path .view-head {
   position: absolute;
   width: 1px;
@@ -1102,167 +1104,460 @@ body[data-tab='percorso'] #scene {
   clip-path: inset(50%);
   padding: 0;
 }
-/* no veil at the top of the Percorso: the lawn runs up to the edge and the plate reads on it as a card (the user's
-   choice, 30/10/2026, after Nello: «quel gradient verso il bianco mi uccide»); the floors not opened yet are not built */
 .path-list {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
+  max-width: 560px;
+  margin: 0 auto;
+  padding-top: calc(var(--safe-t) + 10px);
 }
-.path-list > * {
-  pointer-events: auto;
+.pf {
+  position: relative;
 }
-/* the floor in the middle of the screen, top left, like the plate of the Ufficio */
-/* the floor's band across the top of the Percorso (10/11/2026, Davide: closer to a column you scroll): the floor's
-   colour on its deep edge, its name and its eight pips in the ink that reads on that colour; no number */
-.path-plate {
-  position: absolute;
-  left: 14px;
-  right: 14px;
+/* the floor's band: it stays up while its stages pass under it, and the next floor's pushes it away */
+.pf-head {
+  position: sticky;
   top: calc(var(--safe-t) + 10px);
-  display: flex;
-  align-items: center;
-  min-height: 64px;
-  padding: 11px 18px 12px;
+  z-index: 6;
+  display: grid;
+  gap: 2px;
+  padding: 12px 18px 14px;
+  border-radius: 18px;
   background: var(--c);
   color: var(--on-c);
-  border-radius: 18px;
-  box-shadow: 0 4px 0 var(--c-deep), var(--shadow-sm);
-  pointer-events: none !important;
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--c) 70%, #000);
 }
 /* in the prova the Demo button sits on the right */
-html:not([data-app]) .path-plate {
-  right: 100px;
+html:not([data-app]) .pf-head {
+  margin-right: 92px;
 }
-.path-plate::before {
-  display: none;
+.pf-label {
+  font-size: calc(12px * var(--fs));
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.78;
 }
-.path-plate > span:last-child {
-  min-width: 0;
-}
-.path-plate-name {
-  display: block;
+.pf-name {
   font-family: var(--title);
   font-weight: 800;
-  font-size: calc(22px * var(--fs-l));
+  font-size: calc(23px * var(--fs-l));
   letter-spacing: -0.02em;
   line-height: 1.1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
-.path-plate-pips {
+.pf-pips {
   display: flex;
   gap: 4px;
-  margin-top: 8px;
+  margin-top: 7px;
 }
-.path-plate-pips i {
-  width: 22px;
+.pf-pips i {
+  width: 20px;
   height: 5px;
   border-radius: 3px;
   background: currentColor;
   opacity: 0.25;
 }
-.path-plate-pips i.on {
-  background: currentColor;
+.pf-pips i.on {
   opacity: 1;
 }
-/* the bubble over the stage to do now: its tip points at the stand */
-.bubble {
+.pf-track {
+  position: relative;
+}
+
+/* a stage: a round button with a thick lower edge in a deeper shade of its face; pressed, it sinks into the edge */
+.pn {
+  --size: 70px;
+  --face: var(--c);
+  --lip: color-mix(in srgb, var(--c) 68%, #000);
+  --ink: var(--on-c);
   position: absolute;
-  transform: translate(-50%, -100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  width: max-content;
-  max-width: 236px;
-  padding: 11px 18px 13px;
-  background: var(--surface);
-  color: var(--ink);
-  border-radius: 18px;
-  box-shadow: var(--shadow);
-  text-align: center;
-  z-index: 2;
+  width: var(--size);
+  height: calc(var(--size) + 7px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translateX(-50%);
+  cursor: pointer;
+  z-index: 1;
 }
-.bubble::after {
-  content: '';
-  position: absolute;
-  left: calc(50% + var(--tip, 0px));
-  bottom: -7px;
-  width: 16px;
-  height: 16px;
-  border-radius: 3px;
-  background: var(--surface);
-  transform: translateX(-50%) rotate(45deg);
-}
-.bubble:active {
-  transform: translate(-50%, -100%) scale(0.98);
-}
-.bubble-tag {
-  font-size: calc(12px * var(--fs));
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--c-deep);
-  white-space: nowrap;
-}
-@media (prefers-color-scheme: dark) {
-  .bubble-tag {
-    color: color-mix(in srgb, var(--c) 45%, #ffffff);
-  }
-}
-.bubble-title {
-  font-family: var(--title);
-  font-weight: 700;
-  font-size: calc(16px * var(--fs));
-  line-height: 1.2;
-}
-/* «Inizia» in the floor's colour on its deep edge, as the palette's buttons of the 12 floors (30/10/2026); the words
-   take the ink that reads on that colour (inkOn), so on the light floors they are dark and not white */
-.bubble-go {
-  margin-top: 8px;
-  margin-bottom: 3px;
-  padding: 8px 18px;
-  border-radius: 999px;
-  background: var(--c);
-  color: var(--on-c);
-  box-shadow: 0 3px 0 var(--c-deep);
-  font-weight: 700;
-  font-size: calc(14px * var(--fs));
-  white-space: nowrap;
-}
-/* the names of the people, under their feet */
-.path-name {
+.pn-face {
   position: absolute;
   left: 0;
   top: 0;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: var(--glass);
-  box-shadow: var(--shadow-sm);
-  font-size: calc(12px * var(--fs));
-  font-weight: 700;
-  color: var(--ink-2);
-  white-space: nowrap;
-  pointer-events: none !important;
+  display: grid;
+  place-items: center;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--face);
+  box-shadow: 0 7px 0 var(--lip);
+  transition: transform 0.1s linear, box-shadow 0.1s linear;
 }
-.path-a11y {
+.pn:active .pn-face {
+  transform: translateY(7px);
+  box-shadow: 0 0 0 var(--lip);
+}
+.pn-icon {
+  width: 46%;
+  height: 46%;
+  background: var(--ink);
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+/* the number of the stage, from 1 on across the floors (10/11/2026 sera, instead of the icons) */
+.pn-num {
+  font-family: var(--title);
+  font-weight: 800;
+  font-size: calc(30px * var(--fs-l));
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--ink);
+}
+.pn-num.long {
+  font-size: calc(24px * var(--fs-l));
+}
+.pn-badge {
   position: absolute;
+  right: -4px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  min-width: 30px;
+  height: 30px;
+  padding: 0 7px;
+  border-radius: 15px;
+  background: var(--c);
+  color: var(--on-c);
+  box-shadow: 0 0 0 3px var(--page);
+  font-family: var(--title);
+  font-weight: 800;
+  font-size: calc(16px * var(--fs-l));
+  line-height: 1;
 }
-/* above a finished floor whose next floor is not in the app yet (cubotto 7.8): a card to read, not a button */
-.bubble.soon {
-  pointer-events: none !important;
+.pn--locked .pn-badge {
+  background: var(--node-off-lip);
+  color: var(--ink-2);
 }
-.bubble.soon::after {
+.pn--locked {
+  --face: var(--node-off);
+  --lip: var(--node-off-lip);
+  --ink: var(--node-off-ink);
+}
+/* the stage to do now: a ring in the floor's colour around it */
+.pn--next::before {
+  content: '';
+  position: absolute;
+  left: -9px;
+  top: -9px;
+  width: calc(var(--size) + 18px);
+  height: calc(var(--size) + 18px + 7px);
+  border-radius: 999px;
+  border: 5px solid color-mix(in srgb, var(--c) 32%, transparent);
+  box-sizing: border-box;
+}
+/* a stage that brings an object: the object itself on a light face, in colour once it is yours */
+.pn--prize {
+  --face: var(--c-light);
+}
+.pn--prize .pn-face {
+  box-shadow: inset 0 0 0 3px var(--c), 0 7px 0 var(--lip);
+}
+.pn--prize:active .pn-face {
+  box-shadow: inset 0 0 0 3px var(--c), 0 0 0 var(--lip);
+}
+.pn--prize.pn--locked {
+  --face: var(--node-off);
+}
+.pn--prize.pn--locked .pn-face {
+  box-shadow: 0 7px 0 var(--lip);
+}
+.pn-obj {
+  width: 112%;
+  height: 112%;
+  margin-top: -14%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pn--locked .pn-obj {
+  filter: grayscale(1) brightness(1.08) contrast(0.8);
+  opacity: 0.6;
+}
+@media (prefers-color-scheme: dark) {
+  .pn--prize {
+    --face: color-mix(in srgb, var(--c) 22%, var(--surface));
+  }
+  .pn--locked .pn-obj {
+    filter: grayscale(1) brightness(0.8) contrast(0.8);
+    opacity: 0.45;
+  }
+}
+.pn--launch {
+  --face: var(--reward);
+  --ink: var(--reward-ink);
+}
+/* the stage just opened comes up with a little jump; the one just done, a flash of its colour */
+.pn.arrive .pn-face {
+  animation: pn-arrive 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both;
+}
+.pn.won .pn-face {
+  animation: pn-won 0.7s var(--ease) both;
+}
+@keyframes pn-arrive {
+  from {
+    transform: scale(0.6);
+  }
+}
+@keyframes pn-won {
+  40% {
+    transform: scale(1.12);
+  }
+}
+.pn:focus-visible {
+  outline: none;
+}
+.pn:focus-visible .pn-face {
+  outline: 3px solid var(--action);
+  outline-offset: 5px;
+}
+
+/* «Inizia» over the stage to do now, bobbing a little; it starts the stage */
+.pn-start {
+  position: absolute;
+  z-index: 3;
+  transform: translate(-50%, -100%);
+  padding: 9px 18px 10px;
+  border: 2px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--c-deep);
+  font-family: var(--text);
+  font-weight: 800;
+  font-size: calc(15px * var(--fs));
+  white-space: nowrap;
+  cursor: pointer;
+  animation: pn-bob 1.6s ease-in-out infinite;
+}
+.pn-start::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 12px;
+  height: 12px;
+  background: var(--surface);
+  border-right: 2px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  transform: translateX(-50%) rotate(45deg);
+}
+@media (prefers-color-scheme: dark) {
+  .pn-start {
+    color: color-mix(in srgb, var(--c) 45%, #ffffff);
+  }
+}
+@keyframes pn-bob {
+  50% {
+    transform: translate(-50%, calc(-100% - 5px));
+  }
+}
+
+/* the card under a stage: in the floor's colour, what the stage is and one button; its tip points at the stage */
+.pop {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: grid;
+  gap: 2px;
+  padding: 16px 18px 18px;
+  border-radius: 18px;
+  background: var(--c);
+  color: var(--on-c);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--c) 70%, #000), var(--shadow);
+  animation: pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: calc(50% + var(--tip, 0px)) 0;
+}
+.pop::before {
+  content: '';
+  position: absolute;
+  left: calc(50% + var(--tip, 0px));
+  top: -7px;
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  background: inherit;
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes pop-in {
+  from {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+}
+.pop-tag {
+  font-size: calc(12px * var(--fs));
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.pop-title {
+  font-family: var(--title);
+  font-weight: 800;
+  font-size: calc(20px * var(--fs));
+  line-height: 1.2;
+}
+.pop-go {
+  margin-top: 12px;
+  min-height: 50px;
+  border: 0;
+  border-radius: 14px;
+  background: #ffffff;
+  color: var(--c-deep);
+  box-shadow: 0 4px 0 rgba(20, 33, 61, 0.18);
+  font-family: var(--text);
+  font-weight: 800;
+  font-size: calc(16px * var(--fs));
+  cursor: pointer;
+}
+.pop-go:active {
+  transform: translateY(4px);
+  box-shadow: none;
+}
+.pop--locked {
+  background: var(--node-off);
+  color: var(--ink-2);
+  box-shadow: 0 5px 0 var(--node-off-lip), var(--shadow-sm);
+}
+.pop-note {
+  margin-top: 6px;
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+/* the people beside the way, standing in the room the zigzag leaves; grey until you get there */
+.pfig {
+  position: absolute;
+  z-index: 2;
+  height: 138px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+}
+.pfig img,
+.pfig svg {
+  display: block;
+  height: 100%;
+  width: auto;
+  pointer-events: none;
+}
+.pfig::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -4px;
+  z-index: -1;
+  width: 62px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(20, 33, 61, 0.1);
+  transform: translateX(-50%);
+}
+.pfig svg + * {
   display: none;
 }
-.bubble-note {
-  margin-top: 4px;
-  max-width: 200px;
-  font-size: calc(14px * var(--fs));
-  line-height: 1.3;
+.pfig--small {
+  height: 74px;
+}
+.pfig--small::after {
+  display: none;
+}
+.pfig.off img,
+.pfig.off svg {
+  filter: grayscale(1) brightness(1.15) contrast(0.7);
+  opacity: 0.5;
+}
+@media (prefers-color-scheme: dark) {
+  .pfig.off img,
+  .pfig.off svg {
+    filter: grayscale(1) brightness(0.75) contrast(0.8);
+    opacity: 0.45;
+  }
+  .pfig::after {
+    background: rgba(0, 0, 0, 0.25);
+  }
+}
+/* the floor's surprise: it answers when touched, with a shake */
+.pegg {
+  position: absolute;
+  z-index: 2;
+  width: 76px;
+  height: 76px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  transform: translate(-50%, -100%);
+  cursor: pointer;
+}
+.pegg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.pegg.off img {
+  filter: grayscale(1) brightness(1.1) contrast(0.75);
+  opacity: 0.55;
+}
+.pegg.shake img {
+  animation: pegg-shake 0.6s var(--ease);
+}
+@keyframes pegg-shake {
+  20% {
+    transform: rotate(-9deg);
+  }
+  45% {
+    transform: rotate(7deg) translateY(-4px);
+  }
+  70% {
+    transform: rotate(-4deg);
+  }
+}
+/* under a finished floor whose next floor is not in the app yet (cubotto 7.8): a grey card to read, not a button */
+.pf-soon {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  margin: 8px 0 24px;
+  padding: 22px 22px 24px;
+  border-radius: 18px;
+  background: var(--node-off);
   color: var(--ink-2);
+  box-shadow: 0 5px 0 var(--node-off-lip);
+  text-align: center;
+}
+.pf-soon-lock {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 4px;
+  background: var(--node-off-ink);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='5' y='10.5' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='5' y='10.5' width='14' height='10' rx='2.5'/%3E%3Cpath d='M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.pf-soon-name {
+  font-family: var(--title);
+  font-weight: 800;
+  font-size: calc(21px * var(--fs-l));
+  color: var(--ink);
+}
+.pf-soon-note {
+  max-width: 280px;
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 /* ---------- Tu: the character, the contract, the milestones, the settings ---------- */
@@ -3973,79 +4268,6 @@ body.in-lesson .toast {
   animation: none;
 }
 
-/* partita 09/11 · C: the bubble of the Percorso goes beside its stage (js/path.js, placeBubble): above it, on its right
-   or left, or under it, where it covers neither the next stage nor the partner and their name. path.js gives the
-   place of its corner and of the tip (--tip-at, along the edge facing the stand); the width can be narrower or wider
-   than usual to fit. The look stays the same: colours, type, «Inizia · 3 min» in the floor's colour */
-.bubble.placed {
-  transform: none;
-  transform-origin: var(--tip-at, 50%) 100%;
-}
-.bubble.placed:active {
-  transform: scale(0.98);
-}
-.bubble.placed[data-side='below'] {
-  transform-origin: var(--tip-at, 50%) 0;
-}
-.bubble.placed[data-side='left'] {
-  transform-origin: 100% var(--tip-at, 50%);
-}
-.bubble.placed[data-side='right'] {
-  transform-origin: 0 var(--tip-at, 50%);
-}
-.bubble.placed[data-fit='narrow'] {
-  max-width: 168px;
-  min-width: min-content;
-}
-.bubble.placed[data-fit='wide'] {
-  max-width: min(304px, calc(100vw - 24px));
-}
-.bubble.placed::after {
-  left: var(--tip-at, 50%);
-  right: auto;
-  top: auto;
-  bottom: -7px;
-  transform: translateX(-50%) rotate(45deg);
-}
-.bubble.placed[data-side='below']::after {
-  top: -7px;
-  bottom: auto;
-}
-.bubble.placed[data-side='left']::after,
-.bubble.placed[data-side='right']::after {
-  top: var(--tip-at, 50%);
-  bottom: auto;
-  transform: translateY(-50%) rotate(45deg);
-}
-.bubble.placed[data-side='left']::after {
-  left: auto;
-  right: -7px;
-}
-.bubble.placed[data-side='right']::after {
-  left: -7px;
-}
-/* «Inizia» alone, until the stage is touched (path.js, 10/11/2026: Davide, less text): the white bubble hugs the
-   button */
-.bubble.placed:not(.open) {
-  padding: 6px;
-  border-radius: 999px;
-}
-.bubble.placed:not(.open) .bubble-go {
-  margin: 0 0 3px;
-  padding: 9px 20px;
-  font-size: calc(15px * var(--fs));
-}
-/* the short form, for where the way is crowded: what the stage is and «Inizia · 3 min», without the title (the
-   screen reader still hears it, from aria-label) */
-.bubble.placed[data-fit='mini'] {
-  padding: 8px 14px 10px;
-}
-.bubble.placed[data-fit='mini'] .bubble-title {
-  display: none;
-}
-.bubble.placed[data-fit='mini'] .bubble-go {
-  margin-top: 5px;
-}
 
 /* partita 09/11 · B: the stamp of the contract, the end of a stage in its card, the partner at the end of a floor
    (js/avvio.js, js/main.js; 1. LAVORO/revisione-ux/partita-2026-11-09.md, punti 7, 9 e 14) */

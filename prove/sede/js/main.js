@@ -907,7 +907,6 @@ async function review(n, i) {
     const room = roomPhoto(n);
     state.tab = tab;
     go(name, arg, { instant: true });
-    if (tab === 'percorso') path.render(); // the garden draws itself again over the photo
     // the Prova sul campo is played again whole, as the Caso: a new month from the start
     const field = fieldFor(n, s);
     r = field ? await campo.play(field, { room, floorName: FLOORS[n - 1].name }) : await caso.play(caseFor(n, s), { room, floorName: FLOORS[n - 1].name });
@@ -1721,7 +1720,7 @@ function setTab(t) {
   $('path').hidden = t !== 'percorso';
   $('me').hidden = t !== 'tu';
   if (t === 'percorso') {
-    // the garden is built at once, so it can open on the stage to do now in the same frame
+    // the way is built at once, so it can open on the stage to do now in the same frame
     path.render();
     path.scrollToNext();
   }
@@ -1883,7 +1882,7 @@ async function start() {
   setTimeout(() => ($('loading').hidden = true), 450);
   trophies = makeTrophies({ sfx, onChange: () => state.tab === 'tu' && me?.render() });
   if (saved) trophies.restore(saved.trophies);
-  path = makePath({ renderer, state, earnedOn, built, LIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false), who: () => avvio?.who(), soon: comingSoon });
+  path = makePath({ renderer, state, earnedOn, built, LIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false), review, canReview, who: () => avvio?.who(), soon: comingSoon });
   me = makeMe({ state, earnedOn, toast, sfx, sound, toggleSound, trophies, settings, applySettings, persist, who: () => avvio.who(), wipe: wipeAll });
   // the reminders are checked and scheduled again at every opening, and when FEEN comes back to the front
   window.feenAvvisiSync = () => syncAvvisi({ force: true });
@@ -1932,9 +1931,8 @@ async function start() {
     updateFx(dt);
     updateCamera(dt);
     updateGlow(dt);
-    // the Percorso draws its garden with the same renderer; the Tu draws nothing
-    if (state.tab === 'percorso') path.step(dt, force);
-    else if (force || state.tab === 'ufficio') renderer.render(scene, camera);
+    // the Percorso and the Tu are pages: only the Ufficio is drawn (the Percorso is no longer a garden in 3D, 10/11/2026)
+    if (force || state.tab === 'ufficio') renderer.render(scene, camera);
   };
   // for checking the prova from the browser tools: advance the scene by n frames
   Object.assign(window.__feen, { go, state, built, setup, completeNext, finishFloor, reset, tap, setTab, LAST, IN_APP });

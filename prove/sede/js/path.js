@@ -1,44 +1,28 @@
-// FEEN · la sede — il Percorso, il giardino della sede (28/10/2026, strada A scelta dall'utente fra tre schizzi,
-// `1. LAVORO/percorso/schizzi/`; prima era un sentiero piatto a tasselli, bocciato lo stesso giorno).
-// The path climbs through the garden of the sede, in 3D like the Ufficio and seen from above at a fixed angle: every
-// floor is a terrace of lawn, one step higher than the one before, with the white slab and the band in the floor's
-// colour on its front, like the floors of the building, and the floor's plate on it. The 8 stages are the white stands
-// of the Ufficio, square-edged and turned like diamonds, their number painted on top; the stages done take the floor's
-// colour, the one to do now stands taller on a soft light. The three stages that bring an object carry the real
-// object, grey until it is yours. The mentor waits beside the Case, the two candidates of an interview beside the first
-// stage of their floor. Trees, hedges, lamps and benches of the sede line the way. Only the floor in progress and the
-// floors done are built (CLAUDE.md §7); above them the lawn simply goes on, with no veil (30/10/2026). The finger
-// drags the garden up and down.
-// 10/11/2026, Davide (his word is law): «troppo crossy road, va portato più sulla dimensione di duolingo… duolingo non
-// sacrifica la componente di ambiente naturale ma è molto scuro e si vede solo se zoomi; senza zoomare sembra molto
-// più asciutto». The garden in half light (1. LAVORO/percorso/davide-2026-11-10/, strada B): the camera higher and
-// closer, the stages a column in an even zigzag in the middle, as big as a finger; the lawn quiet, trees, hedges,
-// lamps and benches faded towards it and without shadows, so at a glance the way is what you see; the floor's band
-// across the top; on the stage to do only «Inizia», the title when you touch the stage; the partner standing, drawn.
+// FEEN · la sede — il Percorso, rifatto da capo il 10/11/2026 (l'utente: «la parte del percorso fa schifo… ripartiamo
+// da capo, ignora tutto quello che sai, copiamola da Duolingo e Finanz»). Before it was a garden in 3D (28/10 – 10/11/2026,
+// in the git of mobile/ until commit 258d96b).
+// From Duolingo the method, all of it (2. FONTI/duolingo/ux-ui.md §5.1): a plain page on the colour of the app, that
+// the finger scrolls like any page; for every floor a band across the top in the floor's colour, which stays up while
+// its stages pass under it and is pushed away by the next floor's; the stages are round buttons with a thick lower edge,
+// one under the other in a gentle zigzag; the one to do now has «Inizia» bobbing over it and a ring around; the ones
+// still closed are grey; a touch opens a card in the floor's colour under the stage, with what it is and one button;
+// the people wait in the room the zigzag leaves free, grey until you get there; the prizes stand on the way, bigger than
+// the stages. From Finanz the short pill: every stage says its minutes («Inizia · 3 min»).
+// From neither the look (CLAUDE.md §2): the colours are the palette of FEEN, the type is FEEN's, the icons are the
+// lessons' own, the prizes are the real objects of the Ufficio, photographed from the 3D, the people are FEEN's.
+// Up the page, as the building and as before (the user, 10/11/2026: «teniamola come prima dal basso verso l'alto»):
+// floor 1 at the bottom, the floor in progress above it, and in every floor the stages climb from the first to the
+// eighth; you scroll up towards the launch. Only the floor in progress and the floors done are shown (CLAUDE.md §7).
 import * as THREE from 'three';
-import { C, mat, box, canvasTexture, roundRect, inkOn, sfx } from './kit.js';
+import { roundRect, inkOn, sfx } from './kit.js';
 import { EGGS } from './eggs.js';
-import { FLOORS, signTexture, tree, hedge, bench } from './world.js';
+import { FLOORS } from './world.js';
 import { ROOMS } from './office.js';
 import { FIGURES } from './figures.js';
 
 const DEG = Math.PI / 180;
-const EL = 56 * DEG; // the camera looks down at 56°, from the front (35° until 10/11/2026: the isometric game look)
-const L = 22; // a floor's stretch of garden, from its wall to the next
-const H = 0.7; // how much higher each terrace is than the one before
-const FIRST = 2.2; // from a floor's wall to its first stage
-const GAP = 2.5; // from one stage to the next
-// where each stage stands across the garden: an even zigzag round the middle, as in a column you scroll (10/11/2026)
-const X = [0, 1.02, 1.27, 0.56, -0.58, -1.27, -1.0, 0.07];
-const SIDE = 0.9; // the stand's side
-const TALL = 0.34;
-const NEXT_TALL = 0.5;
-const PAWN_H = 0.92; // the top of a pawn's head, where its name stands
-// the interviews (CLAUDE.md §4): the two candidates, beside the first stage of these floors
 const HIRES = { 2: ['Samir', 'Irene'], 5: ['Teo', 'Giada'], 8: ['Leo', 'Marta'], 10: ['Dario', 'Sofia'] };
-// the mentor is the version of your type you did not choose (CLAUDE.md §4): the pawn takes their name and their
-// clothes and hair (1. LAVORO/personaggi/: the two versions of a type wear the same clothes); before the choice, a
-// plain pawn. On floor 1 there is no colleague yet: only you and the mentor.
+// until the characters are drawn (the candidates, and the mentor before the choice): a pawn in their clothes and hair
 const LOOKS = {
   Elizabeth: ['#34363D', '#E2C27A'],
   Leopold: ['#34363D', '#B88A55'],
@@ -49,49 +33,12 @@ const LOOKS = {
   Jane: ['#5A6236', '#5C3A28'],
   Warren: ['#5A6236', '#ECECEC'],
 };
-// once the Case is done the mentor no longer waits for it (provisional lines, Claude's: the mentor's lines are the
-// user's to write, CLAUDE.md §11)
+// once the Case is done the mentor no longer waits for it (provisional lines, Claude's: CLAUDE.md §11)
 const mentorSays = (name, n, done) =>
   done
     ? `${name ?? 'Il mentore'}: il Caso è fatto. Il lancio si prepara un piano alla volta.`
     : `${name ?? 'Il mentore'} ti aspetta al Caso: si decide insieme${n > 1 ? ', con il collega del piano' : ''}.`;
 
-const wallZ = (n) => -(n - 1) * L; // the front of terrace n
-const ground = (n) => n * H; // the lawn of terrace n
-const stageS = (n, i) => (n - 1) * L + FIRST + i * GAP;
-const camY = (s) => H * (1 + s / L); // the height the camera follows: smooth, while the terraces step
-
-// ---------- textures ----------
-/** The lawn in half light (10/11/2026): one quiet green with bands you hardly see, so the way stands out on it. */
-const LAWN = '#D5E1CF';
-const lawnTex = canvasTexture(
-  64,
-  256,
-  (g, w, h) => {
-    g.fillStyle = LAWN;
-    g.fillRect(0, 0, w, h);
-    g.fillStyle = 'rgba(255,255,255,0.12)';
-    g.fillRect(0, 0, w, h / 2);
-  },
-  { repeat: [6, 90] },
-);
-const lawnFront = lawnTex.clone();
-lawnFront.repeat.set(6, 13.5);
-lawnFront.needsUpdate = true;
-const signCache = new Map();
-const sign = (info) => {
-  if (!signCache.has(info.n)) signCache.set(info.n, signTexture(info));
-  return signCache.get(info.n);
-};
-/** A soft round light, for the stage to do now. */
-const haloTex = canvasTexture(128, 128, (g, w, h) => {
-  const r = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
-  r.addColorStop(0, 'rgba(255,255,255,0.95)');
-  r.addColorStop(0.45, 'rgba(255,255,255,0.4)');
-  r.addColorStop(1, 'rgba(255,255,255,0)');
-  g.fillStyle = r;
-  g.fillRect(0, 0, w, h);
-});
 // ---------- the icons of the lessons (28/10/2026, after the user's try on the iPhone: «le icone vanno migliorate») ----
 // Every lesson shows the icon of what it is about, on a small plate standing on its stand, instead of a painted number:
 // the way says at a glance what comes, and no two stretches look the same. Drawn in a 24-unit box, like the icons of
@@ -319,141 +266,50 @@ const LESSON_ICONS = {
   12: ['cambio', 'goccia', 'altalena', 'esagono', 'crollo'],
 };
 const iconOf = (n, lesson) => LESSON_ICONS[n]?.[lesson - 2] ?? 'foglio';
-const plateCache = new Map();
-/** The face of a lesson's plate: its icon in `ink` on `bg`. */
-function plateTex(icon, bg, ink) {
-  const key = icon + bg + ink;
-  if (!plateCache.has(key)) {
-    plateCache.set(
-      key,
-      canvasTexture(256, 256, (g, w) => {
-        g.fillStyle = bg;
-        g.fillRect(0, 0, w, w);
-        g.scale(w / 32, w / 32);
-        g.translate(4, 4);
-        g.strokeStyle = g.fillStyle = ink;
-        g.lineWidth = 2.4;
-        g.lineJoin = 'round';
-        g.lineCap = 'round';
-        ICONS[icon](g);
-      }),
-    );
+
+// ---------- the measures of the way (on a 390 px phone; the zigzag follows the width) ----------
+const NODE = 70; // a stage: a round button, and under it its edge
+const PRIZE = 84; // a stage that brings an object: bigger, as the prizes on a way you scroll
+const EDGE = 7;
+const PITCH = 94; // from one stage to the next
+const ROOM_NEXT = 38; // more room over the stage to do now, for «Inizia»
+const TOP = 34; // from the floor's band to its first stage
+const BOTTOM = 40;
+const fontScale = () => Number(document.documentElement.style.getPropertyValue('--fs')) || 1;
+
+// the icons, drawn once in black and used as masks: the page gives them their colour (light and dark theme)
+const maskCache = new Map();
+function iconMask(name) {
+  if (!maskCache.has(name)) {
+    const c = document.createElement('canvas');
+    c.width = c.height = 96;
+    const g = c.getContext('2d');
+    g.scale(96 / 32, 96 / 32);
+    g.translate(4, 4);
+    g.strokeStyle = g.fillStyle = '#000';
+    g.lineWidth = 2.6;
+    g.lineJoin = 'round';
+    g.lineCap = 'round';
+    (ICONS[name] ?? MORE[name] ?? ICONS.foglio)(g);
+    maskCache.set(name, c.toDataURL());
   }
-  return plateCache.get(key);
+  return maskCache.get(name);
 }
-const PLATE = 0.54; // the side of a lesson's plate
-const LEAN = 0.5; // it leans back, so its face looks up at the camera
-/** A lesson's plate, standing on its stand and leaning back: square-edged like the stands, its icon on the front,
- *  drawn in the deep colour of the floor's palette, the one made for lines on a light ground. */
-function iconPlate(icon, st, deep) {
-  const bg = st === 'locked' ? '#EFE9DF' : '#FBF8F3';
-  const ink = st === 'locked' ? '#B5AEA3' : deep;
-  const side = mat(st === 'locked' ? '#E4DDD2' : '#EFE8DD', { roughness: 0.7 });
-  const face = new THREE.MeshStandardMaterial({ map: plateTex(icon, bg, ink), roughness: 0.7 });
-  const s = st === 'next' ? PLATE * 1.12 : PLATE;
-  const m = new THREE.Mesh(new THREE.BoxGeometry(s, s, 0.06), [side, side, side, side, face, side]);
-  m.position.set(0, s / 2, 0);
-  m.castShadow = true;
-  const g = new THREE.Group();
-  g.add(m);
-  g.rotation.x = -LEAN;
-  g.userData.height = s * Math.cos(LEAN);
-  return g;
-}
+// two more, for the stages that are not lessons when they bring no object, and for the launch
+const MORE = {
+  dialogo: (g) => {
+    roundRect(g, 2.5, 4, 13, 9.5, 3);
+    g.stroke();
+    roundRect(g, 8.5, 10.5, 13, 9.5, 3);
+    g.stroke();
+  },
+  bandiera: (g) => (line(g, 6, 21, 6, 3.5), line(g, 6, 4.5, 18.5, 4.5, 15.5, 8.5, 18.5, 12.5, 6, 12.5)),
+  telo: (g) => (line(g, 12, 3.5, 19.5, 18.5, 4.5, 18.5, 12, 3.5), line(g, 3, 20.5, 21, 20.5)),
+};
 
-// the drawings of the people, decoded once, before the garden needs them
-const figImgs = new Map();
-function figureImage(name) {
-  if (!figImgs.has(name)) {
-    const img = new Image();
-    img.src = FIGURES[name];
-    figImgs.set(name, img);
-  }
-  return figImgs.get(name);
-}
-
-// ---------- the pieces of the garden ----------
-const greyCache = new Map();
-/** Grey, until it is yours: the same object, its colours turned to a light warm grey. */
-function grey(m) {
-  if (!greyCache.has(m.uuid)) {
-    const c = m.color ? m.color.clone() : new THREE.Color('#cccccc');
-    const l = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
-    const g = new THREE.Color('#E4DED4').multiplyScalar(0.72 + 0.32 * Math.min(1, l * 1.4));
-    greyCache.set(m.uuid, new THREE.MeshStandardMaterial({ color: g, roughness: 0.8, transparent: m.transparent, opacity: m.opacity }));
-  }
-  return greyCache.get(m.uuid);
-}
-
-/** The garden in half light (10/11/2026, Davide): its pieces keep their shape, their colours go most of the way
- *  towards the lawn, and they cast no shadow. At a glance the way is what you see; the garden is there if you look. */
-const FADE_TO = new THREE.Color(LAWN);
-const fadeCache = new Map();
-function faded(m, k) {
-  const key = m.uuid + k;
-  if (!fadeCache.has(key)) {
-    const f = m.clone();
-    if (f.color) f.color.lerp(FADE_TO, k);
-    fadeCache.set(key, f);
-  }
-  return fadeCache.get(key);
-}
-function fade(obj, k = 0.6) {
-  obj.traverse((o) => {
-    if (!o.isMesh) return;
-    o.castShadow = false;
-    o.material = Array.isArray(o.material) ? o.material.map((m) => faded(m, k)) : faded(o.material, k);
-  });
-  return obj;
-}
-
-const standMat = (color) => mat(color, { roughness: 0.62 });
-/** The white stand of the Ufficio, on its stone foot, turned like a diamond. */
-function stand(color, tall) {
-  const g = new THREE.Group();
-  const foot = box(SIDE * 0.86, 0.08, SIDE * 0.86, '#D9CFC0');
-  const body = box(SIDE, tall, SIDE, standMat(color), { at: [0, 0.08, 0] });
-  foot.rotation.y = body.rotation.y = Math.PI / 4;
-  g.add(foot, body);
-  return g;
-}
-
-/** A person of the path, until the characters are drawn: a pawn of a board game, its body in the colour of their
- *  clothes, a head and a cap of hair. Grey until you reach them. */
-function person(suit, hair, reached) {
-  const g = new THREE.Group();
-  const m = (c) => (reached ? mat(c, { roughness: 0.7 }) : mat('#D5CEC3', { roughness: 0.85 }));
-  const part = (geo, c, y) => {
-    const o = new THREE.Mesh(geo, m(c));
-    o.position.y = y;
-    o.castShadow = true;
-    g.add(o);
-    return o;
-  };
-  part(new THREE.CylinderGeometry(0.24, 0.27, 0.08, 28), suit, 0.04);
-  part(new THREE.CylinderGeometry(0.11, 0.21, 0.5, 28), suit, 0.33);
-  part(new THREE.SphereGeometry(0.15, 24, 16), '#E7C6A5', 0.72);
-  const cap = part(new THREE.SphereGeometry(0.155, 24, 12, 0, Math.PI * 2, 0, Math.PI * 0.45), hair, 0.735);
-  cap.rotation.x = -0.25;
-  return g;
-}
-
-/** A lamp of the garden: a white post and a warm head (no thin dark lines). FEEN is never set at night
- *  (the user, 10/11/2026), so the lamp is never lit. */
-function lamp() {
-  const g = new THREE.Group();
-  g.add(box(0.16, 0.06, 0.16, C.stoneDark));
-  g.add(box(0.07, 1.5, 0.07, '#F7F4EE', { at: [0, 0.06, 0] }));
-  const head = box(0.22, 0.13, 0.22, mat('#FFF6DE', { emissive: '#FFD58A', emissiveIntensity: 0.15 }), { at: [0, 1.56, 0] });
-  g.add(head, box(0.3, 0.04, 0.3, '#F7F4EE', { at: [0, 1.69, 0] }));
-  return g;
-}
-
-/** A tiny repeatable random, so that every floor keeps the same garden. */
-function rand(seed) {
-  let s = seed * 9301 + 49297;
-  return () => ((s = (s * 9301 + 49297) % 233280) / 233280);
-}
+/** The pawn of a person not drawn yet, in their clothes and hair. */
+const pawn = (suit, hair) =>
+  `<svg viewBox="0 0 60 96" aria-hidden="true"><ellipse cx="30" cy="90" rx="20" ry="4.5" fill="rgba(20,33,61,.12)"/><path d="M17 88c0-22 5-40 13-40s13 18 13 40z" fill="${suit}"/><circle cx="30" cy="34" r="12" fill="#E7C6A5"/><path d="M18 33a12 12 0 0 1 24 0c-4-5-9-7-12-7s-8 2-12 7z" fill="${hair}"/></svg>`;
 
 export function makePath(api) {
   const { renderer, state, earnedOn, built, LIGHT } = api;
@@ -461,906 +317,407 @@ export function makePath(api) {
   const layer = document.getElementById('path-list');
   const sub = document.getElementById('path-sub');
 
-  // ---------- the scene ----------
-  const scene = new THREE.Scene();
-  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -60, 120);
-  const hemi = new THREE.HemisphereLight(LIGHT.hemiSky, LIGHT.hemiGround, LIGHT.hemi);
-  const sun = new THREE.DirectionalLight(LIGHT.sunCol, LIGHT.sun);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
-  Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 15, bottom: -15, near: 0.5, far: 80 });
-  sun.shadow.bias = -0.0003;
-  sun.shadow.normalBias = 0.02;
-  sun.shadow.radius = 4;
-  const fill = new THREE.DirectionalLight('#BFD9FF', LIGHT.fill);
-  scene.add(hemi, sun, sun.target, fill);
-  let garden = null;
-  let built3d = ''; // what the garden was built for
-  let figMats = []; // the people drawn: their own materials, disposed with the garden
-  let halo = null;
-  let picks = []; // what a tap can touch
-  let anims = []; // the surprises of the garden while they move
-  let eggs = []; // the surprises built, for the keyboard and the screen reader
-  let people = []; // the people of the garden, for the keyboard and the screen reader
-  let marks = []; // what the overlay follows: the bubble's stage, the names of the people
-  let stages = []; // every stage built, in order from the bottom
-  let dirty = true;
-
-  // ---------- the view: one number, how far up the garden the camera is ----------
-  let ppu = 54; // pixels per unit
-  let W = 1;
-  let Hs = 1;
-  const view = { off: 0, vel: 0, goal: null };
-  const perOff = () => Math.sin(EL) + (Math.cos(EL) * H) / L; // screen units per unit of `off`
-  /** The `off` that shows the point (x, y, s) at `f` of the screen's height from the top. */
-  const offFor = (y, s, f) => {
-    const U = ((0.5 - f) * Hs) / ppu;
-    return (s * Math.sin(EL) + (y - H) * Math.cos(EL) - U) / perOff();
+  // ---------- the photos of the prizes: the real objects of the Ufficio, taken once from the 3D ----------
+  const shots = new Map();
+  const shotScene = new THREE.Scene();
+  shotScene.add(new THREE.HemisphereLight(LIGHT.hemiSky, LIGHT.hemiGround, LIGHT.hemi * 1.1));
+  const key = new THREE.DirectionalLight(LIGHT.sunCol, LIGHT.sun * 0.9);
+  key.position.set(-3, 6, 7);
+  const rim = new THREE.DirectionalLight('#BFD9FF', LIGHT.fill);
+  rim.position.set(5, 3, 2);
+  shotScene.add(key, rim);
+  const shotCam = new THREE.PerspectiveCamera(24, 1, 0.05, 200);
+  const SHOT = 224;
+  /** A photo of `obj` on a clear ground, as a picture for the page; null if the phone cannot take it. */
+  function photo(id, obj, [tilt, turn] = [0, 0]) {
+    if (shots.has(id)) return shots.get(id);
+    let url = null;
+    try {
+      const o = obj.clone(true);
+      o.position.set(0, 0, 0);
+      o.rotation.set(tilt, turn, 0);
+      o.scale.set(1, 1, 1);
+      o.traverse((m) => (m.visible = true));
+      shotScene.add(o);
+      o.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(o);
+      const sphere = bb.getBoundingSphere(new THREE.Sphere());
+      const c = sphere.center;
+      const dist = (sphere.radius / Math.sin((shotCam.fov / 2) * DEG)) * 0.98;
+      const el = 14 * DEG;
+      shotCam.position.set(c.x, c.y + Math.sin(el) * dist, c.z + Math.cos(el) * dist);
+      shotCam.lookAt(c);
+      shotCam.updateProjectionMatrix();
+      const rt = new THREE.WebGLRenderTarget(SHOT, SHOT, { samples: 4 });
+      rt.texture.colorSpace = THREE.SRGBColorSpace;
+      const was = { target: renderer.getRenderTarget(), color: renderer.getClearColor(new THREE.Color()), alpha: renderer.getClearAlpha() };
+      renderer.setRenderTarget(rt);
+      renderer.setClearColor(0x000000, 0);
+      renderer.clear();
+      renderer.render(shotScene, shotCam);
+      const px = new Uint8Array(SHOT * SHOT * 4);
+      renderer.readRenderTargetPixels(rt, 0, 0, SHOT, SHOT, px);
+      renderer.setRenderTarget(was.target);
+      renderer.setClearColor(was.color, was.alpha);
+      rt.dispose();
+      shotScene.remove(o);
+      // upside down, and with the colours of the edges multiplied by their cover: turned the right way, and back
+      const cv = document.createElement('canvas');
+      cv.width = cv.height = SHOT;
+      const g = cv.getContext('2d');
+      const img = g.createImageData(SHOT, SHOT);
+      for (let y = 0; y < SHOT; y++) {
+        for (let x = 0; x < SHOT; x++) {
+          const s = ((SHOT - 1 - y) * SHOT + x) * 4;
+          const d = (y * SHOT + x) * 4;
+          const a = px[s + 3];
+          const k = a > 0 && a < 255 ? 255 / a : 1;
+          img.data[d] = Math.min(255, px[s] * k);
+          img.data[d + 1] = Math.min(255, px[s + 1] * k);
+          img.data[d + 2] = Math.min(255, px[s + 2] * k);
+          img.data[d + 3] = a;
+        }
+      }
+      g.putImageData(img, 0, 0);
+      url = cv.toDataURL('image/png');
+    } catch {
+      url = null;
+    }
+    shots.set(id, url);
+    return url;
+  }
+  const eggs = new Map(); // the surprise of each floor, made once: its answer comes from it
+  const eggOf = (n) => {
+    if (!eggs.has(n) && EGGS[n]) eggs.set(n, EGGS[n].make(FLOORS[n - 1].color));
+    return eggs.get(n) ?? null;
   };
-  let lo = 0;
-  let hi = 0;
-  function frame() {
-    W = window.innerWidth;
-    Hs = window.innerHeight;
-    // from higher up the stages are further apart on screen: a little further away than before (W / 7.2), so a stand
-    // is about as big as a finger and seven or eight stages show at once, as in a column you scroll
-    ppu = THREE.MathUtils.clamp(W / 7.6, 44, 60);
-    Object.assign(camera, { left: -W / 2 / ppu, right: W / 2 / ppu, top: Hs / 2 / ppu, bottom: -Hs / 2 / ppu });
-    camera.updateProjectionMatrix();
-    dirty = true;
-  }
-  function placeCamera() {
-    const t = new THREE.Vector3(0, camY(view.off), -view.off);
-    camera.position.set(0, t.y + Math.sin(EL) * 30, t.z + Math.cos(EL) * 30);
-    camera.lookAt(t);
-    sun.position.set(t.x - 9, t.y + 22, t.z + 14);
-    sun.target.position.copy(t);
-    fill.position.set(t.x + 8, t.y + 6, t.z + 8);
-  }
 
-  // ---------- building the garden for the state of the game ----------
+  // ---------- the state of the game ----------
   const stateOf = (n, i) => {
     const e = earnedOn(n);
     return i < e ? 'done' : i === e && n === state.floor ? 'next' : 'locked';
   };
-  const lessonNumber = (list, i) => list.slice(0, i + 1).filter((s) => s.tag.startsWith('Lezione')).length;
   const launched = () => state.floor === FLOORS.length && earnedOn(state.floor) === 8;
+  // the way is built again when a stage is done, and when the partner changes («Ricomincia da capo», a new choice)
+  const signature = () => `${state.floor}:${earnedOn(state.floor)}:${api.who?.()?.partner ?? ''}:${launched()}`;
+  let builtFor = '';
+  let last = null; // floor and stage of the last build: the stage just opened arrives with a little jump
 
-  function dispose(group) {
-    group.traverse((o) => {
-      if (o.userData.shared) return;
-      if (o.isMesh && !o.userData.keepGeo) o.geometry.dispose();
-    });
-  }
+  const el = (tag, cls, html = '') => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html) e.innerHTML = html;
+    return e;
+  };
+  const setColours = (e, color, deep, light) => {
+    e.style.setProperty('--c', color);
+    e.style.setProperty('--c-deep', deep);
+    e.style.setProperty('--c-light', light);
+    e.style.setProperty('--on-c', inkOn(color));
+  };
+
+  // the card under a stage, one at a time
+  const pop = el('div', 'pop');
+  pop.hidden = true;
+  let popFor = null;
 
   function build() {
-    if (garden) {
-      scene.remove(garden);
-      dispose(garden);
-    }
-    garden = new THREE.Group();
-    scene.add(garden);
-    for (const m of figMats) m.dispose();
-    figMats = [];
-    picks = [];
-    anims = [];
-    eggs = [];
-    people = [];
-    for (const m of marks) m.el?.remove();
-    marks = [];
-    stages = [];
+    closePop();
+    layer.replaceChildren();
     const top = state.floor;
-
-    // the lawn in front of the first terrace, where the way starts from the plaza of the sede
-    const front = new THREE.Mesh(new THREE.PlaneGeometry(40, 30), new THREE.MeshStandardMaterial({ map: lawnFront, roughness: 0.95 }));
-    front.rotation.x = -Math.PI / 2;
-    front.position.set(0, 0, 15);
-    front.receiveShadow = true;
-    garden.add(front);
-    garden.add(box(3.2, 0.06, 2.2, '#E2DACB', { at: [-0.6, 0, 1.6] }));
-    garden.add(box(3.3, 0.04, 2.3, C.stoneDark, { at: [-0.6, 0, 1.6] }));
-
-    const last = launched() ? FLOORS.length + 1 : top;
-    for (let n = 1; n <= last; n++) {
-      const info = FLOORS[n - 1] ?? { n, color: C.gold, name: 'Il lancio' };
-      const z0 = wallZ(n);
-      const y = ground(n);
-      // the terrace: lawn on top, stone in front; it runs far back, and the next one rises from it
-      const lawn = new THREE.MeshStandardMaterial({ map: lawnTex, roughness: 0.95 });
-      const stone = mat('#E4DCCE', { roughness: 0.85 });
-      const terrace = new THREE.Mesh(new THREE.BoxGeometry(40, y + 1, 200), [stone, stone, lawn, stone, stone, stone]);
-      terrace.position.set(0, (y - 1) / 2, z0 - 100);
-      terrace.receiveShadow = true;
-      garden.add(terrace);
-      // its front, like a floor of the building: the white slab on top, the band in the floor's colour under it
-      garden.add(box(40, 0.1, 0.16, C.white, { at: [0, y - 0.1, z0 + 0.04] }));
-      garden.add(box(40, 0.24, 0.02, mat(info.color, { roughness: 0.6 }), { at: [0, y - 0.34, z0 + 0.01] }));
-      // the steps where the way comes up, from the last stage of the floor below
-      const sx = n === 1 ? -0.6 : (X[7] + X[0]) / 2;
-      for (let k = 0; k < 3; k++) {
-        const h = (H * (k + 1)) / 3 - 0.004;
-        garden.add(box(1.2, h, 0.32, C.stone, { at: [sx, y - H, z0 + 0.32 * (3 - k) - 0.16] }));
-      }
-      // the floor's plate on its front, on the right of the steps
-      if (n <= FLOORS.length) {
-        const plate = new THREE.Mesh(new THREE.PlaneGeometry(1.75, 0.38), new THREE.MeshStandardMaterial({ map: sign(info), roughness: 0.6 }));
-        plate.position.set(sx + 1.75, y - H / 2 - 0.08, z0 + 0.03);
-        garden.add(plate);
-      }
-
-      if (n > FLOORS.length) {
-        paving(X[7], -stageS(n - 1, 7), sx, z0 + 1.2, ground(n - 1), 2, true);
-        paving(sx, z0 - 0.45, 0, z0 - 1.25, y, 1, true);
-        launch(y, z0);
-        continue;
-      }
-      // the paving up to the first stage: from the plaza, or from the last stage of the floor below, up the steps
-      const fromX = n === 1 ? -0.6 : X[7];
-      const fromZ = n === 1 ? 2.2 : -stageS(n - 1, 7);
-      paving(fromX, fromZ, sx, z0 + 1.2, ground(n - 1), 2, n === 1 || earnedOn(n - 1) === 8);
-      paving(sx, z0 - 0.45, X[0], -stageS(n, 0), y, 1, earnedOn(n) > 0);
-      for (let i = 0; i < 7; i++) paving(X[i], -stageS(n, i), X[i + 1], -stageS(n, i + 1), y, 3, earnedOn(n) > i);
-      // the stages
-      const list = ROOMS[n].stages;
-      for (let i = 0; i < 8; i++) {
-        const st = stateOf(n, i);
-        const kind = list[i].tag === 'Caso' ? 'caso' : list[i].tag === 'Prova sul campo' ? 'prova' : 'lezione';
-        const color = st === 'locked' ? C.white : info.color;
-        const tall = st === 'next' ? NEXT_TALL : TALL;
-        const slot = built.get(n)?.office?.slotOf(i);
-        const g = stand(color, tall);
-        const z = -stageS(n, i);
-        g.position.set(X[i], y, z);
-        g.userData.pick = { type: 'stage', n, i, st };
-        garden.add(g);
-        picks.push(g);
-        const s = { n, i, st, x: X[i], y, z, top: y + 0.08 + tall, tall, info, tag: list[i].tag, title: list[i].title };
-        stages.push(s);
-        // the room the stand takes in the garden, and below what it carries: the bubble keeps off them (placeBubble)
-        s.body = new THREE.Box3().setFromObject(g);
-        // a lesson without an object shows its icon on a plate
-        if (!slot) {
-          const p = iconPlate(kind === 'lezione' ? iconOf(n, lessonNumber(list, i)) : 'foglio', st, info.deep);
-          p.position.y = 0.08 + tall;
-          g.add(p);
-          s.top += p.userData.height;
-        }
-        if (st === 'next') {
-          halo = new THREE.Mesh(
-            new THREE.PlaneGeometry(2.6, 2.6),
-            new THREE.MeshBasicMaterial({ map: haloTex, color: info.color, transparent: true, opacity: 0.6, depthWrite: false }),
-          );
-          halo.rotation.x = -Math.PI / 2;
-          halo.position.set(X[i], y + 0.012, z);
-          halo.renderOrder = 1;
-          halo.raycast = () => {};
-          garden.add(halo);
-          marks.push({ kind: 'bubble', s });
-        }
-        // the object it brings, the real one from the Ufficio, standing on top
-        let holder = null;
-        if (slot) {
-          const o = slot.obj.clone(true);
-          o.position.set(0, 0, 0);
-          // turned towards you as in its card: what lies flat on a desk in the room stands up a little
-          const [tilt, turn] = slot.place.pose ?? [0, 0];
-          o.rotation.set(tilt, turn, 0);
-          o.scale.set(1, 1, 1);
-          const mine = st === 'done';
-          o.traverse((m) => {
-            m.visible = true;
-            m.userData.shared = true;
-            if (m.isMesh) {
-              m.castShadow = true;
-              m.receiveShadow = false;
-              if (!mine) m.material = Array.isArray(m.material) ? m.material.map(grey) : grey(m.material);
-            }
-          });
-          holder = new THREE.Group();
-          holder.add(o);
-          const bb = new THREE.Box3().setFromObject(o);
-          const size = bb.getSize(new THREE.Vector3());
-          const k = Math.min(1.15 / size.x, 1.0 / size.y, 0.9 / size.z, 3);
-          o.scale.setScalar(k);
-          const c = bb.getCenter(new THREE.Vector3()).multiplyScalar(k);
-          o.position.set(-c.x, -bb.min.y * k, -c.z);
-          holder.position.set(X[i], s.top, z);
-          holder.userData.pick = { type: 'stage', n, i, st };
-          garden.add(holder);
-          picks.push(holder);
-          s.top += size.y * k;
-        }
-        s.head = new THREE.Box3().setFromObject(holder ?? g.children[g.children.length - 1]);
-      }
-      // the mentor waits beside the Case: since 10/11/2026 your partner standing, as drawn, grey until you get there
-      // (as the characters of a column you scroll); before the choice of the character, a plain pawn
-      const caso = stages.find((s) => s.n === n && s.i === 3);
-      const partner = api.who?.()?.partner ?? null;
-      const reached = caso.st !== 'locked' || earnedOn(n) >= 3;
-      const mx = caso.x + 1.6;
-      const mz = caso.z + 0.15;
-      const says = mentorSays(partner, n, earnedOn(n) > 3);
-      const role = api.who?.()?.partnerWord ?? 'il mentore';
-      if (partner && FIGURES[partner]) addFigure(partner, reached, mx, y, mz, says, role);
-      else {
-        const [suit, hair] = LOOKS[partner] ?? ['#2F3A4A', '#5A3A2A'];
-        const mentor = addPerson(partner ?? 'Il mentore', suit, hair, reached, mx, y, mz, says, role);
-        mentor.userData.pick.mentor = true;
-      }
-      // the two candidates beside the first stage of a floor with an interview
-      const hire = HIRES[n];
-      if (hire) {
-        const say = `Il colloquio: prima della prima lezione scegli tra ${hire[0]} e ${hire[1]}.`;
-        const z = -stageS(n, 0) + 0.7;
-        addPerson(hire[0], info.color, '#3B2A22', true, 0.4, y, z, say, `il colloquio del piano ${n}`);
-        addPerson(hire[1], info.color, '#C9A06A', true, 1.4, y, z - 0.1, say, `il colloquio del piano ${n}`);
-      }
-      dress(n, y, z0);
-      addEgg(n, y, z0);
-    }
+    const fresh = last && last.n === top && last.e + 1 === earnedOn(top);
+    const count = launched() ? FLOORS.length + 1 : top;
+    const parts = [];
+    for (let n = 1; n <= count; n++) parts.push(n <= FLOORS.length ? floor(n, fresh) : launchFloor());
     // in the app, the floor after the one just finished may not be in the app yet (main.js, comingSoon; cubotto 7.8):
-    // above the finished floor an honest card says so, where its terrace will rise. Floor 1 stays there to review.
+    // over the finished floor a grey card says so, honest and without a date. Floor 1 stays there to review.
     if (top < FLOORS.length && earnedOn(top) === 8 && api.soon?.(top + 1)) {
-      const n = top + 1;
-      const info = FLOORS[n - 1];
-      const card = document.createElement('div');
-      card.className = 'bubble soon';
-      card.style.setProperty('--c', info.color);
-      card.style.setProperty('--c-deep', info.deep);
-      card.innerHTML = `<span class="bubble-tag">${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">La gru ci lavora: apre con il prossimo aggiornamento di FEEN.</span>`;
+      const info = FLOORS[top];
+      const card = el('div', 'pf-soon', `<span class="pf-soon-lock" aria-hidden="true"></span><span class="pf-soon-name">${info.name}</span><span class="pf-soon-note">In costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.</span>`);
       card.setAttribute('role', 'note');
-      card.setAttribute('aria-label', `Il piano ${n} è in costruzione. La gru ci lavora: apre con il prossimo aggiornamento di FEEN.`);
-      layer.append(card);
-      // anchored a little past the wall of the floor to come, so the card stands above the last stage and its object
-      // instead of covering them (with large text the card grows upwards, never down onto the stage)
-      const s = { n, i: 0, st: 'soon', x: 0, y: ground(top), z: wallZ(n) - 0.8, top: ground(top) + 0.1 };
-      stages.push(s);
-      marks.push({ kind: 'soon', el: card, s });
+      setColours(card, info.color, info.deep, info.light);
+      parts.push(card);
     }
-    applyLight();
-    limits();
-    built3d = signature();
-    dirty = true;
+    // from the bottom up: the page is read from its end, floor 1 last
+    layer.append(...parts.reverse());
+    last = { n: top, e: earnedOn(top) };
+    builtFor = signature();
   }
 
-  /** `count` stone slabs between two points, turned like the stands; the way you have walked is warmer. */
-  function paving(ax, az, bx, bz, y, count, walked) {
-    for (let k = 1; k <= count; k++) {
-      const t = k / (count + 1);
-      const sl = box(0.44, 0.04, 0.44, walked ? '#F2E6D8' : '#ECE5DA', { at: [ax + (bx - ax) * t, y, az + (bz - az) * t] });
-      sl.rotation.y = Math.PI / 4;
-      sl.castShadow = false;
-      garden.add(sl);
-    }
-  }
-
-  /** The floor's surprise, on the side of its stretch (eggs.js): it answers when touched. */
-  function addEgg(n, y, z0) {
-    const egg = EGGS[n];
-    if (!egg) return;
-    const e = egg.make(FLOORS[n - 1].color);
-    e.g.position.set(egg.x, y, z0 - egg.s);
-    e.g.rotation.y = egg.x < 0 ? 0.45 : -0.45;
-    e.g.scale.setScalar(egg.scale ?? 1);
-    e.g.traverse((o) => o.isMesh && (o.castShadow = true));
-    e.g.userData.pick = { type: 'egg', n, react: e.react };
-    garden.add(e.g);
-    picks.push(e.g);
-    eggs.push({ n, pick: e.g.userData.pick, y, z: z0 - egg.s, box: new THREE.Box3().setFromObject(e.g) });
-  }
-
-  /** `role`: who they are, for the screen reader («il tuo socio», «il colloquio del piano 2»). */
-  function addPerson(name, suit, hair, reached, x, y, z, say, role) {
-    const p = person(suit, hair, reached);
-    p.position.set(x, y, z);
-    p.rotation.y = -0.35;
-    p.userData.pick = { type: 'person', name, say };
-    garden.add(p);
-    picks.push(p);
-    // the name stands over the head: at the feet it fell on the stage in front and hid its icon (09/11/2026)
-    marks.push(nameMark(name, x, y + PAWN_H, z, true, true));
-    people.push({ name, role, pick: p.userData.pick, x, y, z, box: new THREE.Box3().setFromObject(p) });
-    return p;
-  }
-  /** A person drawn (1. LAVORO/personaggi/), standing on the lawn and turned to you whatever the angle: the partner.
-   *  Grey and faint until you get there. */
-  const FIG_H = 1.55;
-  function addFigure(name, reached, x, y, z, say, role) {
-    const m = new THREE.SpriteMaterial({ transparent: true, depthWrite: false, visible: false });
-    figMats.push(m);
-    const sp = new THREE.Sprite(m);
-    sp.center.set(0.5, 0);
-    sp.scale.set(FIG_H * 0.42, FIG_H, 1);
-    sp.position.set(x, y + 0.01, z);
-    sp.renderOrder = 2;
-    sp.userData.pick = { type: 'person', name, say, mentor: true };
-    // the drawing is ready at once almost always (an image already decoded); otherwise as soon as it is
-    figureTexture(name, reached, (t) => {
-      m.map = t;
-      m.visible = true;
-      m.needsUpdate = true;
-      sp.scale.set(FIG_H * t.userData.aspect, FIG_H, 1);
-      dirty = true;
-    });
-    garden.add(sp);
-    picks.push(sp);
-    // a soft shadow at the feet
-    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.5), new THREE.MeshBasicMaterial({ map: haloTex, color: '#000000', transparent: true, opacity: 0.18, depthWrite: false }));
-    sh.rotation.x = -Math.PI / 2;
-    sh.position.set(x, y + 0.012, z);
-    sh.raycast = () => {};
-    garden.add(sh);
-    // the drawing faces the screen, so it stands FIG_H tall on screen: in the garden's units that is FIG_H / cos(EL)
-    const tall = FIG_H / Math.cos(EL);
-    marks.push(nameMark(name, x, y + tall + 0.08, z, true, true));
-    const w = FIG_H * 0.42;
-    people.push({ name, role, pick: sp.userData.pick, x, y, z, box: new THREE.Box3(new THREE.Vector3(x - w / 2, y, z - 0.2), new THREE.Vector3(x + w / 2, y + tall, z + 0.2)) });
-    return sp;
-  }
-  /** The figure as a texture: in colour, or turned to a faint grey until you reach the person. Made once each. */
-  const figTex = new Map();
-  function figureTexture(name, reached, ready) {
-    const key = `${name}:${reached}`;
-    if (figTex.has(key)) return ready(figTex.get(key));
-    const img = figureImage(name);
-    const make = () => {
-      const cv = document.createElement('canvas');
-      cv.width = img.naturalWidth;
-      cv.height = img.naturalHeight;
-      const g = cv.getContext('2d');
-      g.drawImage(img, 0, 0);
-      if (!reached) {
-        const d = g.getImageData(0, 0, cv.width, cv.height);
-        for (let k = 0; k < d.data.length; k += 4) {
-          const l = 0.2126 * d.data[k] + 0.7152 * d.data[k + 1] + 0.0722 * d.data[k + 2];
-          d.data[k] = d.data[k + 1] = d.data[k + 2] = 196 + l * 0.18;
-          d.data[k + 3] *= 0.75;
-        }
-        g.putImageData(d, 0, 0);
+  /** A floor: its band, then its eight stages in a zigzag, the people and the surprise in the room it leaves. */
+  function floor(n, fresh) {
+    const info = FLOORS[n - 1];
+    const list = ROOMS[n].stages;
+    const e = earnedOn(n);
+    const sec = el('section', 'pf');
+    sec.setAttribute('aria-label', info.name);
+    setColours(sec, info.color, info.deep, info.light);
+    const head = el(
+      'header',
+      'pf-head',
+      `<span class="pf-label">Livello ${n}</span><span class="pf-name">${info.name}</span><span class="pf-pips" aria-label="${e} tappe fatte su 8">${[...Array(8)]
+        .map((_, k) => `<i class="${k < e ? 'on' : ''}"></i>`)
+        .join('')}</span>`,
+    );
+    sec.append(head);
+    const track = el('div', 'pf-track');
+    sec.append(track);
+    // the zigzag: a wave across the middle, one stage in eight back in the middle; the floor above carries it on.
+    // Laid out from the top of the page down, so from the eighth stage to the first: the first is at the bottom
+    // wider since the evening of 10/11/2026 (the user: «dai più sinuosità alle curve del percorso»): about 100 px each side
+    const swing = Math.min(112, Math.max(60, (Math.min(root.clientWidth || window.innerWidth, 560) - 32) * 0.29));
+    let y = TOP;
+    const at = [];
+    for (const i of [7, 6, 5, 4, 3, 2, 1, 0]) {
+      const st = stateOf(n, i);
+      if (st === 'next') y += ROOM_NEXT * fontScale(); // «Inizia» grows with the phone's text size
+      const x = -Math.sin((i * Math.PI) / 4) * swing;
+      const s = list[i];
+      const slot = built.get(n)?.office?.slotOf(i);
+      const prize = slot ? photo(`${n}:${i}`, slot.obj, slot.place.pose) : null;
+      const size = prize ? PRIZE : NODE;
+      const b = el('button', `pn pn--${st}${prize ? ' pn--prize' : ''}`);
+      b.style.left = `calc(50% + ${x}px)`;
+      b.style.top = `${y}px`;
+      b.style.setProperty('--size', `${size}px`);
+      // the number of the stage, from 1 on and never back to 1: floor 1 is 1–8, floor 2 is 9–16… (the user,
+      // 10/11/2026 sera: «leva le icone nelle palle e metti i numeri da 1 a infinito»); a prize keeps its object, with
+      // the number in a small round badge
+      const num = (n - 1) * 8 + i + 1;
+      const face = el('span', 'pn-face');
+      if (prize) {
+        const img = el('img', 'pn-obj');
+        img.src = prize;
+        img.alt = '';
+        img.draggable = false;
+        face.append(img, el('span', 'pn-badge', String(num)));
+      } else face.append(el('span', `pn-num${num > 99 ? ' long' : ''}`, String(num)));
+      b.append(face);
+      const soon = api.soon?.(n);
+      const what = st === 'done' ? 'fatta' : st === 'next' ? (soon ? 'in arrivo con il prossimo aggiornamento' : 'da fare adesso') : 'non ancora aperta';
+      b.setAttribute('aria-label', `Tappa ${num}, ${s.tag}: ${s.title}, ${what}${s.object ? `. Porta ${s.object.toLowerCase()}` : ''}`);
+      b.setAttribute('aria-expanded', 'false');
+      const below = y + size + EDGE; // read now: `y` goes on growing with the stages after this one
+      b.onclick = (ev) => {
+        ev.stopPropagation();
+        tapStage(b, n, i, st, x, below);
+      };
+      if (fresh && n === state.floor) {
+        if (st === 'next') b.classList.add('arrive');
+        if (i === earnedOn(n) - 1) b.classList.add('won');
       }
-      const t = new THREE.CanvasTexture(cv);
-      t.colorSpace = THREE.SRGBColorSpace;
-      t.anisotropy = 4;
-      t.userData.aspect = img.naturalWidth / img.naturalHeight;
-      figTex.set(key, t);
-      ready(t);
-    };
-    if (img.complete && img.naturalWidth) make();
-    else img.addEventListener('load', make, { once: true });
-  }
-
-  /** `over`: the name sits above the point (a person's head) instead of under it (the stage of the launch).
-   *  `person`: the name of someone in the garden, which the bubble never covers. */
-  function nameMark(name, x, y, z, over = false, person = false) {
-    const el = document.createElement('span');
-    el.className = 'path-name';
-    el.textContent = name;
-    el.setAttribute('aria-hidden', 'true');
-    layer.append(el);
-    return { kind: 'name', el, x, y, z, over, person };
-  }
-
-  /** Trees, hedges, lamps and a bench along the sides of a floor's stretch, always the same for the same floor. */
-  function dress(n, y, z0) {
-    const r = rand(n * 7 + 3);
-    for (let k = 0; k < 6; k++) {
-      const left = k % 2 === 0;
-      const s = 1.2 + k * 3.4 + r() * 1.2;
-      const x = (left ? -1 : 1) * (2.85 + r() * 0.5);
-      // keep clear of the mentor, on the right of the Case, and of the floor's surprise
-      if (!left && Math.abs(s - (FIRST + 3 * GAP)) < 1.6) continue;
-      if (EGGS[n] && Math.sign(x) === Math.sign(EGGS[n].x) && Math.abs(s - EGGS[n].s) < 1.5) continue;
-      const t = tree(x, z0 - s, 0.62 + r() * 0.18, Math.floor(r() * 3));
-      t.position.y = y;
-      garden.add(fade(t));
-    }
-    const hl = n % 2 ? -1 : 1;
-    // long across the garden: seen from above, a hedge running away from you looks like a pillar
-    const hd = hedge(hl * 2.75, z0 - (n % 2 ? 9.5 : 14), 1.5, 0.42);
-    hd.position.y += y;
-    garden.add(fade(hd));
-    for (const [x, s] of [
-      [-2.25, FIRST + 1 * GAP + 0.6],
-      [2.35, FIRST + 5 * GAP + 0.6],
-    ]) {
-      const l = fade(lamp());
-      l.position.set(x, y, z0 - s);
-      garden.add(l);
-    }
-    // on the side the way leaves free: right of the 4th stage, left of the 3rd
-    const b = n % 2 ? bench(2.6, z0 - (FIRST + 4 * GAP), -0.5) : bench(-2.6, z0 - (FIRST + 2 * GAP), 0.5);
-    b.position.y += y;
-    garden.add(fade(b));
-  }
-
-  /** After the last floor: the stage of the launch, the product under its cloth, never uncovered (CLAUDE.md §3). */
-  function launch(y, z0) {
-    const g = new THREE.Group();
-    g.add(box(3.2, 0.16, 2.2, C.white));
-    // the backdrop of the roof: a wooden frame, a warm white panel, the 12 colours of the floors along its top
-    g.add(box(2.9, 1.25, 0.12, C.wood, { at: [0, 0.16, -0.95] }));
-    g.add(box(2.7, 1.05, 0.04, '#FBF6EC', { at: [0, 0.26, -0.87] }));
-    FLOORS.forEach((f, k) => g.add(box(0.2, 0.12, 0.03, f.color, { at: [-1.21 + k * 0.22, 1.13, -0.84] })));
-    g.add(box(0.7, 0.5, 0.7, '#F7F4EE', { at: [0, 0.16, 0] }));
-    const cloth = new THREE.Mesh(new THREE.ConeGeometry(0.42, 0.62, 6), mat(C.cream, { roughness: 0.9, flatShading: true }));
-    cloth.position.y = 0.66 + 0.31;
-    cloth.castShadow = true;
-    g.add(cloth);
-    g.position.set(0, y, z0 - 2.4);
-    g.userData.pick = { type: 'launch' };
-    garden.add(g);
-    picks.push(g);
-    stages.push({ n: FLOORS.length + 1, i: 0, st: 'launch', x: 0, y, z: z0 - 2.4, top: y + 1.3 });
-    marks.push(nameMark('Il lancio', 0, y, z0 - 1.4));
-  }
-
-  // the garden is built again when a stage is done, and when the partner changes («Ricomincia da capo», a new choice)
-  const signature = () => `${state.floor}:${earnedOn(state.floor)}:${api.who?.()?.partner ?? ''}`;
-
-  // ---------- the light: always day (the user, 10/11/2026: «l'app non è mai ambientata di notte») ----------
-  function applyLight() {
-    hemi.intensity = LIGHT.hemi * 1.05;
-    if (halo) halo.material.opacity = 0.55;
-    scene.background = new THREE.Color(LAWN);
-    dirty = true;
-  }
-
-  // ---------- the overlay: the bubble beside the stage to do now, the names of the people ----------
-  const bubble = document.createElement('button');
-  bubble.className = 'bubble placed';
-  bubble.hidden = true;
-  const plate = document.createElement('div');
-  plate.className = 'path-plate';
-  plate.setAttribute('aria-hidden', 'true');
-  const a11y = document.createElement('div'); // the stages without the finger: one button each, read aloud
-  a11y.className = 'path-a11y';
-  layer.replaceChildren(plate, bubble, a11y);
-  const v = new THREE.Vector3();
-  const toScreen = (x, y, z) => {
-    v.set(x, y, z).project(camera);
-    return [((v.x + 1) / 2) * W, ((1 - v.y) / 2) * Hs];
-  };
-  let plateFloor = 0;
-  const overlaps = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
-  const overlapArea = (a, b) =>
-    Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) * Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
-  /** The screen rectangle of a box of the garden: its eight corners, projected. */
-  const corner = new THREE.Vector3();
-  function rectOf(box) {
-    const r = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
-    for (let k = 0; k < 8; k++) {
-      corner.set(k & 1 ? box.max.x : box.min.x, k & 2 ? box.max.y : box.min.y, k & 4 ? box.max.z : box.min.z).project(camera);
-      const x = ((corner.x + 1) / 2) * W;
-      const y = ((1 - corner.y) / 2) * Hs;
-      r.left = Math.min(r.left, x);
-      r.right = Math.max(r.right, x);
-      r.top = Math.min(r.top, y);
-      r.bottom = Math.max(r.bottom, y);
-    }
-    return r;
-  }
-
-  // ---------- where the bubble goes (partita 09/11/2026, punto 11) ----------
-  // The stages are 2.5 apart, about 80 px on the phone, and the bubble is taller than that: drawn always over its stage,
-  // it covered the next stage and the partner's pawn (at lesson 2 only the name showed, at lesson 3 not even that).
-  // Now, every frame, the bubble tries the four sides of its stage (above, right, left, below), four forms (as it is,
-  // narrow, wide, and a short one without the title, for where the way is crowded) and several points along its edge
-  // for the tip, which always points at the stand. It takes the place that stays on screen, clear of the plate, the
-  // round buttons and the bar, and covers the least: the next stage, the people and their names count most, by far;
-  // the other stages less, the surprises of the garden least. The garden moves all in one piece, so while it scrolls
-  // the choice stays the same, until the place it had leaves the screen; then it moves to the next best, like a
-  // tooltip near the edge of the screen.
-  const FITS = ['', 'narrow', 'wide', 'mini'];
-  const FIT_COST = [0, 260, 160, 2400]; // the short one only when the others would cover a good part of a stage
-  const SIDES = { above: 0, right: 320, left: 320, below: 900 };
-  const KEEP = 80; // a covered pixel of the next stage, of a person or a name: only when nothing else is left
-  // (10/11/2026, A-077: after the Caso the bubble of lesson 4 covered half the Caso's stand and the letterbox: the
-  // stages done and the surprises weigh more than before, 6 → 10, 1 → 2, 0.6 → 2)
-  const HEAD = 10; // of the icon or the object of another stage, what says what the stage is
-  const BODY = 2; // of the stand of another stage
-  const EGG = 2; // of a surprise of the garden
-  const TIP_GAP = 13; // from the edge of the bubble to the stand (the tip is 10 px long)
-  const TIP_IN = 24; // the tip keeps this far from the corners of the bubble (its radius is 18)
-  const STEPS = 8; // points along the edge for the tip
-  let sizes = null; // the bubble's [width, height] for each of FITS
-  let sizeKey = '';
-  let lastPlace = null; // the place of the last frame: kept while it fits, so the bubble does not jump
-  /** The bubble's size in each width; measured again only when its words, the screen or the text size change. */
-  function measure() {
-    const key = `${bubble.textContent}|${W}|${document.documentElement.style.getPropertyValue('--fs')}|${document.fonts?.status}`;
-    if (sizes && key === sizeKey) return sizes;
-    sizeKey = key;
-    sizes = FITS.map((f) => {
-      bubble.dataset.fit = f;
-      return [bubble.offsetWidth, bubble.offsetHeight];
-    });
-    return sizes;
-  }
-  /** The free part of the screen: under the plate and the round buttons, above the bar, with a margin. */
-  function band() {
-    const tr = document.querySelector('.top-right')?.getBoundingClientRect();
-    const top = Math.max(plate.getBoundingClientRect().bottom, tr?.bottom ?? 0) + 8;
-    const bar = document.querySelector('.tabs')?.getBoundingClientRect().top || Hs - 96;
-    return { left: 12, right: W - 12, top, bottom: bar - 8 };
-  }
-  /** What the bubble keeps off, and how much each covered pixel weighs: only what stands near its stage, so that
-   *  with twelve floors built the work of a frame stays small. */
-  function blockers(s) {
-    const list = [];
-    const at = stages.indexOf(s);
-    const near = (z) => Math.abs(z - s.z) < 14; // a little more than the bubble can reach, at the largest text
-    stages.forEach((o, k) => {
-      if (o === s || !o.body || !near(o.z)) return;
-      list.push({ r: rectOf(o.body), w: k === at + 1 ? KEEP : BODY });
-      list.push({ r: rectOf(o.head), w: k === at + 1 ? KEEP : HEAD });
-    });
-    for (const p of people) if (near(p.z)) list.push({ r: rectOf(p.box), w: KEEP });
-    for (const e of eggs) if (near(e.z)) list.push({ r: rectOf(e.box), w: EGG });
-    for (const m of marks) if (m.kind === 'name' && near(m.z) && !m.el.hidden && m.rect) list.push({ r: m.rect, w: m.person ? KEEP : EGG });
-    return list;
-  }
-  function placeBubble(s, bounds) {
-    const [cx, topY] = toScreen(s.x, s.top, s.z);
-    const [, footY] = toScreen(s.x, s.y, s.z + SIDE * 0.72);
-    const [, midY] = toScreen(s.x, s.y + 0.08 + s.tall, s.z);
-    const [leftX] = toScreen(s.x - SIDE * 0.72, s.y, s.z);
-    const [rightX] = toScreen(s.x + SIDE * 0.72, s.y, s.z);
-    // the stage itself off the free part of the screen: no bubble pointing at nothing
-    if (cx < 0 || cx > W || midY < bounds.top || midY > bounds.bottom) {
-      bubble.hidden = true;
-      lastPlace = null;
-      return;
-    }
-    bubble.hidden = false;
-    const sz = measure();
-    const list = blockers(s);
-    let best = null;
-    let kept = null;
-    sz.forEach(([w, h], fit) => {
-      for (const side in SIDES) {
-        const flat = side === 'above' || side === 'below';
-        const along = flat ? w : h;
-        if (along < 2 * TIP_IN) continue;
-        // the tip slides along the edge: evenly spaced, and also where the bubble meets the edge of the screen or
-        // just clears something in the way
-        const from = flat ? cx : midY;
-        const ts = [];
-        for (let k = 0; k <= STEPS; k++) ts.push(TIP_IN + ((along - 2 * TIP_IN) * k) / STEPS);
-        const lo0 = flat ? bounds.left : bounds.top;
-        const hi0 = flat ? bounds.right : bounds.bottom;
-        ts.push(from - lo0, from - (hi0 - along));
-        for (const b of list) {
-          const [a0, a1] = flat ? [b.r.left, b.r.right] : [b.r.top, b.r.bottom];
-          ts.push(from - (a1 + 2), from - (a0 - 2 - along));
-        }
-        for (const t0 of ts) {
-          if (t0 < TIP_IN || t0 > along - TIP_IN) continue;
-          const t = Math.round(t0); // where the tip is, along the edge
-          const x = flat ? cx - t : side === 'left' ? leftX - TIP_GAP - w : rightX + TIP_GAP;
-          const y = side === 'above' ? topY - TIP_GAP - h : side === 'below' ? footY + TIP_GAP : midY - t;
-          const r = { left: x, top: y, right: x + w, bottom: y + h };
-          if (r.left < bounds.left - 0.5 || r.right > bounds.right + 0.5 || r.top < bounds.top - 0.5 || r.bottom > bounds.bottom + 0.5) continue;
-          // opened by a touch, the bubble is there to tell the title: never the short form then
-          let cost = SIDES[side] + (open && FITS[fit] === 'mini' ? 1e6 : FIT_COST[fit]) + Math.abs(t - along / 2) * 0.4;
-          for (const b of list) cost += b.w * overlapArea(r, b.r);
-          const c = { side, fit, t, x, y, cost, r };
-          if (!best || cost < best.cost) best = c;
-          if (lastPlace && lastPlace.side === side && lastPlace.fit === fit && Math.abs(lastPlace.t - t) < 1) kept = c;
-        }
+      track.append(b);
+      // «Inizia» over the stage to do now: it starts it at once (a touch on the stage opens its card)
+      if (st === 'next') {
+        const go = el('button', 'pn-start', soon ? 'In arrivo' : 'Inizia');
+        go.style.left = `calc(50% + ${x}px)`;
+        go.style.top = `${y - 12}px`;
+        go.setAttribute('aria-label', `${s.tag}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
+        go.onclick = (ev) => {
+          ev.stopPropagation();
+          start(n);
+        };
+        track.append(go);
       }
-    });
-    if (kept && kept.cost <= best.cost + 400) best = kept;
-    if (!best) {
-      bubble.hidden = true;
-      lastPlace = null;
-      return;
+      at[i] = { x, y, size };
+      y += PITCH + (size - NODE);
     }
-    lastPlace = best;
-    bubble.dataset.fit = FITS[best.fit];
-    bubble.dataset.side = best.side;
-    bubble.style.left = `${Math.round(best.x)}px`;
-    bubble.style.top = `${Math.round(best.y)}px`;
-    bubble.style.setProperty('--tip-at', `${Math.round(best.t)}px`);
+    track.style.height = `${y - PITCH + NODE + EDGE + BOTTOM}px`;
+
+    // the partner waits beside the Case, on the side the zigzag leaves free (CLAUDE.md §7), grey until you get there
+    const caso = at[3];
+    const who = api.who?.();
+    const partner = who?.partner ?? null;
+    const reached = e >= 3;
+    const says = mentorSays(partner, n, e > 3);
+    const fig = person(partner, reached, says, who?.partnerWord ?? 'il mentore', true);
+    fig.style.left = `calc(50% + ${swing * 0.92}px)`;
+    fig.style.top = `${caso.y + caso.size + EDGE}px`;
+    track.append(fig);
+    // the two candidates of an interview, beside the first stage of their floor
+    const hire = HIRES[n];
+    if (hire) {
+      const say = `Il colloquio: prima della prima lezione scegli tra ${hire[0]} e ${hire[1]}.`;
+      hire.forEach((name, k) => {
+        const p = person(name, true, say, `il colloquio del piano ${n}`, false, info.color, k ? '#C9A06A' : '#3B2A22');
+        p.classList.add('pfig--small');
+        p.style.left = `calc(50% + ${swing * (0.78 + k * 0.5)}px)`;
+        p.style.top = `${at[0].y + at[0].size + EDGE - 6}px`;
+        track.append(p);
+      });
+    }
+    // the floor's surprise, on the other side (eggs.js): it answers when touched
+    const egg = eggOf(n);
+    const pic = egg ? photo(`egg${n}`, egg.g, [0, 0.45]) : null;
+    if (egg && pic) {
+      const b = el('button', `pegg${e >= 5 ? '' : ' off'}`);
+      const img = el('img');
+      img.src = pic;
+      img.alt = '';
+      img.draggable = false;
+      b.append(img);
+      b.style.left = `calc(50% - ${swing * 0.95}px)`;
+      b.style.top = `${(at[5].y + at[6].y) / 2 + NODE + EDGE}px`;
+      b.setAttribute('aria-label', 'Una sorpresa');
+      b.onclick = (ev) => {
+        ev.stopPropagation();
+        tapEgg(b, n, egg);
+      };
+      track.append(b);
+    }
+    return sec;
   }
 
-  function overlay() {
-    bubble.hidden = true;
-    const cards = [plate];
-    const bounds = band();
-    const bar = bounds.bottom + 8;
-    // the names first, where they stand: the bubble keeps off them; under a card they hide (below)
-    for (const m of marks) {
-      if (m.kind !== 'name') continue;
-      const [x, y] = toScreen(m.x, m.y, m.over ? m.z : m.z + 0.25);
-      m.el.hidden = false;
-      m.el.style.transform = m.over ? `translate(${x}px, ${y - 4}px) translate(-50%, -100%)` : `translate(${x}px, ${y + 4}px) translateX(-50%)`;
-      m.rect = m.el.getBoundingClientRect();
-      m.el.hidden = m.rect.bottom < 0 || m.rect.top > Hs;
-    }
-    for (const m of marks) {
-      if (m.kind === 'bubble') {
-        placeBubble(m.s, bounds);
-        if (!bubble.hidden) cards.push(bubble);
-      } else if (m.kind === 'soon') {
-        const [x, y] = toScreen(m.s.x, m.s.top, m.s.z);
-        m.el.hidden = y < -40 || y > Hs + 200;
-        const half = Math.min(118, W / 2 - 16);
-        m.el.style.left = `${THREE.MathUtils.clamp(x, half + 16, W - half - 16)}px`;
-        m.el.style.top = `${y}px`;
-        if (!m.el.hidden) cards.push(m.el);
-      }
-    }
-    // a name that would sit under the bubble, a card, the plate or the bar at the bottom is hidden, so it never covers
-    // them nor peeks out from under them (09/11/2026)
-    const blocks = cards.map((el) => el.getBoundingClientRect());
-    for (const m of marks) {
-      if (m.kind !== 'name') continue;
-      const r = m.rect;
-      m.el.hidden = r.top < 0 || r.bottom > bar - 4 || blocks.some((b) => overlaps(r, b));
-    }
-    // the plate follows the floor in the middle of the screen
-    const mid = stages.filter((s) => s.n <= FLOORS.length && s.st !== 'soon').reduce((best, s) => {
-      const d = Math.abs(toScreen(s.x, s.y, s.z)[1] - Hs * 0.5);
-      return !best || d < best.d ? { d, n: s.n } : best;
-    }, null);
-    const n = mid?.n ?? state.floor;
-    if (n !== plateFloor) {
-      plateFloor = n;
-      const info = FLOORS[n - 1];
-      const e = earnedOn(n);
-      // the name and the floor's colour, no number on a square (10/11/2026, Davide: it looked like a bingo card)
-      plate.style.setProperty('--c', info.color);
-      plate.style.setProperty('--c-deep', info.deep);
-      plate.style.setProperty('--on-c', inkOn(info.color));
-      plate.innerHTML = `<span><span class="path-plate-name">${info.name}</span><span class="path-plate-pips">${[...Array(8)].map((_, k) => `<i class="${k < e ? 'on' : ''}" style="--c:${info.color}"></i>`).join('')}</span></span>`;
-    }
-  }
-
-  // on the stage to do only «Inizia»; a touch on the stage opens the bubble with what it is and how long it takes, as
-  // a node of a column you scroll (10/11/2026, Davide: less text, the screen says it)
-  let open = false;
-  function renderBubble() {
-    lastPlace = null;
-    const m = marks.find((x) => x.kind === 'bubble');
-    if (!m) return;
-    const s = m.s;
-    bubble.style.setProperty('--c', s.info.color);
-    bubble.style.setProperty('--c-deep', s.info.deep);
-    bubble.style.setProperty('--on-c', inkOn(s.info.color));
-    // a floor whose lessons are not in the app yet (main.js, comingSoon): the bubble says so, the tap explains
-    const soon = api.soon?.(s.n);
-    bubble.classList.toggle('open', open);
-    bubble.innerHTML = open
-      ? `<span class="bubble-tag">${s.tag}</span><span class="bubble-title">${s.title}</span><span class="bubble-go">${soon ? 'In arrivo' : 'Inizia · 3 min'}</span>`
-      : `<span class="bubble-go">${soon ? 'In arrivo' : 'Inizia'}</span>`;
-    bubble.setAttribute('aria-label', `${s.tag}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
-    bubble.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: 'next', go: true });
-  }
-
-  function renderA11y() {
-    a11y.replaceChildren();
-    for (const s of stages) {
-      if (s.st === 'soon') continue; // the card reads by itself
-      const b = document.createElement('button');
-      b.className = 'sr-only';
-      if (s.st === 'launch') {
-        b.textContent = 'Il lancio, sul tetto';
-        b.onclick = () => tap({ type: 'launch' });
-      } else {
-        const what = s.st === 'done' ? 'fatta' : s.st !== 'next' ? 'non ancora aperta' : api.soon?.(s.n) ? 'in arrivo con il prossimo aggiornamento' : 'da fare adesso';
-        const obj = ROOMS[s.n].stages[s.i].object;
-        b.textContent = `Piano ${s.n}, ${s.tag}: ${s.title}, ${what}${obj ? `. Porta ${obj.toLowerCase()}` : ''}`;
-        // the button already reads the title: it starts the stage at once
-        b.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: s.st, go: true });
-      }
-      b.onfocus = () => show(s, 0.5);
-      a11y.append(b);
-    }
-    for (const e of eggs) {
-      const b = document.createElement('button');
-      b.className = 'sr-only';
-      b.textContent = `Piano ${e.n}: una sorpresa nel giardino`;
-      b.onclick = () => tap(e.pick);
-      b.onfocus = () => show(e, 0.5);
-      a11y.append(b);
-    }
-    // the people of the garden answer the keyboard and the screen reader too, as they answer the finger
-    for (const p of people) {
-      const b = document.createElement('button');
-      b.className = 'sr-only';
-      b.textContent = `${p.name}, ${p.role}`;
-      b.onclick = () => tap(p.pick);
-      b.onfocus = () => show(p, 0.5);
-      a11y.append(b);
-    }
-  }
-
-  // ---------- the finger, the wheel ----------
-  function limits() {
-    const first = stages[0];
-    const lastStage = stages[stages.length - 1];
-    lo = offFor(first.y, -first.z, 0.74);
-    // the card of a floor still to come grows upwards from its point: lower on screen, so it clears the plate; so does
-    // the last stage when it is the one to do, so that its bubble fits above it whole, title too, on the smallest
-    // phones (partita 09/11/2026: at 34% of an iPhone SE only the short bubble fitted)
-    hi = Math.max(lo, offFor(lastStage.y, -lastStage.z, lastStage.st === 'soon' ? 0.45 : lastStage.st === 'next' ? 0.42 : 0.34));
-  }
-  const clampOff = (o) => THREE.MathUtils.clamp(o, lo, hi);
-  function show(s, f, instant = true) {
-    const o = clampOff(offFor(s.y, -s.z, f));
-    if (instant) {
-      view.off = o;
-      view.vel = 0;
-      view.goal = null;
-    } else view.goal = o;
-    dirty = true;
-  }
-  let drag = null;
-  const SLOP = 8;
-  root.addEventListener('pointerdown', (e) => {
-    if (e.button !== 0) return;
-    drag = { id: e.pointerId, y: e.clientY, start: e.clientY, raw: view.off, t: performance.now(), moved: false, onButton: !!e.target.closest('button') };
-    view.vel = 0;
-    view.goal = null;
-  });
-  root.addEventListener('pointermove', (e) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const dy = e.clientY - drag.y;
-    if (!drag.moved && Math.abs(e.clientY - drag.start) < SLOP) return;
-    if (!drag.moved) {
-      drag.moved = true;
-      try {
-        root.setPointerCapture(e.pointerId);
-      } catch {
-        // a pointer the page no longer tracks: the drag goes on without it
-      }
-    }
-    const now = performance.now();
-    const d = dy / (ppu * perOff());
-    // past the ends it gives a little, and never more than a stage
-    drag.raw += d;
-    const past = drag.raw > hi ? drag.raw - hi : drag.raw < lo ? drag.raw - lo : 0;
-    view.off = clampOff(drag.raw) + Math.sign(past) * Math.min(Math.abs(past) * 0.35, 1.5);
-    view.vel = d / Math.max(0.008, (now - drag.t) / 1000);
-    drag.y = e.clientY;
-    drag.t = now;
-    dirty = true;
-  });
-  const endDrag = (e) => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const d = drag;
-    drag = null;
-    if (performance.now() - d.t > 80) view.vel = 0;
-    if (!d.moved && !d.onButton && e.type === 'pointerup') pick(e.clientX, e.clientY);
-  };
-  root.addEventListener('pointerup', endDrag);
-  root.addEventListener('pointercancel', endDrag);
-  root.addEventListener(
-    'wheel',
-    (e) => {
-      e.preventDefault();
-      view.goal = null;
-      view.off = clampOff(view.off - e.deltaY / (ppu * perOff()));
-      view.vel = 0;
-      dirty = true;
-    },
-    { passive: false },
-  );
-
-  const ray = new THREE.Raycaster();
-  function pick(cx, cy) {
-    ray.setFromCamera(new THREE.Vector2((cx / W) * 2 - 1, -(cy / Hs) * 2 + 1), camera);
-    const hit = ray.intersectObjects(picks, true)[0];
-    if (!hit) return;
-    let o = hit.object;
-    while (o && !o.userData.pick) o = o.parent;
-    if (o) tap(o.userData.pick);
-  }
-
-  function tap(p) {
-    if (state.busy) return;
-    if (p.type === 'person') {
-      sfx.tap();
-      if (p.mentor) api.trophy?.('mentore');
-      return api.toast(p.say);
-    }
-    if (p.type === 'egg') {
-      // one answer at a time: a touch while it moves is not counted
-      if (anims.some((a) => a.n === p.n)) return;
-      const r = p.react();
-      sfx.tap();
-      if (r.roll || r.plink) setTimeout(() => sfx.land(), (r.plink ?? 0.85) * 1000);
-      anims.push({ n: p.n, t: 0, ...r });
-      api.toast(r.say);
-      api.trophy?.('egg', p.n);
-      if (r.roll === 6) setTimeout(() => api.trophy?.('sei'), 1000);
-      return;
-    }
-    if (p.type === 'launch') {
+  /** After the last floor: the launch, on the roof. The product stays covered (CLAUDE.md §3). */
+  function launchFloor() {
+    const sec = el('section', 'pf pf--launch');
+    setColours(sec, '#FFC93C', '#654A00', '#FFF5DC');
+    sec.append(el('header', 'pf-head', '<span class="pf-label">Il tetto</span><span class="pf-name">Il lancio</span>'));
+    const track = el('div', 'pf-track');
+    const b = el('button', 'pn pn--done pn--launch');
+    b.style.left = '50%';
+    b.style.top = `${TOP}px`;
+    b.style.setProperty('--size', `${PRIZE}px`);
+    const face = el('span', 'pn-face');
+    const m = el('span', 'pn-icon');
+    m.style.setProperty('--icon', `url(${iconMask('telo')})`);
+    face.append(m);
+    b.append(face);
+    b.setAttribute('aria-label', 'Il lancio, sul tetto');
+    b.onclick = (ev) => {
+      ev.stopPropagation();
       sfx.tap();
       api.trophy?.('telo');
-      return api.toast(api.roofSays);
-    }
-    const list = ROOMS[p.n].stages;
-    if (p.st === 'done') return api.openStage(p.n, p.i);
-    // the stage to do: the first touch on the stand opens its bubble, «Inizia» (or a second touch) starts it
-    if (p.st === 'next' && !open && !p.go) {
-      sfx.tap();
-      open = true;
-      renderBubble();
-      // the stage moves up a little, so its bubble has room for the title
-      const s = stages.find((x) => x.n === p.n && x.i === p.i);
-      if (s) show(s, 0.6, false);
-      dirty = true;
-      return;
-    }
-    if (p.st === 'next') return api.play();
-    sfx.tap();
-    api.toast(`Si apre dopo «${list[p.i - 1]?.title ?? ''}».`.replace('««', '«').replace('»»', '»'));
+      api.toast(api.roofSays);
+    };
+    track.append(b);
+    track.style.height = `${TOP + PRIZE + EDGE + BOTTOM}px`;
+    sec.append(track);
+    return sec;
   }
 
-  // ---------- every frame, while the Percorso is on screen ----------
-  function step(dt, force = false) {
-    if (!drag) {
-      if (view.goal !== null) {
-        const d = view.goal - view.off;
-        view.off += d * Math.min(1, dt * 8);
-        if (Math.abs(d) < 0.002) {
-          view.off = view.goal;
-          view.goal = null;
-        }
-        dirty = true;
-      } else if (Math.abs(view.vel) > 0.01) {
-        view.off += view.vel * dt;
-        view.vel *= Math.exp(-dt * 3.2);
-        if (view.off < lo || view.off > hi) view.vel *= Math.exp(-dt * 12);
-        dirty = true;
-      } else view.vel = 0;
-      // back inside the ends, springing
-      if (Math.abs(view.vel) < 0.5 && (view.off < lo || view.off > hi)) {
-        const target = clampOff(view.off);
-        view.off += (target - view.off) * Math.min(1, dt * 10);
-        if (Math.abs(target - view.off) < 0.002) view.off = target;
-        dirty = true;
-      }
+  /** A person beside the way: drawn if there is a drawing, a pawn if not; grey until you get there. */
+  function person(name, reached, say, role, mentor, suit, hair) {
+    const b = el('button', `pfig${reached ? '' : ' off'}`);
+    if (name && FIGURES[name]) {
+      const img = el('img');
+      img.src = FIGURES[name];
+      img.alt = '';
+      img.draggable = false;
+      b.append(img);
+    } else {
+      const [s, h] = suit ? [suit, hair] : (LOOKS[name] ?? ['#2F3A4A', '#5A3A2A']);
+      b.innerHTML = pawn(s, h);
     }
-    // the surprises that are moving
-    for (const a of anims) {
-      a.t = Math.min(a.dur, a.t + dt);
-      a.step(a.t, dt);
-      dirty = true;
-    }
-    anims = anims.filter((a) => a.t < a.dur);
-    if (!dirty && !force) return;
-    dirty = false;
-    placeCamera();
-    renderer.render(scene, camera);
-    overlay();
+    b.setAttribute('aria-label', `${name ?? 'Il mentore'}, ${role}`);
+    b.onclick = (ev) => {
+      ev.stopPropagation();
+      if (state.busy) return;
+      sfx.tap();
+      if (mentor) api.trophy?.('mentore');
+      api.toast(say);
+    };
+    return b;
   }
+
+  // ---------- the touches ----------
+  function start(n) {
+    if (state.busy) return;
+    closePop();
+    if (api.soon?.(n)) return api.toast(`Questo piano è in costruzione: apre con il prossimo aggiornamento di FEEN.`);
+    api.play();
+  }
+
+  /** A stage: its card opens under it, in the floor's colour, with one button (a second touch closes it). */
+  function tapStage(b, n, i, st, x, below) {
+    if (state.busy) return;
+    sfx.tap();
+    if (popFor === b) return closePop();
+    closePop();
+    const s = ROOMS[n].stages[i];
+    const list = ROOMS[n].stages;
+    pop.className = `pop pop--${st}`;
+    pop.style.top = `${below + 14}px`;
+    pop.style.setProperty('--tip', `${x}px`);
+    pop.innerHTML = `<span class="pop-tag">${s.tag}</span><span class="pop-title">${s.title}</span>`;
+    if (st === 'locked') {
+      const before = list[i - 1]?.title;
+      pop.append(el('span', 'pop-note', before ? `Si apre dopo «${before}».`.replace('««', '«').replace('»»', '»') : 'Si apre con il piano.'));
+    } else {
+      const go = el('button', 'pop-go');
+      if (st === 'next') {
+        go.textContent = api.soon?.(n) ? 'In arrivo' : 'Inizia · 3 min';
+        go.onclick = (ev) => {
+          ev.stopPropagation();
+          start(n);
+        };
+      } else {
+        const again = api.canReview?.(n, i);
+        go.textContent = again ? 'Ripassa · 2 min' : 'Guarda la scheda';
+        go.onclick = (ev) => {
+          ev.stopPropagation();
+          if (state.busy) return;
+          closePop();
+          if (again) api.review(n, i);
+          else api.openStage(n, i);
+        };
+      }
+      pop.append(go);
+    }
+    pop.hidden = false;
+    b.closest('.pf-track').append(pop);
+    b.setAttribute('aria-expanded', 'true');
+    popFor = b;
+    // the card stays whole on the screen: if it falls under the bar, the page moves up to show it
+    requestAnimationFrame(() => {
+      const r = pop.getBoundingClientRect();
+      const bar = document.querySelector('.tabs')?.getBoundingClientRect().top || window.innerHeight;
+      const over = r.bottom + 16 - bar;
+      if (over > 0) root.scrollBy({ top: over, behavior: calm() ? 'auto' : 'smooth' });
+      pop.querySelector('button')?.focus({ preventScroll: true });
+    });
+  }
+  function closePop() {
+    if (!popFor) return;
+    popFor.setAttribute('aria-expanded', 'false');
+    popFor = null;
+    pop.hidden = true;
+    pop.remove();
+  }
+  root.addEventListener('click', (ev) => {
+    if (!ev.target.closest('.pop')) closePop();
+  });
+
+  function tapEgg(b, n, egg) {
+    if (state.busy || b.classList.contains('shake')) return;
+    const r = egg.react();
+    sfx.tap();
+    if (r.roll || r.plink) setTimeout(() => sfx.land(), (r.plink ?? 0.85) * 1000);
+    b.classList.add('shake');
+    setTimeout(() => b.classList.remove('shake'), 700);
+    api.toast(r.say);
+    api.trophy?.('egg', n);
+    if (r.roll === 6) setTimeout(() => api.trophy?.('sei'), 1000);
+  }
+  const calm = () => document.documentElement.hasAttribute('data-calm') || matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   // ---------- what main.js calls ----------
   function render() {
-    if (signature() !== built3d) {
-      open = false;
-      build();
-    }
-    renderBubble();
-    renderA11y();
-    plateFloor = 0;
+    if (signature() !== builtFor) build();
     const info = FLOORS[state.floor - 1];
     sub.textContent = `${info.name} · ${earnedOn(state.floor)} di 8`;
-    dirty = true;
   }
-  /** The stage to do now, a little under the middle of the screen. */
+  /** The stage to do now, a little over the middle of the screen; at the end of the way, its last stage. */
   function scrollToNext() {
-    const s = stages.find((x) => x.st === 'next') ?? stages[stages.length - 1];
-    if (s) show(s, 0.58);
+    const b = layer.querySelector('.pn--next') ?? [...layer.querySelectorAll('.pn')].pop();
+    if (!b) return;
+    const r = b.getBoundingClientRect();
+    const box = root.getBoundingClientRect();
+    root.scrollTop += r.top - box.top - root.clientHeight * 0.46;
   }
-  frame();
   window.addEventListener('resize', () => {
-    frame();
-    if (garden) limits();
+    builtFor = '';
+    if (!root.hidden) render();
   });
-  applyLight();
-  return { render, scrollToNext, step, rebuild: () => (built3d = '') };
+  return { render, scrollToNext, step: () => {}, rebuild: () => (builtFor = '') };
 }
