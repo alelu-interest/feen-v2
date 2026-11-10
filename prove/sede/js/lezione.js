@@ -7,6 +7,7 @@
 // shows and the lesson goes on. The bar never goes back.
 // The exercises come from the approved cards (lessons-data.js, made by mobile/scripts/lezioni.mjs).
 import { PEOPLE } from './people.js';
+import { askLeave, stay } from './esci.js';
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const shuffle = (a) => {
@@ -48,20 +49,21 @@ export function makeLesson(api) {
     const total = lesson.exercises.length;
     const hot = streak >= STREAK;
     return `<div class="lz-bar${hot ? ' hot' : ''}" role="progressbar" aria-label="Avanzamento" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${doneCount}"><i style="transform:scaleX(${doneCount / total})"></i></div>
-      ${hot ? `<span class="lz-streak" aria-live="polite">${streak} di fila</span>` : ''}`;
+      ${hot ? `<span class="lz-streak">${streak} di fila</span>` : ''}`;
   }
   function frame(body, { foot = true } = {}) {
     defWord = null;
     sheetRoom?.disconnect();
     sheetRoom = null;
     root.innerHTML = `<div class="lz-top">
-        <button class="lz-x" data-act="x" aria-label="Esci dalla lezione"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+        <button class="lz-x" data-act="x" aria-label="Esci dalla lezione"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="lz-barbox">${bar()}</div>
       </div>
       <div class="lz-body">${body}</div>
       ${foot ? '<div class="lz-foot"><button class="pill pill-dark wide" data-act="check" disabled>Verifica</button></div>' : ''}
       <div class="lz-sheet" id="lz-sheet" hidden></div>
       <div class="lz-defs" id="lz-defs" aria-live="polite"></div>
+      <p class="sr-only" id="lz-said" aria-live="polite"></p>
       <div class="lz-ask" id="lz-ask" hidden></div>`;
     root.querySelector('.lz-q, .lz-say')?.focus({ preventScroll: true });
   }
@@ -104,6 +106,16 @@ export function makeLesson(api) {
     if (box) box.innerHTML = '';
   }
   const redrawBar = () => (root.querySelector('.lz-barbox').innerHTML = bar());
+
+  /** Said aloud by the screen reader, never seen: what a touch did when only the look of the screen tells it (a pair
+   *  made, a step put in its place). Emptied first, so the same words are read again. Inside the lesson, because a
+   *  screen reader does not listen outside a modal dialog (10/11/2026, the check with the screen reader's tree). */
+  function said(text) {
+    const s = root.querySelector('#lz-said');
+    if (!s) return;
+    s.textContent = '';
+    requestAnimationFrame(() => (s.textContent = text));
+  }
 
   function face() {
     const who = api.who();
@@ -153,15 +165,16 @@ export function makeLesson(api) {
       ex.right = mix(e.pairs.map((p) => p.right));
       ex.match = {}; // left → right
       ex.sel = null;
+      // for the screen reader: the two columns have a name, a picked item says so, a paired one says with what
       answers = `<div class="lz-match">
-        <div>${ex.left.map((t, i) => `<button class="lz-cell" data-left="${i}">${esc(t)}</button>`).join('')}</div>
-        <div>${ex.right.map((t, i) => `<button class="lz-cell" data-right="${i}">${esc(t)}</button>`).join('')}</div>
+        <div role="group" aria-label="Voci a sinistra">${ex.left.map((t, i) => `<button class="lz-cell" data-left="${i}" aria-pressed="false">${esc(t)}</button>`).join('')}</div>
+        <div role="group" aria-label="Voci a destra">${ex.right.map((t, i) => `<button class="lz-cell" data-right="${i}" aria-pressed="false">${esc(t)}</button>`).join('')}</div>
       </div>`;
     }
     if (e.type === 'ordina') {
       ex.items = mix(e.order);
       ex.seq = [];
-      answers = `<ol class="lz-seq" aria-label="Il tuo ordine"></ol><div class="lz-pool"></div>`;
+      answers = `<ol class="lz-seq" aria-label="Il tuo ordine"></ol><div class="lz-pool" role="group" aria-label="Voci da ordinare"></div>`;
     }
     if (e.type === 'slider') {
       const s = e.slider;
@@ -169,13 +182,13 @@ export function makeLesson(api) {
       // when the bottom one is right
       ex.value = e.range[0] <= s.min ? s.max : s.min;
       answers = `<div class="lz-slider">
-        <output class="lz-value" id="lz-value">${fmt(ex.value, s.unit)}</output>
+        <output class="lz-value" id="lz-value" aria-live="off">${fmt(ex.value, s.unit)}</output>
         <input type="range" id="lz-range" min="${s.min}" max="${s.max}" step="${s.step}" value="${ex.value}" aria-label="La tua stima" aria-valuetext="${esc(fmt(ex.value, s.unit))}" />
         <div class="lz-ends"><span>${fmt(s.min, s.unit)}</span><span>${fmt(s.max, s.unit)}</span></div>
       </div>`;
     }
     // the help line of a new type: the first time only, not in «Ci riprovi»
-    const help = e.help && !retry ? `<p class="lz-help"><svg viewBox="0 0 24 24"><path d="M12 3.5a6 6 0 0 1 3.5 10.9V17h-7v-2.6A6 6 0 0 1 12 3.5zM9.5 20.5h5"/></svg>${esc(e.help)}</p>` : '';
+    const help = e.help && !retry ? `<p class="lz-help"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a6 6 0 0 1 3.5 10.9V17h-7v-2.6A6 6 0 0 1 12 3.5zM9.5 20.5h5"/></svg>${esc(e.help)}</p>` : '';
     const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="lz-hint">${TYPE_ASK[e.type]}</p>` : '';
     frame(`${e.idea != null && !retry ? '<span class="lz-idea">Idea nuova</span>' : ''}
       ${mentorLine(e)}
@@ -185,7 +198,11 @@ export function makeLesson(api) {
     if (e.type === 'ordina') drawOrder();
     if (e.type === 'slider') {
       const r = root.querySelector('#lz-range');
+      // the part of the track behind the thumb fills with the blue (style.css, .lz-slider input: --p)
+      const fill = () => r.style.setProperty('--p', `${((Number(r.value) - Number(r.min)) / (Number(r.max) - Number(r.min))) * 100}%`);
+      fill();
       const moved = () => {
+        fill();
         if (checked) return;
         ex.value = Number(r.value);
         ex.pick = true;
@@ -204,14 +221,17 @@ export function makeLesson(api) {
   const fmt = (v, unit) => `${String(v).replace('.', ',')}${unit ? ` ${unit}` : ''}`;
   function sentence(e, word, state = '') {
     const [a, b] = e.sentence.split('___');
-    return `${words(a, e)}<span class="lz-gap ${state}">${word ? esc(word) : '&nbsp;'}</span>${words(b ?? '', e)}`;
+    // empty, the gap is said («parola mancante»): a screen reader skipped it and the sentence had no hole
+    return `${words(a, e)}<span class="lz-gap ${state}">${word ? esc(word) : '<span class="sr-only">parola mancante</span>&nbsp;'}</span>${words(b ?? '', e)}`;
   }
 
   function drawOrder() {
     const seq = root.querySelector('.lz-seq');
     const pool = root.querySelector('.lz-pool');
     seq.innerHTML = ex.seq.length
-      ? ex.seq.map((t, i) => `<li><button class="lz-cell on" data-unseq="${i}"><b>${i + 1}</b>${esc(t)}</button></li>`).join('')
+      ? ex.seq
+          .map((t, i) => `<li><button class="lz-cell on" data-unseq="${i}" aria-label="Passo ${i + 1}: ${esc(t)}. Toglilo${i < ex.seq.length - 1 ? ' con i successivi' : ''}."><b>${i + 1}</b>${esc(t)}</button></li>`)
+          .join('')
       : '<li class="lz-empty">Il primo passo che tocchi va qui</li>';
     pool.innerHTML = ex.items.map((t, i) => (ex.seq.includes(t) ? '' : `<button class="lz-cell" data-seq="${i}">${esc(t)}</button>`)).join('');
     ex.pick = ex.seq.length === ex.items.length || null;
@@ -263,7 +283,10 @@ export function makeLesson(api) {
       const before = streak;
       streak = v.ok ? streak + 1 : 0;
       redrawBar();
-      if (streak === STREAK && before < STREAK) api.sfx.fanfare?.();
+      if (streak === STREAK && before < STREAK) {
+        api.sfx.fanfare?.();
+        said(`${streak} di fila.`);
+      }
     } else if (!v.ok) still.push(i);
     paint(e, v.ok);
     if (v.ok && streak !== STREAK) api.sfx.reward();
@@ -285,7 +308,7 @@ export function makeLesson(api) {
       ${v.ok ? '' : `<p class="lz-right">La risposta giusta: <b>${esc(v.answer)}</b></p>`}
       ${v.why ? `<p class="lz-why">${words(v.why, e)}</p>` : ''}
       ${theory ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(e.theory ?? e.explain, e)}</p></div>` : ''}
-      <p class="lz-explain" id="lz-explain" hidden>${words(e.explain, e)}</p>
+      <p class="lz-explain" id="lz-explain" tabindex="-1" hidden>${words(e.explain, e)}</p>
       <div class="lz-sheet-acts">
         <button class="pill pill-light" data-act="explain" aria-expanded="false" aria-controls="lz-explain">Spiegami</button>
         <button class="pill pill-dark" data-act="next">Continua</button>
@@ -366,16 +389,7 @@ export function makeLesson(api) {
   }
 
   // ---------- leaving: «La lezione riparte dall'inizio. L'ufficio resta com'è» ----------
-  function ask() {
-    const a = root.querySelector('#lz-ask');
-    a.innerHTML = `<div class="lz-ask-card" role="alertdialog" aria-modal="true" aria-labelledby="lz-ask-t">
-      <h3 id="lz-ask-t" tabindex="-1">Vuoi uscire?</h3>
-      <p>La lezione riparte dall’inizio. L’ufficio resta com’è.</p>
-      <div class="lz-sheet-acts"><button class="pill pill-light" data-act="stay">Resto</button><button class="pill pill-light" data-act="leave">Esco</button></div>
-    </div>`;
-    a.hidden = false;
-    a.querySelector('h3').focus({ preventScroll: true });
-  }
+  const ask = () => askLeave(root, root.querySelector('#lz-ask'), 'lz-ask-t', 'La lezione riparte dall’inizio. L’ufficio resta com’è.');
 
   // what lies under the lesson is out of reach of the finger, the keyboard and the screen reader
   const BEHIND = ['.top', '#a11y', '#btn-back', '.bottom', '#path', '#me', '#avvio'];
@@ -410,7 +424,7 @@ export function makeLesson(api) {
     }
     api.sfx.tap();
     if (act === 'x') return ask();
-    if (act === 'stay') return (root.querySelector('#lz-ask').hidden = true);
+    if (act === 'stay') return stay(root.querySelector('#lz-ask'));
     if (act === 'leave') return finish(false);
     if (act === 'check') return check();
     if (act === 'next') return next();
@@ -419,6 +433,9 @@ export function makeLesson(api) {
       const p = root.querySelector('#lz-explain');
       p.hidden = !p.hidden;
       b.setAttribute('aria-expanded', String(!p.hidden));
+      // the text opens above the button: the focus goes on it, so a screen reader reads it and goes on to «Continua»
+      // (before, it stayed on «Spiegami» with the new text behind it)
+      if (!p.hidden) p.focus({ preventScroll: true });
       return;
     }
     if (checked || !e) return;
@@ -434,11 +451,14 @@ export function makeLesson(api) {
       ex.seq.push(ex.items[Number(b.dataset.seq)]);
       drawOrder();
       ready();
+      said(`Passo ${ex.seq.length}: ${ex.seq.at(-1)}.`);
       return keepFocus(at);
     }
     if (b.dataset.unseq !== undefined) {
       // taking a step back out takes the ones after it too
-      ex.seq = ex.seq.slice(0, Number(b.dataset.unseq));
+      const from = Number(b.dataset.unseq);
+      said(from === ex.seq.length - 1 ? `Tolto il passo ${from + 1}.` : `Tolti i passi dal ${from + 1} in poi.`);
+      ex.seq = ex.seq.slice(0, from);
       drawOrder();
       ready();
       return keepFocus(0);
@@ -459,9 +479,11 @@ export function makeLesson(api) {
     const side = b.dataset.left !== undefined ? 'left' : 'right';
     const i = Number(b.dataset[side]);
     const pairOf = side === 'left' ? ex.match[i] : Object.keys(ex.match).find((l) => ex.match[l] === i);
+    let tell = '';
     if (pairOf !== undefined && !ex.sel) {
       if (side === 'left') delete ex.match[i];
       else delete ex.match[pairOf];
+      tell = `Coppia sciolta: ${b.textContent}.`;
     } else if (!ex.sel || ex.sel.side === side) {
       ex.sel = ex.sel?.side === side && ex.sel.i === i ? null : { side, i };
     } else {
@@ -470,18 +492,30 @@ export function makeLesson(api) {
       for (const key of Object.keys(ex.match)) if (ex.match[key] === r) delete ex.match[key];
       ex.match[l] = r;
       ex.sel = null;
+      tell = `${ex.left[l]} con ${ex.right[r]}.`;
     }
     // the pairs share a number, so they read without colour too
     const order = Object.keys(ex.match).map(Number).sort((a, c) => a - c);
     root.querySelectorAll('[data-left],[data-right]').forEach((c) => {
       c.classList.remove('sel');
       c.removeAttribute('data-pair');
+      c.removeAttribute('aria-label');
+      c.setAttribute('aria-pressed', 'false');
     });
     order.forEach((l, n) => {
-      root.querySelector(`[data-left="${l}"]`).dataset.pair = n + 1;
-      root.querySelector(`[data-right="${ex.match[l]}"]`).dataset.pair = n + 1;
+      const left = root.querySelector(`[data-left="${l}"]`);
+      const right = root.querySelector(`[data-right="${ex.match[l]}"]`);
+      left.dataset.pair = right.dataset.pair = n + 1;
+      // the number is for the eye; for the screen reader each one says what it is paired with
+      left.setAttribute('aria-label', `${ex.left[l]}, in coppia con ${ex.right[ex.match[l]]}`);
+      right.setAttribute('aria-label', `${ex.right[ex.match[l]]}, in coppia con ${ex.left[l]}`);
     });
-    if (ex.sel) root.querySelector(`[data-${ex.sel.side}="${ex.sel.i}"]`).classList.add('sel');
+    if (ex.sel) {
+      const picked = root.querySelector(`[data-${ex.sel.side}="${ex.sel.i}"]`);
+      picked.classList.add('sel');
+      picked.setAttribute('aria-pressed', 'true');
+    }
+    if (tell) said(tell);
     ex.pick = Object.keys(ex.match).length === ex.left.length || null;
     ready();
   }

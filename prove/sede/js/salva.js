@@ -1,7 +1,10 @@
 // FEEN · la sede — the progress kept on the phone (compiti D1–D2, 07/11/2026; CLAUDE.md §8): the floor and the stages
 // done, how each stage went, the exercises got wrong (for the review, C5), the surprises found, the objects looked
 // at, the trophies, the settings. Nothing leaves the phone: it lives in the page's storage, and with it in the
-// phone's backup. The first start keeps its own key (avvio.js, «feen-avvio»).
+// phone's backup. The first start keeps its own key (avvio.js, «feen-avvio»). Inside the app a copy of both is kept in
+// a file of the app as well (copia.js, cubotto 9.3, 10/11/2026).
+import { copySoon } from './copia.js';
+
 const KEY = 'feen-progressi';
 const VERSION = 1;
 
@@ -26,6 +29,7 @@ export function loadProgress() {
 export function saveProgress(d) {
   try {
     localStorage.setItem(KEY, JSON.stringify({ v: VERSION, ...d }));
+    copySoon(); // the app's file follows (copia.js)
     return true;
   } catch {
     return false;
@@ -38,6 +42,7 @@ export function dropProgress() {
     const raw = localStorage.getItem(KEY);
     if (raw != null) localStorage.setItem(`${KEY}-rotto`, raw);
     localStorage.removeItem(KEY);
+    copySoon();
   } catch {
     /* nothing to drop */
   }

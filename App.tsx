@@ -13,7 +13,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <SedeScreen />
-      <StatusBar style="auto" />
+      <StatusBar style="dark" />
     </SafeAreaProvider>
   );
 }

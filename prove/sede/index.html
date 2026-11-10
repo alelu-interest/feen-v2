@@ -3,8 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <meta name="theme-color" content="#F4F8FD" media="(prefers-color-scheme: light)" />
-  <meta name="theme-color" content="#0D1529" media="(prefers-color-scheme: dark)" />
+  <meta name="theme-color" content="#F4F8FD" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -74,9 +73,9 @@
       <span class="cta-min">3 min</span>
     </button>
     <nav class="tabs">
-      <button class="tab" data-tab="percorso"><svg viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.4" /><circle cx="18" cy="6" r="2.4" /><path d="M8.4 17c6 0 2.2-9 7.2-10" /></svg><span>Percorso</span></button>
-      <button class="tab" data-tab="ufficio"><svg viewBox="0 0 24 24"><path d="M5.5 20.5v-15l6.5-3 6.5 3v15z" /><path d="M9.5 8.5h1.5M13 8.5h1.5M9.5 12.5h1.5M13 12.5h1.5M10.5 20.5v-4h3v4" /></svg><span>Ufficio</span></button>
-      <button class="tab" data-tab="tu"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.8" /><path d="M4.5 20.5c1-4.6 4.2-6.6 7.5-6.6s6.5 2 7.5 6.6" /></svg><span>Tu</span></button>
+      <button class="tab" data-tab="percorso"><svg viewBox="0 0 24 24"><circle class="f" cx="6.5" cy="19" r="2.5" /><circle class="f" cx="17.5" cy="5" r="2.5" /><path d="M6.5 16.5v-.3c0-2.6 2.4-4.2 5.5-4.2s5.5-1.6 5.5-4.2v-.3" /></svg><span>Percorso</span></button>
+      <button class="tab" data-tab="ufficio"><svg viewBox="0 0 24 24"><rect class="f" x="14.5" y="2.5" width="5" height="18.5" rx="1" /><path d="M14.5 8H6.5a1 1 0 0 0-1 1v12M14.5 14.5h-9M3 21h18" /></svg><span>Ufficio</span></button>
+      <button class="tab" data-tab="tu"><svg viewBox="0 0 24 24"><circle class="f" cx="12" cy="8" r="3.8" /><path class="f" d="M4.5 20.5c1-4.6 4.2-6.6 7.5-6.6s6.5 2 7.5 6.6z" /></svg><span>Tu</span></button>
     </nav>
   </footer>
 
@@ -84,9 +83,9 @@
   <div class="sheet-wrap" id="card-wrap" hidden>
     <div class="sheet card" id="card" role="dialog" aria-modal="true" aria-labelledby="card-title">
       <div class="handle"></div>
+      <span class="chip chip-stage card-stage"><i></i><span id="card-tag">Lezione 1</span></span>
       <h2 id="card-title" tabindex="-1">Dove sono finiti?</h2>
       <div class="chips">
-        <span class="chip chip-stage"><i></i><span id="card-tag">Lezione 1</span></span>
         <span class="chip"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.5 5.4 5.9.7-4.4 4 1.2 5.8L12 16.5l-5.2 2.9 1.2-5.8-4.4-4 5.9-.7z" /></svg><span id="card-object">Il porta carte vuoto</span></span>
       </div>
       <p class="card-idea" id="card-idea">…</p>

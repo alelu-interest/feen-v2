@@ -16,6 +16,8 @@ import { FIGURES } from './figures.js';
 import { FLOORS } from './world.js';
 import { IN_APP } from './app.js';
 import { inkOn } from './kit.js';
+import { TEXT as REMIND } from './avvisi.js';
+import { copySoon } from './copia.js';
 
 const KEY = 'feen-avvio';
 const ORDER = ['alto-innovativo', 'alto-tradizionale', 'basso-innovativo', 'basso-tradizionale'];
@@ -112,10 +114,30 @@ export function makeAvvio(api) {
   let lock = false;
   let opened = false; // the opening played (or was skipped) in this session
   let openT = 0;
+  let smoothF = 0;
+
+  /** Calls back when the screen moves smoothly (four frames in a row under 40 ms), or after 6 s of frames: on a slow
+   *  phone still busy building the sede the opening waits to be seen instead of running out its clock (10/11/2026 sera;
+   *  on the Mac the screen is free after about 0.2 s, so there it starts at once). */
+  const whenSmooth = (cb) => {
+    cancelAnimationFrame(smoothF);
+    let t0 = 0;
+    let last = 0;
+    let calm = 0;
+    const step = (now) => {
+      if (!t0) t0 = last = now;
+      calm = now - last < 40 ? calm + 1 : 0;
+      last = now;
+      if (calm >= 4 || now - t0 > 6000) return cb();
+      smoothF = requestAnimationFrame(step);
+    };
+    smoothF = requestAnimationFrame(step);
+  };
 
   const save = () => {
     try {
       localStorage.setItem(KEY, JSON.stringify(s));
+      copySoon(); // the app's file follows (copia.js)
     } catch {
       /* private window: the first start still works, it is only not kept */
     }
@@ -128,6 +150,7 @@ export function makeAvvio(api) {
 
   function screen(cls, html) {
     clearTimeout(openT);
+    cancelAnimationFrame(smoothF);
     root.className = `avvio ${cls}`;
     root.innerHTML = html;
     root.scrollTop = 0;
@@ -144,10 +167,15 @@ export function makeAvvio(api) {
     // high risk on top, innovative on the left; --c is the column, for the light that passes from left to right
     const pairs = ORDER.map((q, i) => `<div class="av-pair">${PROFILES[q].names.map((n, j) => shadow(n, i * 2 + j, (i % 2) * 2 + j)).join('')}</div>`).join('');
     screen('av-open', `<h1>Che investitore sei?</h1><div class="av-shadows" aria-hidden="true">${pairs}</div>`);
-    openT = setTimeout(() => {
-      root.classList.add('av-open-out');
-      openT = setTimeout(endOpen, 230);
-    }, OPEN_TIME);
+    // the shadows, the title and the clock start together, once the phone can show them (av-go)
+    whenSmooth(() => {
+      if (!root.classList.contains('av-open')) return;
+      root.classList.add('av-go');
+      openT = setTimeout(() => {
+        root.classList.add('av-open-out');
+        openT = setTimeout(endOpen, 230);
+      }, OPEN_TIME);
+    });
   }
   function endOpen() {
     clearTimeout(openT);
@@ -285,7 +313,15 @@ export function makeAvvio(api) {
   function avvisi() {
     screen(
       'av-page av-remind',
-      `<div class="av-art av-art-bell" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></svg></div>
+      // the reminder as it will arrive (revisione della grafica, 10/11/2026 notte): the phone's screen at the time
+      // chosen, with FEEN's notification, in place of a bell on a white card; the time follows the one below
+      `<div class="av-lock" aria-hidden="true">
+        <b class="av-lock-time">18:00</b>
+        <div class="av-notif">
+          <svg class="av-notif-icon" viewBox="0 0 40 40"><rect width="40" height="40" rx="9.5" fill="#F3EEE6"/><text x="20" y="22.4" text-anchor="middle">FEEN</text><rect x="16.2" y="25.6" width="7.6" height="2.2" rx="1.1" fill="#FF9466"/></svg>
+          <div><p class="av-notif-head"><b>${REMIND.title}</b><span class="av-notif-when">ora</span></p><p class="av-notif-body">${REMIND.body}</p></div>
+        </div>
+      </div>
       <h1>Un promemoria, ogni tanto?</h1>
       <p class="av-lead">Uno al giorno al massimo, mai se hai già fatto lezione.</p>
       <label class="av-time"><span>Ogni giorno alle</span><input type="time" id="av-time" value="18:00" step="900" /></label>
@@ -408,6 +444,12 @@ export function makeAvvio(api) {
   }
 
   // ---------- touches ----------
+  // the preview of the reminder follows the time being chosen
+  root.addEventListener('input', (e) => {
+    if (e.target.id !== 'av-time' || !e.target.value) return;
+    for (const t of root.querySelectorAll('.av-lock-time')) t.textContent = e.target.value;
+  });
+
   root.addEventListener('click', (e) => {
     // a touch during the opening: the first statement, at once
     if (root.classList.contains('av-open')) return endOpen();

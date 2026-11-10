@@ -8,7 +8,8 @@
 // mentor's last line. The months come from the approved cards (Prova-scheda.md, read by scripts/lezioni.mjs).
 import { PEOPLE } from './people.js';
 import { motion } from './kit.js';
-import { shuffled, hold, held, HOLD } from './caso.js';
+import { shuffled, hold, held, HOLD, fitRoom, fadeOld } from './caso.js';
+import { askLeave, stay } from './esci.js';
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 // the engine's own lines, the same on every floor (provisional, Claude's, 09/11/2026: to approve with the cards)
@@ -35,6 +36,7 @@ export function euro(c, sign = false) {
 
 export function makeField(api) {
   const root = document.getElementById('campo');
+  fadeOld(root);
   let resolve = null;
   // a step put off after an answer runs only while its game is still on: leaving with the X ends it (partita 09/11/2026)
   let run = 0;
@@ -56,11 +58,11 @@ export function makeField(api) {
   function shell(room, floorName) {
     weeks = month.story.filter((b) => b.kind === 'settimana').length;
     root.innerHTML = `<div class="lz-top">
-        <button class="lz-x" data-act="x" aria-label="Esci dalla Prova sul campo"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+        <button class="lz-x" data-act="x" aria-label="Esci dalla Prova sul campo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="cs-bar" role="progressbar" aria-label="Settimane del mese" aria-valuemin="0" aria-valuemax="${weeks}" aria-valuenow="0">${'<i></i>'.repeat(weeks)}</div>
       </div>
       <div class="cs-room">${room ? `<img src="${room}" alt="" />` : ''}<span class="cs-tag">Prova sul campo · ${esc(floorName)}</span>
-        <div class="pv-purse"><small>Saldo del mese</small><b class="pv-amount"></b><i class="pv-delta" aria-hidden="true"></i></div>
+        <div class="pv-purse" role="img"><small>Saldo del mese</small><b class="pv-amount"></b><i class="pv-delta" aria-hidden="true"></i></div>
       </div>
       <div class="cs-chat" aria-live="polite"></div>
       <div class="cs-foot"></div>
@@ -70,7 +72,8 @@ export function makeField(api) {
   const chat = () => root.querySelector('.cs-chat');
   const foot = () => root.querySelector('.cs-foot');
 
-  /** The purse on the photo: the amount, read as one sentence by VoiceOver. */
+  /** The purse on the photo: the amount, read as one sentence by VoiceOver. It has a role (img) because a name on a
+   *  plain box is not read: the two lines were read apart, «Saldo del mese» and then «50 €» (10/11/2026). */
   function paintPurse(c) {
     const purse = root.querySelector('.pv-purse');
     purse.querySelector('.pv-amount').textContent = euro(c);
@@ -119,8 +122,10 @@ export function makeField(api) {
   const line = (who, text, cls = '') => say(`${face(who)}<div class="cs-bubble"><b>${esc(nameOf(who))}</b><p>${esc(text)}</p></div>`, `cs-line ${cls}`);
   const scene = (text, cls = '') => say(`<p>${esc(text)}</p>`, `cs-scene ${cls}`);
   const mine = (text) => say(`<p>${esc(text)}</p>`, 'cs-mine');
-  /** What an answer did: what it cost, in front, then what happened. */
-  const then = (o, cls = '') => say(`<p><span class="pv-cost">${o.cents ? euro(o.cents, true) : '0 €'}</span> ${esc(o.then)}</p>`, `cs-scene ${cls}`);
+  /** What an answer did: what it cost, in front, then what happened. With `left`, the balance it leaves is said too,
+   *  for the screen reader only: the eye has it on the photo, the ear had only the cost (10/11/2026). */
+  const then = (o, cls = '', left = null) =>
+    say(`<p><span class="pv-cost">${o.cents ? euro(o.cents, true) : '0 €'}</span> ${esc(o.then)}${left == null ? '' : `<span class="sr-only"> Saldo: ${euro(left)}.</span>`}</p>`, `cs-scene ${cls}`);
   /** A divider in the chat: «Settimana 2», «I momenti chiave». */
   const divider = (text) => say(`<span>${esc(text)}</span>`, 'pv-week');
 
@@ -129,9 +134,8 @@ export function makeField(api) {
   function settle() {
     const c = chat();
     requestAnimationFrame(() => {
-      root.classList.remove('cs-tight');
       const ask = foot().querySelector('.cs-opts') && [...c.querySelectorAll('.cs-ask')].at(-1);
-      if (ask && ask.offsetHeight > c.clientHeight - 12) root.classList.add('cs-tight');
+      fitRoom(root, ask);
       c.scrollTop = c.scrollHeight;
     });
   }
@@ -139,6 +143,12 @@ export function makeField(api) {
     // as in the Caso (caso.js, hold): where the choices were, the button fades in and waits a moment
     const after = fresh;
     fresh = false;
+    // the same button as before stays the one it was (caso.js, button: the screen reader reads the new line, not «Avanti»)
+    const old = foot().querySelector(':scope > button');
+    if (!after && old && old.dataset.act === act && old.textContent === label) {
+      if (document.activeElement !== old) old.focus({ preventScroll: true });
+      return settle();
+    }
     foot().innerHTML = `<button class="pill pill-dark wide${after ? ' cs-in cs-in-short' : ''}" data-act="${act}">${label}</button>`;
     if (after) hold(foot(), HOLD.button);
     foot().querySelector('button').focus({ preventScroll: true });
@@ -208,7 +218,7 @@ export function makeField(api) {
     api.buzz(14);
     later(() => {
       move(o.cents);
-      then(o);
+      then(o, '', balance);
       if (balance < 0 && !wentBelow) {
         wentBelow = true;
         line('mentore', `${month.below ?? SAY.below} ${SAY.owe}`);
@@ -277,16 +287,7 @@ export function makeField(api) {
     if (el) el.inert = !on;
   });
 
-  function ask() {
-    const a = root.querySelector('#pv-ask');
-    a.innerHTML = `<div class="lz-ask-card" role="alertdialog" aria-modal="true" aria-labelledby="pv-ask-t">
-      <h3 id="pv-ask-t" tabindex="-1">Vuoi uscire?</h3>
-      <p>La Prova sul campo riparte dall’inizio. L’ufficio resta com’è.</p>
-      <div class="lz-sheet-acts"><button class="pill pill-light" data-act="stay">Resto</button><button class="pill pill-light" data-act="leave">Esco</button></div>
-    </div>`;
-    a.hidden = false;
-    a.querySelector('h3').focus({ preventScroll: true });
-  }
+  const ask = () => askLeave(root, root.querySelector('#pv-ask'), 'pv-ask-t', 'La Prova sul campo riparte dall’inizio. L’ufficio resta com’è.');
 
   function finish(done) {
     run++;
@@ -311,7 +312,7 @@ export function makeField(api) {
     api.sfx.tap();
     const act = b.dataset.act;
     if (act === 'x') return ask();
-    if (act === 'stay') return (root.querySelector('#pv-ask').hidden = true);
+    if (act === 'stay') return stay(root.querySelector('#pv-ask'));
     if (act === 'leave') return finish(false);
     if (act === 'next') return step();
     if (act === 'end') return finish(true);

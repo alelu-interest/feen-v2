@@ -99,10 +99,29 @@ function outside() {
   const hi = lo + Math.max(0, state.floor - 4) * B.floorH;
   // at the bottom the plaza clears the stage pill and the tab bar, however short the screen
   const half = dist * Math.tan((camera.fov * DEG) / 2);
-  const bar = ((window.innerHeight - $('cta').getBoundingClientRect().top + 8) / window.innerHeight) * 2 * half;
-  return { dist, lo: Math.min(lo, PLAZA_Y + half - bar), hi };
+  // the pill and the tabs: away from the Ufficio (the Percorso at the start, the first start) they are not laid out, so
+  // the bar is counted as it will be there; with a zero box the framing fell back to the middle of the screen
+  const cta = $('cta').getBoundingClientRect();
+  const tabs = document.querySelector('.tabs').getBoundingClientRect();
+  const top = cta.height ? cta.top : tabs.height ? tabs.top - 74 : window.innerHeight - 150;
+  const bar = ((window.innerHeight - top + 8) / window.innerHeight) * 2 * half;
+  const floorOnBar = PLAZA_Y + half - bar; // the height at which the plaza sits right on the bar
+  // while the building is short it rests low, with a strip of street over the bar and the sky above it, where the
+  // floors to come will rise (revisione della grafica, 10/11/2026 sera: before, it sat in the middle over a third of
+  // the screen of asphalt); once it is taller than that, nothing changes
+  return { dist, lo: Math.min(lo, floorOnBar), hi: Math.max(hi, floorOnBar - 0.9) };
 }
 const PLAZA_Y = -0.9; // the height, at the building, that just clears the bar: below it lie the steps and the plaza
+/** Floor n in the free space above `top` (the top of a panel at the bottom of the screen, in px), a little below its
+ *  middle so the crane on the roof stays in sight; the distance is the one from outside (revisione della grafica,
+ *  quarta ondata, 10/11/2026 notte: at the end of a floor the partner's words, three times taller than the tab bar on
+ *  which the framing rests the building, covered the floor just finished). */
+function frameAbove(n, top) {
+  const { dist } = outside();
+  const half = dist * Math.tan((camera.fov * DEG) / 2);
+  const at = top * 0.72; // where the middle of the room goes on the screen, in px from the top
+  rig.goal.target.y = floorY(n) + B.ih / 2 - ((window.innerHeight / 2 - at) / (window.innerHeight / 2)) * half;
+}
 const PRESETS = {
   // the building from outside, with the crane on top; `n` is the floor to keep in sight, `y` a height reached with the finger
   overview: ({ n = state.floor, y } = {}) => {
@@ -636,7 +655,7 @@ function renderA11y() {
     const n = +b.dataset.n;
     const done = ROOMS[n] ? earnedOn(n) : 0;
     if (b.dataset.i === undefined) {
-      b.textContent = `Piano ${n} · ${FLOORS[n - 1].name}: ${ROOMS[n] ? `${done} tappe su 8` : 'si arreda più avanti'}`;
+      b.textContent = `${FLOORS[n - 1].name}, livello ${n}: ${ROOMS[n] ? `${done} tappe su 8` : 'si arreda più avanti'}`;
       b.setAttribute('aria-current', state.view !== 'overview' && state.viewFloor === n ? 'location' : 'false');
       continue;
     }
@@ -655,7 +674,7 @@ function renderCta() {
   cta.disabled = false;
   cta.querySelector('.cta-min').hidden = !room || state.earned >= 8;
   if (!room) {
-    $('cta-tag').textContent = `Piano ${n} · ${FLOORS[n - 1].name}`;
+    $('cta-tag').textContent = FLOORS[n - 1].name;
     $('cta-title').textContent = 'Si arreda al prossimo passo';
     cta.disabled = true;
   } else if (state.earned < 8) {
@@ -686,12 +705,15 @@ function showcase(n, i) {
   sfx.whoosh();
   // turned a little and seen from above, so it reads at a glance while it stands still
   const [tilt, turn] = s.place.pose ?? [0, 0];
-  let to = null;
-  return tween(0.55, (k) => {
+  // measured once, at rest in its place; placed at every frame in front of the camera as it is at that moment, so it
+  // comes to the front already at its size while the camera draws back from the desk (revisione della grafica,
+  // 10/11/2026 sera: placed for where the camera would end, it showed huge for a moment and then shrank)
+  const m = showMeasure(s, S);
+  return tween(1.0, (k) => {
     // the card closed while the object was still flying in: the way home takes over, or it would stay in mid-air
     if (shown !== me) return;
-    // worked out on the first frame, when the card is open: the object floats in the room the card leaves above it
-    to ??= showSpot(office, s, S);
+    // the object floats in the room the card leaves above it
+    const to = showSpot(office, m);
     s.obj.position.lerpVectors(from, to, k);
     s.obj.scale.setScalar(1 + (S - 1) * k);
     s.obj.rotation.set(tilt * k, turn * k, 0);
@@ -700,27 +722,25 @@ function showcase(n, i) {
 /** Where the object of the card floats, in the room's coordinates: between the plate (and «Sede») at the top and the
  *  card at the bottom, as big as a third of the screen when there is room, smaller on a short phone or with large text,
  *  where the card is taller (09/11/2026: at 375×667 with the text at 1.35 the card covered half of it). */
-function showSpot(office, s, S) {
-  const g = rig.goal;
-  const az = g.az * DEG;
-  const el = g.el * DEG;
-  const cam = new THREE.Vector3(
-    g.target.x + Math.sin(az) * Math.cos(el) * g.dist,
-    g.target.y + Math.sin(el) * g.dist,
-    g.target.z + Math.cos(az) * Math.cos(el) * g.dist,
-  );
+function showMeasure(s, S) {
   const box = new THREE.Box3().setFromObject(s.obj);
   const size = box.getSize(new THREE.Vector3()).multiplyScalar(S);
   // from the object's origin up to its middle: at the bottom for what stands on a desk, in the middle for what hangs
   // on a wall (taking it always as the bottom put the hanging ones half their height too low, onto the card)
   const lift = (box.getCenter(new THREE.Vector3()).y - s.obj.getWorldPosition(new THREE.Vector3()).y) * S;
+  return { size, lift };
+}
+function showSpot(office, { size, lift }) {
+  // the camera as it is now (it may still be on its way back from the desk)
+  const cam = camera.position.clone();
+  const ahead = camera.getWorldDirection(new THREE.Vector3());
   const tanV = Math.tan((camera.fov * DEG) / 2);
   const H = window.innerHeight;
   const top = Math.max($('plate').getBoundingClientRect().bottom, $('btn-back').hidden ? 0 : $('btn-back').getBoundingClientRect().bottom) + 12;
   const bottom = Math.max(top + 80, ($('card-wrap').hidden ? H * 0.62 : $('card').offsetTop) - 16);
   const q = Math.min(0.34, (0.8 * (bottom - top)) / H); // the object's height, as a part of the screen's
   const d = Math.max(size.y / (q * 2 * tanV), size.x / (0.72 * 2 * tanV * camera.aspect), 1.2);
-  const spot = cam.clone().addScaledVector(g.target.clone().sub(cam).normalize(), d);
+  const spot = cam.clone().addScaledVector(ahead, d);
   spot.y += (0.5 - (top + bottom) / 2 / H) * 2 * d * tanV - lift;
   return office.room.worldToLocal(spot);
 }
@@ -779,7 +799,7 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   $('card-tag').textContent = s.tag;
   $('card-title').textContent = s.title;
   $('card-object').textContent = s.object ?? '';
-  $('card-object').parentElement.hidden = !s.object; // a lesson without an object: no chip
+  $('card-object').closest('.chips').hidden = !s.object; // a lesson without an object: no chip
   $('card-idea').textContent = s.idea;
   // «Ripassa» only where there is something to play again (the review, below): a lesson, a Caso, a Prova sul campo
   $('card-review').hidden = fresh || !canReview(n, i);
@@ -1081,7 +1101,8 @@ function lessonFor(n, s) {
 function comingSoon(n) {
   return IN_APP && n > 1 && !Object.keys(LESSONS).some((k) => k.startsWith(`p${n}-`));
 }
-const SOON = (n) => `Il piano ${n} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
+// by its name, as everywhere since Davide's «sti numeri così mi sanno di tombola» (10/11/2026)
+const SOON = (n) => `${cap(FLOORS[n - 1].the)} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
 /** The Caso of floor n (compito C1, 07/11/2026): its approved card or, until it arrives, the test Caso. */
 function caseFor(n, s) {
   if (s.tag !== 'Caso') return null;
@@ -1197,6 +1218,9 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   reminders.stageDone();
   earnedSaved = i + 1;
   persist();
+  // the end of a stage is a moment of its own: the bar and «Sede» step aside until «Continua» (revisione della grafica,
+  // 10/11/2026 sera); the plate stays, its pip fills
+  document.body.dataset.festa = '';
   // a stage with an object: it lands in its place; every stage colours a piece of the walls
   if (place) {
     go('slot', { n, i });
@@ -1238,8 +1262,11 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     await openCard(n, i, true, end);
     await unshow();
   } else if (fromPath) await openCard(n, i, true, end);
+  // the end of a floor is the bigger party: the bar stays aside until it is over (10/11/2026 notte: before, it came
+  // back just for «Livello 1 completato», which then stood over the floor instead of where the bar is)
   if (state.earned === 8) await floorComplete();
   else go('interior', n);
+  delete document.body.dataset.festa;
   persist();
   return true;
 }
@@ -1303,7 +1330,7 @@ async function floorComplete() {
   const info = FLOORS[n - 1];
   go('overview');
   await wait(0.8);
-  banner(`Piano ${n} completato`, info.ready);
+  banner(`Livello ${n} completato`, info.ready); // «Livello», as the plate and the Percorso say (Davide, 10/11/2026)
   sfx.fanfare();
   buzz(40);
   confetti(new THREE.Vector3(0, floorY(n) + B.ih + 0.6, 1.2), info);
@@ -1373,7 +1400,7 @@ async function floorComplete() {
   renderPlate();
   renderCta();
   sfx.reward();
-  toast(`Si apre il piano ${n + 1} · ${FLOORS[n].name}`);
+  toast(`Si apre ${FLOORS[n].the}`); // by its name (Davide, 10/11/2026)
   state.busy = false;
 }
 
@@ -1418,6 +1445,8 @@ function partnerSays(line) {
   document.body.dataset.fine = '';
   panel.hidden = false;
   panel.querySelector('.av-talk-line').focus({ preventScroll: true });
+  // the floor just finished in sight above the words, not behind them; «Continua» gives the usual framing back
+  frameAbove(state.floor, panel.querySelector('.av-talk').getBoundingClientRect().top);
   return new Promise((resolve) => {
     panel.querySelector('button').onclick = () => {
       sfx.tap();
@@ -1425,6 +1454,7 @@ function partnerSays(line) {
       panel.innerHTML = '';
       delete document.body.dataset.fine;
       for (const sel of BEHIND) document.querySelector(sel).inert = false;
+      go('overview');
       resolve();
     };
   });
@@ -1706,7 +1736,6 @@ async function remind(time) {
   persist();
   if ((await asked)?.granted) toast(`Promemoria alle ${time}.`);
 }
-let coachDone = false;
 /** Shows one of the three tabs. Away from the Ufficio the sede is not drawn: the phone rests. */
 function setTab(t) {
   state.tab = t;
@@ -1728,11 +1757,8 @@ function setTab(t) {
     me.render();
     $('me').scrollTop = 0;
   }
-  // during the first start the sede is only seen: the hint waits for the first visit of your own
-  if (t === 'ufficio' && !coachDone && !document.body.dataset.avvio) {
-    coachDone = true;
-    showCoach();
-  }
+  // no hint on the first visit any more («Scorri su e giù · Tocca un piano per entrarci»): the screen says it by
+  // itself (revisione della grafica, 10/11/2026 sera, after Davide: «fare capire cose tramite l'UI anziché scriverle»)
 }
 /** The stage to do now, started from the Percorso: the lesson, then its end in the Ufficio, then back. */
 async function play() {
@@ -1822,15 +1848,8 @@ dragToClose($('card'), () => {
 });
 dragToClose(document.querySelector('#demo-wrap .sheet'), () => closeSheet($('demo-wrap')));
 
-let coachShown = false;
-function showCoach() {
-  coachShown = true;
-  $('coach').hidden = false;
-  setTimeout(hideCoach, 6000);
-}
+/** The hint over the sede is not shown any more (10/11/2026 sera): kept hidden, whatever asks to hide it. */
 function hideCoach() {
-  if (!coachShown) return;
-  coachShown = false;
   $('coach').hidden = true;
 }
 

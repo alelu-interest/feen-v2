@@ -6,7 +6,8 @@
 // In the browser there is no app around the page: nothing is sent, and everything else works as before.
 
 // provisional, written by Claude on 09/11/2026: the text of the reminders is the user's to write (CLAUDE.md §8)
-const TEXT = { title: 'FEEN', body: 'Tre minuti per la prossima tappa, quando ti va.' };
+// also shown in the first start, in the preview of the notification (avvio.js)
+export const TEXT = { title: 'FEEN', body: 'Tre minuti per la prossima tappa, quando ti va.' };
 
 const app = () => window.ReactNativeWebView;
 /** True inside the app, where the phone can really remind. */

@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/feen/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "it.buildinterest.feen",
@@ -32,10 +32,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F4F8FD",
-          "dark": {
-            "backgroundColor": "#0D1529"
-          }
+          "backgroundColor": "#F4F8FD"
         }
       ]
     ],

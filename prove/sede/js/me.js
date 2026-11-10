@@ -11,6 +11,7 @@ import { IN_APP } from './app.js';
 import { reminders } from './avvisi.js';
 
 const cap = (t) => t[0].toUpperCase() + t.slice(1);
+const ofFloor = (f) => f.the.replace(/^la /, 'della ').replace(/^il /, 'del '); // «della Tesoreria», «del piano dei Soci»
 
 // the four quadrants (CLAUDE.md §4): risk up, innovative on the left
 const TYPES = [
@@ -62,7 +63,7 @@ export function makeMe(api) {
         <div class="who-name">
           <h2>${who.me}</h2>
           <p class="who-motto">${p.motto}</p>
-          <button class="who-chip" data-act="map" aria-expanded="${mapOpen}" aria-controls="who-map"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 4v16M4 12h16"/></svg>${p.what}</button>
+          <button class="who-chip" data-act="map" aria-expanded="${mapOpen}" aria-controls="who-map"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 4v16M4 12h16"/></svg><span>${p.what.split(' · ').map((w, i, a) => `<span class="nw">${w}${i < a.length - 1 ? ' ·' : ''}</span>`).join(' ')}</span></button>
         </div>
       </div>
       <div class="who-map" id="who-map"${mapOpen ? '' : ' hidden'}>${miniMap(who)}</div>
@@ -87,6 +88,7 @@ export function makeMe(api) {
       <div class="contract-paper" aria-hidden="true">
         <i></i><i></i><i style="width:70%"></i>
         ${drawn}
+        ${who ? '<b class="contract-stamp">FEEN</b>' : ''}
       </div>
       <div>
         <h2>Contratto tra soci</h2>
@@ -103,7 +105,7 @@ export function makeMe(api) {
       const on = api.trophies.has(t.id);
       const name = on || !t.secret ? t.name : 'Segreto';
       const style = on && t.color ? ` style="--c:${t.color};--on-c:${inkOn(t.color)}"` : '';
-      return `<li><button class="trophy${on ? ' on' : ''}" data-trophy="${t.id}"${style} aria-label="${name}${on ? ', preso' : ''}"><span class="trophy-emblem">${emblem(on || !t.secret ? t.id : 'segreto')}</span><b>${name}</b></button></li>`;
+      return `<li><button class="trophy${on ? ' on' : ''}" data-trophy="${t.id}"${style} aria-label="${name}${on ? ', preso' : ''}"><span class="trophy-emblem">${emblem(on || !t.secret ? t.id : 'segreto')}</span><b>${name.replace(/(\S+-\S+)/g, '<span class="nw">$1</span>')}</b></button></li>`;
     }).join('');
     return `<section class="me-card"><h2>Traguardi</h2>
       <ul class="trophies">${cards}</ul>
@@ -115,8 +117,9 @@ export function makeMe(api) {
   function diary() {
     const rows = [['Hai firmato il contratto tra soci', 'Il primo giorno nell’azienda', null]];
     for (let n = 1; n <= api.state.floor; n++) {
-      if (HIRED[n]) rows.push([`Hai assunto ${HIRED[n]}`, `Il colloquio del piano ${n}`, null]);
-      if (api.earnedOn(n) === 8) rows.push([FLOORS[n - 1].ready, `Piano ${n} · ${FLOORS[n - 1].name}`, ROOMS[n].share ? n : null, FLOORS[n - 1].color]);
+      // the floors by name, «Livello 2» as its level: no «Piano 2» (Davide, 10/11/2026)
+      if (HIRED[n]) rows.push([`Hai assunto ${HIRED[n]}`, `Il colloquio ${ofFloor(FLOORS[n - 1])}`, null]);
+      if (api.earnedOn(n) === 8) rows.push([FLOORS[n - 1].ready, `Livello ${n}`, ROOMS[n].share ? n : null, FLOORS[n - 1].color]);
     }
     if (api.state.floor === FLOORS.length && api.earnedOn(FLOORS.length) === 8) rows.push(['Il grande lancio', 'Sul tetto, con tutto il team', 'lancio']);
     const items = rows

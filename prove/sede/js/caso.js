@@ -7,6 +7,7 @@
 // as «Un mese dopo», then the line that opens the next lesson. The stories come from the approved cards.
 import { PEOPLE } from './people.js';
 import { motion } from './kit.js';
+import { askLeave, stay } from './esci.js';
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const COVER = 'Capita anche ai migliori. Riprendiamola.';
@@ -37,8 +38,43 @@ export function hold(foot, ms) {
 /** True while the foot still holds back the touches (a keyboard Enter too). */
 export const held = (foot) => !!foot && performance.now() < (foot.readyAt ?? 0);
 
+/** The room over a dialogue (the Caso, the Prova sul campo): while the dialogue is short the room takes the free space,
+ *  up to half the screen, and as the lines come it goes back to its size, smoothly (revisione della grafica, 10/11/2026
+ *  sera: at the start half the screen was empty under one line). A short phone or large text: while the choices wait,
+ *  the room steps back so the question stays whole (09/11/2026, revisione UX, stanza 9; `ask`, the line of the question). */
+export function fitRoom(root, ask) {
+  const room = root.querySelector('.cs-room');
+  const chat = root.querySelector('.cs-chat');
+  if (!room || !chat) return;
+  const H = window.innerHeight;
+  const base = Math.min(H * 0.3, 240);
+  const max = Math.max(base, Math.min(H * 0.5, 420));
+  const total = room.offsetHeight + chat.clientHeight; // what the room and the dialogue share, whatever the room is now
+  const last = chat.lastElementChild;
+  const used = last ? last.getBoundingClientRect().bottom - chat.getBoundingClientRect().top + chat.scrollTop + 16 : 0;
+  let h = Math.min(max, Math.max(base, total - used));
+  const tight = !!ask && ask.offsetHeight > total - h - 12;
+  if (tight) h = Math.min(H * 0.14, 110);
+  root.classList.toggle('cs-tight', tight);
+  room.style.height = `${Math.round(h)}px`;
+}
+
+/** The older messages fade out under the photo of the room, and only once the chat has scrolled: the fade is a line
+ *  high, so a message cut by the photo reads as going away, while the first line of a chat that has not moved is never
+ *  faded (revisione della grafica, quarta ondata, 10/11/2026 notte). For the Caso and the Prova sul campo. */
+export function fadeOld(root) {
+  root.addEventListener(
+    'scroll',
+    (e) => {
+      if (e.target.classList?.contains('cs-chat')) e.target.classList.toggle('cs-scrolled', e.target.scrollTop > 4);
+    },
+    true,
+  );
+}
+
 export function makeCase(api) {
   const root = document.getElementById('caso');
+  fadeOld(root);
   let resolve = null;
   // a step put off after an answer runs only while its game is still on: leaving with the X ends it (partita 09/11/2026)
   let run = 0;
@@ -57,7 +93,7 @@ export function makeCase(api) {
   function shell(room, floorName) {
     const n = story.story.filter((b) => b.kind === 'scelta').length;
     root.innerHTML = `<div class="lz-top">
-        <button class="lz-x" data-act="x" aria-label="Esci dal Caso"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+        <button class="lz-x" data-act="x" aria-label="Esci dal Caso"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="cs-bar" role="progressbar" aria-label="Scelte fatte" aria-valuemin="0" aria-valuemax="${n}" aria-valuenow="0">${'<i></i>'.repeat(n)}</div>
       </div>
       <div class="cs-room">${room ? `<img src="${room}" alt="" />` : ''}<span class="cs-tag">Il Caso · ${esc(floorName)}</span></div>
@@ -93,9 +129,8 @@ export function makeCase(api) {
   function settle() {
     const c = chat();
     requestAnimationFrame(() => {
-      root.classList.remove('cs-tight');
       const ask = foot().querySelector('.cs-opts') && [...c.querySelectorAll('.cs-ask')].at(-1);
-      if (ask && ask.offsetHeight > c.clientHeight - 12) root.classList.add('cs-tight');
+      fitRoom(root, ask);
       c.scrollTop = c.scrollHeight;
     });
   }
@@ -103,6 +138,13 @@ export function makeCase(api) {
     // where the choices were, the button fades in and waits a moment; after another button it is just there
     const after = fresh;
     fresh = false;
+    // the same button as before stays the one it was: made again at every line, it took the focus again, and a screen
+    // reader said «Avanti» in place of the line just arrived (10/11/2026, the check with the screen reader's tree)
+    const old = foot().querySelector(':scope > button');
+    if (!after && old && old.dataset.act === act && old.textContent === label) {
+      if (document.activeElement !== old) old.focus({ preventScroll: true });
+      return settle();
+    }
     foot().innerHTML = `<button class="pill pill-dark wide${after ? ' cs-in cs-in-short' : ''}" data-act="${act}">${label}</button>`;
     if (after) hold(foot(), HOLD.button);
     foot().querySelector('button').focus({ preventScroll: true });
@@ -187,16 +229,7 @@ export function makeCase(api) {
     if (el) el.inert = !on;
   });
 
-  function ask() {
-    const a = root.querySelector('#lz-ask');
-    a.innerHTML = `<div class="lz-ask-card" role="alertdialog" aria-modal="true" aria-labelledby="lz-ask-t">
-      <h3 id="lz-ask-t" tabindex="-1">Vuoi uscire?</h3>
-      <p>Il Caso riparte dall’inizio. L’ufficio resta com’è.</p>
-      <div class="lz-sheet-acts"><button class="pill pill-light" data-act="stay">Resto</button><button class="pill pill-light" data-act="leave">Esco</button></div>
-    </div>`;
-    a.hidden = false;
-    a.querySelector('h3').focus({ preventScroll: true });
-  }
+  const ask = () => askLeave(root, root.querySelector('#lz-ask'), 'lz-ask-t', 'Il Caso riparte dall’inizio. L’ufficio resta com’è.');
 
   function finish(done) {
     run++;
@@ -218,7 +251,7 @@ export function makeCase(api) {
     api.sfx.tap();
     const act = b.dataset.act;
     if (act === 'x') return ask();
-    if (act === 'stay') return (root.querySelector('#lz-ask').hidden = true);
+    if (act === 'stay') return stay(root.querySelector('#lz-ask'));
     if (act === 'leave') return finish(false);
     if (act === 'next') return step();
     if (act === 'end') return finish(true);

@@ -33,11 +33,22 @@ const LOOKS = {
   Jane: ['#5A6236', '#5C3A28'],
   Warren: ['#5A6236', '#ECECEC'],
 };
-// once the Case is done the mentor no longer waits for it (provisional lines, Claude's: CLAUDE.md §11)
-const mentorSays = (name, n, done) =>
-  done
-    ? `${name ?? 'Il mentore'}: il Caso è fatto. Il lancio si prepara un piano alla volta.`
-    : `${name ?? 'Il mentore'} ti aspetta al Caso: si decide insieme${n > 1 ? ', con il collega del piano' : ''}.`;
+// What the partner says when touched, beside the Case (CLAUDE.md §4: «toccandolo dice frasi sul lancio, senza mai dire
+// cos'è il prodotto»). The first line says where you meet, or that the Case is done; then the lines on the launch, one
+// at each touch, round and round. All provisional, Claude's, to approve: 1. LAVORO/testi/frasi-del-socio.md
+// (10/11/2026 notte; before, one line only, about the partner and not said by the partner).
+const LAUNCH = [
+  'Il lancio? Ci stiamo lavorando. Per ora resta tra soci.',
+  'Dodici piani, poi il tetto. Il lancio si fa lassù.',
+  'Ogni piano che chiudi è un pezzo del lancio. Questo posso dirtelo.',
+  'Cosa lanciamo? Bella domanda. La risposta è sul tetto.',
+];
+let touches = 0; // how many times the partner was touched since FEEN opened: the lines go on from where they were
+const mentorSays = (name, n, done) => () => {
+  const first = done ? 'Il Caso è fatto. Il lancio si prepara un piano alla volta.' : `Ci vediamo al Caso: si decide ${n > 1 ? 'in tre' : 'insieme'}.`;
+  const lines = [first, ...LAUNCH];
+  return `${name ?? 'Il mentore'}: «${lines[touches++ % lines.length]}»`;
+};
 
 // ---------- the icons of the lessons (28/10/2026, after the user's try on the iPhone: «le icone vanno migliorate») ----
 // Every lesson shows the icon of what it is about, on a small plate standing on its stand, instead of a painted number:
@@ -539,7 +550,7 @@ export function makePath(api) {
     if (hire) {
       const say = `Il colloquio: prima della prima lezione scegli tra ${hire[0]} e ${hire[1]}.`;
       hire.forEach((name, k) => {
-        const p = person(name, true, say, `il colloquio del piano ${n}`, false, info.color, k ? '#C9A06A' : '#3B2A22');
+        const p = person(name, true, say, `il colloquio, ${info.name}`, false, info.color, k ? '#C9A06A' : '#3B2A22');
         p.classList.add('pfig--small');
         p.style.left = `calc(50% + ${swing * (0.78 + k * 0.5)}px)`;
         p.style.top = `${at[0].y + at[0].size + EDGE - 6}px`;
@@ -615,7 +626,7 @@ export function makePath(api) {
       if (state.busy) return;
       sfx.tap();
       if (mentor) api.trophy?.('mentore');
-      api.toast(say);
+      api.toast(typeof say === 'function' ? say() : say); // the partner has more than one line (mentorSays)
     };
     return b;
   }

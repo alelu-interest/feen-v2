@@ -151,18 +151,20 @@ function stoneMats(w, h, d) {
   return stoneCache.get(key);
 }
 
-/** The floor's name plate: a dark square-cornered plate, the number on a square in the floor's colour. */
+/** The floor's name plate: the floor's colour on a deeper lower edge, the name in the ink that reads on it. */
 export function signTexture(info) {
-  // the floor's name on the dark plate, after a band in the floor's colour: no number on a square, which looked like
-  // a bingo card (10/11/2026, Davide). Twice the old size, so it stays sharp close up on a phone.
+  // the same band as the floor's in the Percorso: its colour, the name, a deeper edge under it (revisione della grafica,
+  // 10/11/2026 sera; before, a dark navy plate with a stripe of the colour, heavy on the white slab). No number on a
+  // square, which looked like a bingo card (10/11/2026, Davide). Twice the old size, so it stays sharp close up.
   return canvasTexture(1024, 224, (g, w, h) => {
-    g.fillStyle = C.ink;
-    roundRect(g, 0, 0, w, h, 20);
+    const edge = 22;
+    g.fillStyle = info.deep;
+    roundRect(g, 0, 0, w, h, 26);
     g.fill();
     g.fillStyle = info.color;
-    roundRect(g, 26, 34, 18, h - 68, 9);
+    roundRect(g, 0, 0, w, h - edge, 26);
     g.fill();
-    strokeText(g, info.name, 72, h / 2 + 6, info.name.length > 13 ? 96 : 112, { fill: '#FFFFFF', align: 'left', weight: 700 });
+    strokeText(g, info.name, 52, (h - edge) / 2 + 6, info.name.length > 13 ? 96 : 112, { fill: inkOn(info.color), align: 'left', weight: 800 });
   });
 }
 

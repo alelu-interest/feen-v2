@@ -1,0 +1,137 @@
+/* FEEN · la sede — the dark theme, set aside for the v1 (10/11/2026 notte, the user: «per la v1 no tema scuro: tutto
+   chiaro»). These are the blocks that were in style.css, as they were, in the same order. The file is not loaded: the
+   page and the app are light whatever the phone says (style.css has `color-scheme: light`, app.json
+   `userInterfaceStyle: "light"`).
+   To bring the dark theme back: link this file in index.html right after style.css (the build inlines only style.css,
+   so scripts/build-sede.mjs must take it too), put `color-scheme: light dark` back in :root, the dark theme-color in
+   index.html, `userInterfaceStyle: "automatic"` and the dark splash in app.json, BG.dark in sede-screen.tsx, and check
+   every screen in dark again: these blocks now come after all the light rules instead of right after their own. */
+
+/* the interface follows the phone: dark when the phone is dark */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #f4f8fd;
+    --ink-2: #c5d0e0;
+    --muted: #9aa9c0;
+    --line: #2c3b58;
+    --surface: #16213a;
+    --surface-2: #1f2c47;
+    --page: #0d1529;
+    --action-edge: #0c3f80;
+    --brand-soft: #13294a;
+    --brand-ink: #6fb3fe; /* blue 300 of the palette (was #8cc4ff): 6.6:1 on its soft blue, 7.3:1 on the cards */
+    --error-ink: #ff949b;
+    --glass: rgba(22, 33, 58, 0.9);
+    --reward-soft: #3a3018;
+    /* the contexts in the dark: 18% of the state over the card, the state lightened with white; every pair 5.7:1 or
+       more, ink on the cards 7:1 or more. The coins keep the palette's yellow as their ink. */
+    --correct-soft: #1d4249;
+    --correct-ink: #81e4b4;
+    --error-soft: #402b42;
+    --achievement-soft: #2e2e5d;
+    --achievement-ink: #be9fff;
+    --reward-ink: #ffc93c;
+    --orange-soft: #3a2418;
+    --orange-ink: #ffb375;
+    --scrim: rgba(0, 0, 0, 0.4);
+    --veil: rgba(13, 21, 41, 0.72);
+    /* the card stays light, so black suits do not sink into the navy */
+    --paper: #eef3fa;
+    --paper-edge: rgba(0, 0, 0, 0.25);
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 4px 14px rgba(0, 0, 0, 0.35);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .chip-stage {
+    background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+    color: color-mix(in srgb, var(--accent) 45%, #ffffff);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --node-off: #24314d;
+    --node-off-lip: #16213a;
+    --node-off-ink: #6e7f9c;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .pn--prize {
+    --face: color-mix(in srgb, var(--c) 22%, var(--surface));
+  }
+  .pn--locked .pn-obj {
+    filter: grayscale(1) brightness(0.8) contrast(0.8);
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .pn-start {
+    color: color-mix(in srgb, var(--c) 45%, #ffffff);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .pfig.off img,
+  .pfig.off svg {
+    filter: grayscale(1) brightness(0.75) contrast(0.8);
+    opacity: 0.45;
+  }
+  .pfig::after {
+    background: rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sil: #24324f;
+    --sil-hi: #4a5f88;
+    --agree: #6fb3fe; /* blue 300 of the palette */
+    --disagree: #9aa9c0;
+    --mid: #586782; /* 3.2:1 on the page (was #4e5d78, 2.7:1) */
+    --trap-ink: var(--orange-ink);
+    --good-ink: #6fb3fe;
+    --agree-ink: #6fb3fe;
+    --mm-bg: #16213a;
+    --mm-edge: #2c3b58;
+    --mm-q: #1f2c47;
+    --mm-other: #9aa9c0;
+    --mm-axis: #9aa9c0;
+    --mm-me: #3a2418;
+    --mm-me-ink: #f5d3c2;
+    --mm-me-name: #ffffff;
+    --mm-chip: #f4f8fd;
+    --mm-chip-ink: #14213d;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .lz-streak {
+    color: var(--reward);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .lz-theory > span {
+    color: var(--reward);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .lz-idea {
+    color: var(--reward);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  /* from the floor's own colour, as the stage chip (before: floor 1's tones written by hand) */
+  .cs-scene.cs-end {
+    background: color-mix(in srgb, var(--accent) 22%, var(--surface));
+  }
+  .cs-scene.cs-end p {
+    color: color-mix(in srgb, var(--accent) 45%, #ffffff);
+  }
+}
