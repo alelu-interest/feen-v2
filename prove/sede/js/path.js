@@ -9,19 +9,27 @@
 // stage of their floor. Trees, hedges, lamps and benches of the sede line the way. Only the floor in progress and the
 // floors done are built (CLAUDE.md §7); above them the lawn simply goes on, with no veil (30/10/2026). The finger
 // drags the garden up and down.
+// 10/11/2026, Davide (his word is law): «troppo crossy road, va portato più sulla dimensione di duolingo… duolingo non
+// sacrifica la componente di ambiente naturale ma è molto scuro e si vede solo se zoomi; senza zoomare sembra molto
+// più asciutto». The garden in half light (1. LAVORO/percorso/davide-2026-11-10/, strada B): the camera higher and
+// closer, the stages a column in an even zigzag in the middle, as big as a finger; the lawn quiet, trees, hedges,
+// lamps and benches faded towards it and without shadows, so at a glance the way is what you see; the floor's band
+// across the top; on the stage to do only «Inizia», the title when you touch the stage; the partner standing, drawn.
 import * as THREE from 'three';
 import { C, mat, box, canvasTexture, roundRect, inkOn, sfx } from './kit.js';
 import { EGGS } from './eggs.js';
-import { FLOORS, signTexture, lightPool, tree, hedge, bench } from './world.js';
+import { FLOORS, signTexture, tree, hedge, bench } from './world.js';
 import { ROOMS } from './office.js';
+import { FIGURES } from './figures.js';
 
 const DEG = Math.PI / 180;
-const EL = 35 * DEG; // the camera looks down at 35°, from the front
+const EL = 56 * DEG; // the camera looks down at 56°, from the front (35° until 10/11/2026: the isometric game look)
 const L = 22; // a floor's stretch of garden, from its wall to the next
 const H = 0.7; // how much higher each terrace is than the one before
 const FIRST = 2.2; // from a floor's wall to its first stage
 const GAP = 2.5; // from one stage to the next
-const X = [-1.15, 0.7, 1.65, 0.2, -1.4, -0.2, 1.45, 0]; // where each stage stands across the garden
+// where each stage stands across the garden: an even zigzag round the middle, as in a column you scroll (10/11/2026)
+const X = [0, 1.02, 1.27, 0.56, -0.58, -1.27, -1.0, 0.07];
 const SIDE = 0.9; // the stand's side
 const TALL = 0.34;
 const NEXT_TALL = 0.5;
@@ -54,19 +62,16 @@ const stageS = (n, i) => (n - 1) * L + FIRST + i * GAP;
 const camY = (s) => H * (1 + s / L); // the height the camera follows: smooth, while the terraces step
 
 // ---------- textures ----------
-/** Mown lawn: long bands across the garden, in the two greens of the sede's lawn. */
+/** The lawn in half light (10/11/2026): one quiet green with bands you hardly see, so the way stands out on it. */
+const LAWN = '#D5E1CF';
 const lawnTex = canvasTexture(
   64,
   256,
   (g, w, h) => {
-    g.fillStyle = C.grassB;
+    g.fillStyle = LAWN;
     g.fillRect(0, 0, w, h);
-    g.fillStyle = '#B6D79E';
+    g.fillStyle = 'rgba(255,255,255,0.12)';
     g.fillRect(0, 0, w, h / 2);
-    for (let i = 0; i < 40; i++) {
-      g.fillStyle = i % 2 ? 'rgba(70,110,50,0.06)' : 'rgba(255,255,240,0.07)';
-      g.fillRect(Math.random() * w, Math.random() * h, 3 + Math.random() * 4, 2 + Math.random() * 3);
-    }
   },
   { repeat: [6, 90] },
 );
@@ -336,7 +341,6 @@ function plateTex(icon, bg, ink) {
   }
   return plateCache.get(key);
 }
-const plateMats = new Set(); // the faces of the plates, lit in the evening
 const PLATE = 0.54; // the side of a lesson's plate
 const LEAN = 0.5; // it leans back, so its face looks up at the camera
 /** A lesson's plate, standing on its stand and leaning back: square-edged like the stands, its icon on the front,
@@ -345,10 +349,7 @@ function iconPlate(icon, st, deep) {
   const bg = st === 'locked' ? '#EFE9DF' : '#FBF8F3';
   const ink = st === 'locked' ? '#B5AEA3' : deep;
   const side = mat(st === 'locked' ? '#E4DDD2' : '#EFE8DD', { roughness: 0.7 });
-  // in the evening the face glows a little, like the stands, so that the icon always reads
-  const tex = plateTex(icon, bg, ink);
-  const face = new THREE.MeshStandardMaterial({ map: tex, emissive: '#ffffff', emissiveMap: tex, emissiveIntensity: 0, roughness: 0.7 });
-  plateMats.add(face);
+  const face = new THREE.MeshStandardMaterial({ map: plateTex(icon, bg, ink), roughness: 0.7 });
   const s = st === 'next' ? PLATE * 1.12 : PLATE;
   const m = new THREE.Mesh(new THREE.BoxGeometry(s, s, 0.06), [side, side, side, side, face, side]);
   m.position.set(0, s / 2, 0);
@@ -358,6 +359,17 @@ function iconPlate(icon, st, deep) {
   g.rotation.x = -LEAN;
   g.userData.height = s * Math.cos(LEAN);
   return g;
+}
+
+// the drawings of the people, decoded once, before the garden needs them
+const figImgs = new Map();
+function figureImage(name) {
+  if (!figImgs.has(name)) {
+    const img = new Image();
+    img.src = FIGURES[name];
+    figImgs.set(name, img);
+  }
+  return figImgs.get(name);
 }
 
 // ---------- the pieces of the garden ----------
@@ -373,12 +385,29 @@ function grey(m) {
   return greyCache.get(m.uuid);
 }
 
-// the stands have materials of their own, which glow a little in the evening: the stages always read
-const standMats = new Map();
-const standMat = (color) => {
-  if (!standMats.has(color)) standMats.set(color, new THREE.MeshStandardMaterial({ color, roughness: 0.62, emissive: color, emissiveIntensity: 0 }));
-  return standMats.get(color);
-};
+/** The garden in half light (10/11/2026, Davide): its pieces keep their shape, their colours go most of the way
+ *  towards the lawn, and they cast no shadow. At a glance the way is what you see; the garden is there if you look. */
+const FADE_TO = new THREE.Color(LAWN);
+const fadeCache = new Map();
+function faded(m, k) {
+  const key = m.uuid + k;
+  if (!fadeCache.has(key)) {
+    const f = m.clone();
+    if (f.color) f.color.lerp(FADE_TO, k);
+    fadeCache.set(key, f);
+  }
+  return fadeCache.get(key);
+}
+function fade(obj, k = 0.6) {
+  obj.traverse((o) => {
+    if (!o.isMesh) return;
+    o.castShadow = false;
+    o.material = Array.isArray(o.material) ? o.material.map((m) => faded(m, k)) : faded(o.material, k);
+  });
+  return obj;
+}
+
+const standMat = (color) => mat(color, { roughness: 0.62 });
 /** The white stand of the Ufficio, on its stone foot, turned like a diamond. */
 function stand(color, tall) {
   const g = new THREE.Group();
@@ -409,13 +438,13 @@ function person(suit, hair, reached) {
   return g;
 }
 
-/** A lamp of the garden: a white post, a warm head that lights up in the evening (no thin dark lines). */
-function lamp(lampMats) {
+/** A lamp of the garden: a white post and a warm head (no thin dark lines). FEEN is never set at night
+ *  (the user, 10/11/2026), so the lamp is never lit. */
+function lamp() {
   const g = new THREE.Group();
   g.add(box(0.16, 0.06, 0.16, C.stoneDark));
   g.add(box(0.07, 1.5, 0.07, '#F7F4EE', { at: [0, 0.06, 0] }));
   const head = box(0.22, 0.13, 0.22, mat('#FFF6DE', { emissive: '#FFD58A', emissiveIntensity: 0.15 }), { at: [0, 1.56, 0] });
-  lampMats.push(head.material);
   g.add(head, box(0.3, 0.04, 0.3, '#F7F4EE', { at: [0, 1.69, 0] }));
   return g;
 }
@@ -427,7 +456,7 @@ function rand(seed) {
 }
 
 export function makePath(api) {
-  const { renderer, state, earnedOn, built, DAY, NIGHT } = api;
+  const { renderer, state, earnedOn, built, LIGHT } = api;
   const root = document.getElementById('path');
   const layer = document.getElementById('path-list');
   const sub = document.getElementById('path-sub');
@@ -435,21 +464,19 @@ export function makePath(api) {
   // ---------- the scene ----------
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -60, 120);
-  const hemi = new THREE.HemisphereLight(DAY.hemiSky, DAY.hemiGround, DAY.hemi);
-  const sun = new THREE.DirectionalLight(DAY.sunCol, DAY.sun);
+  const hemi = new THREE.HemisphereLight(LIGHT.hemiSky, LIGHT.hemiGround, LIGHT.hemi);
+  const sun = new THREE.DirectionalLight(LIGHT.sunCol, LIGHT.sun);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, { left: -15, right: 15, top: 15, bottom: -15, near: 0.5, far: 80 });
   sun.shadow.bias = -0.0003;
   sun.shadow.normalBias = 0.02;
   sun.shadow.radius = 4;
-  const fill = new THREE.DirectionalLight('#BFD9FF', DAY.fill);
+  const fill = new THREE.DirectionalLight('#BFD9FF', LIGHT.fill);
   scene.add(hemi, sun, sun.target, fill);
   let garden = null;
   let built3d = ''; // what the garden was built for
-  let lampMats = [];
-  let pools = [];
-  let glowMats = []; // the mentor's clothes, lit a little in the evening (their own copies: mat() is shared)
+  let figMats = []; // the people drawn: their own materials, disposed with the garden
   let halo = null;
   let picks = []; // what a tap can touch
   let anims = []; // the surprises of the garden while they move
@@ -457,7 +484,6 @@ export function makePath(api) {
   let people = []; // the people of the garden, for the keyboard and the screen reader
   let marks = []; // what the overlay follows: the bubble's stage, the names of the people
   let stages = []; // every stage built, in order from the bottom
-  let dayK = 0;
   let dirty = true;
 
   // ---------- the view: one number, how far up the garden the camera is ----------
@@ -476,7 +502,9 @@ export function makePath(api) {
   function frame() {
     W = window.innerWidth;
     Hs = window.innerHeight;
-    ppu = THREE.MathUtils.clamp(W / 7.2, 44, 64);
+    // from higher up the stages are further apart on screen: a little further away than before (W / 7.2), so a stand
+    // is about as big as a finger and seven or eight stages show at once, as in a column you scroll
+    ppu = THREE.MathUtils.clamp(W / 7.6, 44, 60);
     Object.assign(camera, { left: -W / 2 / ppu, right: W / 2 / ppu, top: Hs / 2 / ppu, bottom: -Hs / 2 / ppu });
     camera.updateProjectionMatrix();
     dirty = true;
@@ -512,13 +540,10 @@ export function makePath(api) {
     }
     garden = new THREE.Group();
     scene.add(garden);
-    lampMats = [];
-    pools = [];
-    for (const m of glowMats) m.dispose();
-    glowMats = [];
+    for (const m of figMats) m.dispose();
+    figMats = [];
     picks = [];
     anims = [];
-    plateMats.clear();
     eggs = [];
     people = [];
     for (const m of marks) m.el?.remove();
@@ -647,27 +672,20 @@ export function makePath(api) {
         }
         s.head = new THREE.Box3().setFromObject(holder ?? g.children[g.children.length - 1]);
       }
-      // the mentor waits beside the Case, with your partner's name and clothes
+      // the mentor waits beside the Case: since 10/11/2026 your partner standing, as drawn, grey until you get there
+      // (as the characters of a column you scroll); before the choice of the character, a plain pawn
       const caso = stages.find((s) => s.n === n && s.i === 3);
       const partner = api.who?.()?.partner ?? null;
-      const [suit, hair] = LOOKS[partner] ?? ['#2F3A4A', '#5A3A2A'];
       const reached = caso.st !== 'locked' || earnedOn(n) >= 3;
-      const mx = caso.x + 1.65;
+      const mx = caso.x + 1.6;
       const mz = caso.z + 0.15;
-      const mentor = addPerson(partner ?? 'Il mentore', suit, hair, reached, mx, y, mz, mentorSays(partner, n, earnedOn(n) > 3), api.who?.()?.partnerWord ?? 'il mentore');
-      mentor.userData.pick.mentor = true;
-      if (reached) {
-        // in the evening the pawn stands in a pool of light and its clothes glow a little: on the dark lawn a navy or
-        // black pawn disappeared (revisione UX 09/11, problem 11)
-        mentor.traverse((o) => {
-          if (!o.isMesh) return;
-          o.material = o.material.clone();
-          o.material.emissive.copy(o.material.color);
-          glowMats.push(o.material);
-        });
-        const pool = lightPool(mx, mz, 1.9, { pools: [] });
-        pool.position.y = y + 0.015;
-        pools.push(pool);
+      const says = mentorSays(partner, n, earnedOn(n) > 3);
+      const role = api.who?.()?.partnerWord ?? 'il mentore';
+      if (partner && FIGURES[partner]) addFigure(partner, reached, mx, y, mz, says, role);
+      else {
+        const [suit, hair] = LOOKS[partner] ?? ['#2F3A4A', '#5A3A2A'];
+        const mentor = addPerson(partner ?? 'Il mentore', suit, hair, reached, mx, y, mz, says, role);
+        mentor.userData.pick.mentor = true;
       }
       // the two candidates beside the first stage of a floor with an interview
       const hire = HIRES[n];
@@ -689,7 +707,7 @@ export function makePath(api) {
       card.className = 'bubble soon';
       card.style.setProperty('--c', info.color);
       card.style.setProperty('--c-deep', info.deep);
-      card.innerHTML = `<span class="bubble-tag">Piano ${n} · ${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">La gru ci lavora: apre con il prossimo aggiornamento di FEEN.</span>`;
+      card.innerHTML = `<span class="bubble-tag">${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">La gru ci lavora: apre con il prossimo aggiornamento di FEEN.</span>`;
       card.setAttribute('role', 'note');
       card.setAttribute('aria-label', `Il piano ${n} è in costruzione. La gru ci lavora: apre con il prossimo aggiornamento di FEEN.`);
       layer.append(card);
@@ -699,8 +717,7 @@ export function makePath(api) {
       stages.push(s);
       marks.push({ kind: 'soon', el: card, s });
     }
-    for (const p of pools) garden.add(p);
-    applyDay(dayK);
+    applyLight();
     limits();
     built3d = signature();
     dirty = true;
@@ -745,6 +762,73 @@ export function makePath(api) {
     people.push({ name, role, pick: p.userData.pick, x, y, z, box: new THREE.Box3().setFromObject(p) });
     return p;
   }
+  /** A person drawn (1. LAVORO/personaggi/), standing on the lawn and turned to you whatever the angle: the partner.
+   *  Grey and faint until you get there. */
+  const FIG_H = 1.55;
+  function addFigure(name, reached, x, y, z, say, role) {
+    const m = new THREE.SpriteMaterial({ transparent: true, depthWrite: false, visible: false });
+    figMats.push(m);
+    const sp = new THREE.Sprite(m);
+    sp.center.set(0.5, 0);
+    sp.scale.set(FIG_H * 0.42, FIG_H, 1);
+    sp.position.set(x, y + 0.01, z);
+    sp.renderOrder = 2;
+    sp.userData.pick = { type: 'person', name, say, mentor: true };
+    // the drawing is ready at once almost always (an image already decoded); otherwise as soon as it is
+    figureTexture(name, reached, (t) => {
+      m.map = t;
+      m.visible = true;
+      m.needsUpdate = true;
+      sp.scale.set(FIG_H * t.userData.aspect, FIG_H, 1);
+      dirty = true;
+    });
+    garden.add(sp);
+    picks.push(sp);
+    // a soft shadow at the feet
+    const sh = new THREE.Mesh(new THREE.PlaneGeometry(1.0, 0.5), new THREE.MeshBasicMaterial({ map: haloTex, color: '#000000', transparent: true, opacity: 0.18, depthWrite: false }));
+    sh.rotation.x = -Math.PI / 2;
+    sh.position.set(x, y + 0.012, z);
+    sh.raycast = () => {};
+    garden.add(sh);
+    // the drawing faces the screen, so it stands FIG_H tall on screen: in the garden's units that is FIG_H / cos(EL)
+    const tall = FIG_H / Math.cos(EL);
+    marks.push(nameMark(name, x, y + tall + 0.08, z, true, true));
+    const w = FIG_H * 0.42;
+    people.push({ name, role, pick: sp.userData.pick, x, y, z, box: new THREE.Box3(new THREE.Vector3(x - w / 2, y, z - 0.2), new THREE.Vector3(x + w / 2, y + tall, z + 0.2)) });
+    return sp;
+  }
+  /** The figure as a texture: in colour, or turned to a faint grey until you reach the person. Made once each. */
+  const figTex = new Map();
+  function figureTexture(name, reached, ready) {
+    const key = `${name}:${reached}`;
+    if (figTex.has(key)) return ready(figTex.get(key));
+    const img = figureImage(name);
+    const make = () => {
+      const cv = document.createElement('canvas');
+      cv.width = img.naturalWidth;
+      cv.height = img.naturalHeight;
+      const g = cv.getContext('2d');
+      g.drawImage(img, 0, 0);
+      if (!reached) {
+        const d = g.getImageData(0, 0, cv.width, cv.height);
+        for (let k = 0; k < d.data.length; k += 4) {
+          const l = 0.2126 * d.data[k] + 0.7152 * d.data[k + 1] + 0.0722 * d.data[k + 2];
+          d.data[k] = d.data[k + 1] = d.data[k + 2] = 196 + l * 0.18;
+          d.data[k + 3] *= 0.75;
+        }
+        g.putImageData(d, 0, 0);
+      }
+      const t = new THREE.CanvasTexture(cv);
+      t.colorSpace = THREE.SRGBColorSpace;
+      t.anisotropy = 4;
+      t.userData.aspect = img.naturalWidth / img.naturalHeight;
+      figTex.set(key, t);
+      ready(t);
+    };
+    if (img.complete && img.naturalWidth) make();
+    else img.addEventListener('load', make, { once: true });
+  }
+
   /** `over`: the name sits above the point (a person's head) instead of under it (the stage of the launch).
    *  `person`: the name of someone in the garden, which the bubble never covers. */
   function nameMark(name, x, y, z, over = false, person = false) {
@@ -768,28 +852,25 @@ export function makePath(api) {
       if (EGGS[n] && Math.sign(x) === Math.sign(EGGS[n].x) && Math.abs(s - EGGS[n].s) < 1.5) continue;
       const t = tree(x, z0 - s, 0.62 + r() * 0.18, Math.floor(r() * 3));
       t.position.y = y;
-      garden.add(t);
+      garden.add(fade(t));
     }
     const hl = n % 2 ? -1 : 1;
     // long across the garden: seen from above, a hedge running away from you looks like a pillar
     const hd = hedge(hl * 2.75, z0 - (n % 2 ? 9.5 : 14), 1.5, 0.42);
     hd.position.y += y;
-    garden.add(hd);
+    garden.add(fade(hd));
     for (const [x, s] of [
       [-2.25, FIRST + 1 * GAP + 0.6],
       [2.35, FIRST + 5 * GAP + 0.6],
     ]) {
-      const l = lamp(lampMats);
+      const l = fade(lamp());
       l.position.set(x, y, z0 - s);
       garden.add(l);
-      const p = lightPool(x, z0 - s, 2.4, { pools: [] });
-      p.position.y = y + 0.015;
-      pools.push(p);
     }
     // on the side the way leaves free: right of the 4th stage, left of the 3rd
     const b = n % 2 ? bench(2.6, z0 - (FIRST + 4 * GAP), -0.5) : bench(-2.6, z0 - (FIRST + 2 * GAP), 0.5);
     b.position.y += y;
-    garden.add(b);
+    garden.add(fade(b));
   }
 
   /** After the last floor: the stage of the launch, the product under its cloth, never uncovered (CLAUDE.md §3). */
@@ -816,25 +897,11 @@ export function makePath(api) {
   // the garden is built again when a stage is done, and when the partner changes («Ricomincia da capo», a new choice)
   const signature = () => `${state.floor}:${earnedOn(state.floor)}:${api.who?.()?.partner ?? ''}`;
 
-  // ---------- day and evening, with the sede ----------
-  function applyDay(k) {
-    dayK = k;
-    const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), k);
-    // the evening of the garden is lighter than the sede's: the way, the stages and the objects must read
-    hemi.color.copy(mix(DAY.hemiSky, '#8C98C8'));
-    hemi.groundColor.copy(mix(DAY.hemiGround, '#3B4152'));
-    hemi.intensity = THREE.MathUtils.lerp(DAY.hemi * 1.05, 1.35, k);
-    for (const m of standMats.values()) m.emissiveIntensity = 0.26 * k;
-    for (const m of plateMats) m.emissiveIntensity = 0.55 * k;
-    sun.intensity = THREE.MathUtils.lerp(DAY.sun, NIGHT.sun, k);
-    sun.color.copy(mix(DAY.sunCol, NIGHT.sunCol));
-    fill.intensity = THREE.MathUtils.lerp(DAY.fill, NIGHT.fill, k);
-    for (const m of lampMats) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.lamps, NIGHT.lamps, k);
-    for (const m of glowMats) m.emissiveIntensity = 0.45 * k;
-    for (const p of pools) p.material.opacity = k * 0.85;
-    if (halo) halo.material.opacity = THREE.MathUtils.lerp(0.55, 0.95, k);
-    scene.background = mix('#CDE3B8', '#232A3D');
-    root.classList.toggle('evening', k > 0.5);
+  // ---------- the light: always day (the user, 10/11/2026: «l'app non è mai ambientata di notte») ----------
+  function applyLight() {
+    hemi.intensity = LIGHT.hemi * 1.05;
+    if (halo) halo.material.opacity = 0.55;
+    scene.background = new THREE.Color(LAWN);
     dirty = true;
   }
 
@@ -973,7 +1040,8 @@ export function makePath(api) {
           const y = side === 'above' ? topY - TIP_GAP - h : side === 'below' ? footY + TIP_GAP : midY - t;
           const r = { left: x, top: y, right: x + w, bottom: y + h };
           if (r.left < bounds.left - 0.5 || r.right > bounds.right + 0.5 || r.top < bounds.top - 0.5 || r.bottom > bounds.bottom + 0.5) continue;
-          let cost = SIDES[side] + FIT_COST[fit] + Math.abs(t - along / 2) * 0.4;
+          // opened by a touch, the bubble is there to tell the title: never the short form then
+          let cost = SIDES[side] + (open && FITS[fit] === 'mini' ? 1e6 : FIT_COST[fit]) + Math.abs(t - along / 2) * 0.4;
           for (const b of list) cost += b.w * overlapArea(r, b.r);
           const c = { side, fit, t, x, y, cost, r };
           if (!best || cost < best.cost) best = c;
@@ -1040,10 +1108,17 @@ export function makePath(api) {
       plateFloor = n;
       const info = FLOORS[n - 1];
       const e = earnedOn(n);
-      plate.innerHTML = `<span class="path-plate-num" style="background:${info.color};color:${inkOn(info.color)};--c-deep:${info.deep}">${n}</span><span><span class="path-plate-name">${info.name}</span><span class="path-plate-pips">${[...Array(8)].map((_, k) => `<i class="${k < e ? 'on' : ''}" style="--c:${info.color}"></i>`).join('')}</span></span>`;
+      // the name and the floor's colour, no number on a square (10/11/2026, Davide: it looked like a bingo card)
+      plate.style.setProperty('--c', info.color);
+      plate.style.setProperty('--c-deep', info.deep);
+      plate.style.setProperty('--on-c', inkOn(info.color));
+      plate.innerHTML = `<span><span class="path-plate-name">${info.name}</span><span class="path-plate-pips">${[...Array(8)].map((_, k) => `<i class="${k < e ? 'on' : ''}" style="--c:${info.color}"></i>`).join('')}</span></span>`;
     }
   }
 
+  // on the stage to do only «Inizia»; a touch on the stage opens the bubble with what it is and how long it takes, as
+  // a node of a column you scroll (10/11/2026, Davide: less text, the screen says it)
+  let open = false;
   function renderBubble() {
     lastPlace = null;
     const m = marks.find((x) => x.kind === 'bubble');
@@ -1054,9 +1129,12 @@ export function makePath(api) {
     bubble.style.setProperty('--on-c', inkOn(s.info.color));
     // a floor whose lessons are not in the app yet (main.js, comingSoon): the bubble says so, the tap explains
     const soon = api.soon?.(s.n);
-    bubble.innerHTML = `<span class="bubble-tag">${s.tag}</span><span class="bubble-title">${s.title}</span><span class="bubble-go">${soon ? 'In arrivo' : 'Inizia · 3 min'}</span>`;
+    bubble.classList.toggle('open', open);
+    bubble.innerHTML = open
+      ? `<span class="bubble-tag">${s.tag}</span><span class="bubble-title">${s.title}</span><span class="bubble-go">${soon ? 'In arrivo' : 'Inizia · 3 min'}</span>`
+      : `<span class="bubble-go">${soon ? 'In arrivo' : 'Inizia'}</span>`;
     bubble.setAttribute('aria-label', `${s.tag}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
-    bubble.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: 'next' });
+    bubble.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: 'next', go: true });
   }
 
   function renderA11y() {
@@ -1072,7 +1150,8 @@ export function makePath(api) {
         const what = s.st === 'done' ? 'fatta' : s.st !== 'next' ? 'non ancora aperta' : api.soon?.(s.n) ? 'in arrivo con il prossimo aggiornamento' : 'da fare adesso';
         const obj = ROOMS[s.n].stages[s.i].object;
         b.textContent = `Piano ${s.n}, ${s.tag}: ${s.title}, ${what}${obj ? `. Porta ${obj.toLowerCase()}` : ''}`;
-        b.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: s.st });
+        // the button already reads the title: it starts the stage at once
+        b.onclick = () => tap({ type: 'stage', n: s.n, i: s.i, st: s.st, go: true });
       }
       b.onfocus = () => show(s, 0.5);
       a11y.append(b);
@@ -1204,6 +1283,17 @@ export function makePath(api) {
     }
     const list = ROOMS[p.n].stages;
     if (p.st === 'done') return api.openStage(p.n, p.i);
+    // the stage to do: the first touch on the stand opens its bubble, «Inizia» (or a second touch) starts it
+    if (p.st === 'next' && !open && !p.go) {
+      sfx.tap();
+      open = true;
+      renderBubble();
+      // the stage moves up a little, so its bubble has room for the title
+      const s = stages.find((x) => x.n === p.n && x.i === p.i);
+      if (s) show(s, 0.6, false);
+      dirty = true;
+      return;
+    }
     if (p.st === 'next') return api.play();
     sfx.tap();
     api.toast(`Si apre dopo «${list[p.i - 1]?.title ?? ''}».`.replace('««', '«').replace('»»', '»'));
@@ -1250,12 +1340,15 @@ export function makePath(api) {
 
   // ---------- what main.js calls ----------
   function render() {
-    if (signature() !== built3d) build();
+    if (signature() !== built3d) {
+      open = false;
+      build();
+    }
     renderBubble();
     renderA11y();
     plateFloor = 0;
     const info = FLOORS[state.floor - 1];
-    sub.textContent = `Piano ${state.floor} · ${info.name} · ${earnedOn(state.floor)} di 8`;
+    sub.textContent = `${info.name} · ${earnedOn(state.floor)} di 8`;
     dirty = true;
   }
   /** The stage to do now, a little under the middle of the screen. */
@@ -1268,5 +1361,6 @@ export function makePath(api) {
     frame();
     if (garden) limits();
   });
-  return { render, scrollToNext, step, applyDay, rebuild: () => (built3d = '') };
+  applyLight();
+  return { render, scrollToNext, step, rebuild: () => (built3d = '') };
 }

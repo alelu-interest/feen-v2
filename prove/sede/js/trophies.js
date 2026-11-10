@@ -2,7 +2,7 @@
 // i traguardi e farei tipo i traguardi di FIFA», con l'esempio del Gaming finito senza errori: «cosa nascondi sotto?»).
 // Next to the diary of the Tu, a set of trophies with a name and a line of their own, as in a football game: some you
 // can see from the start with what earns them, three stay secret until you find them. No counters, no percentages, no
-// dates, nothing lost if you stop. The names never say «he» or «she» about whoever plays (CLAUDE.md §8): the user's
+// dates, nothing lost if you stop. «Luci accese» (a stage done in the evening) went with the evening on 10/11/2026. The names never say «he» or «she» about whoever plays (CLAUDE.md §8): the user's
 // «Il baro» becomes «Asso nella manica», with the user's line.
 import { FLOORS } from './world.js';
 import { inkOn } from './kit.js';
@@ -16,7 +16,6 @@ export const TROPHIES = [
   { id: 'ripasso', name: 'Seconda occhiata', how: 'Ripassa una tappa già fatta.', line: 'Hai ripassato una tappa già fatta. Chi ripassa, ricorda.' },
   { id: 'visita', name: 'Visita guidata', how: 'Apri le schede dei tre oggetti di un piano.', line: 'Hai guardato da vicino tutti e tre gli oggetti di un piano.' },
   { id: 'lente', name: 'Lente d’ingrandimento', how: 'Ingrandisci una stanza fino in fondo, con due dita.', line: 'Fino all’ultimo dettaglio. Come si leggono le commissioni.' },
-  { id: 'luci', name: 'Luci accese', how: 'Finisci una tappa di sera, con la sede illuminata.', line: 'Una tappa finita con le luci della sede accese.' },
   { id: 'ficcanaso', name: 'Ficcanaso', how: 'Tocca una sorpresa nel giardino del Percorso.', line: 'Hai toccato quello che nessuno tocca. Il giardino ha altri segreti.' },
   { id: 'giardino', name: 'Pollice verde', how: 'Trova la sorpresa del giardino di ogni piano.', line: 'Le sorprese di tutti e dodici i piani: il giardino non ha più segreti.' },
   { id: 'sei', secret: true, name: 'Sei!', line: 'Dal dado del Gaming è uscito 6. Non vuol dire niente: il prossimo tiro non lo sa.' },
@@ -33,7 +32,6 @@ const ICON = {
   ripasso: '<path d="M12 6.5v13.5M12 6.5C9 4.5 6 4.5 2.5 5.5V19c3.5-1 6.5-1 9.5 1M12 6.5c3-2 6-2 9.5-1V19c-3.5-1-6.5-1-9.5 1"/>',
   visita: '<path d="M2.5 12S6 5 12 5s9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z"/><circle cx="12" cy="12" r="3"/>',
   lente: '<circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5.5 5.5"/>',
-  luci: '<path d="M9.5 18h5M10.5 21h3M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z"/>',
   ficcanaso: '<path d="M12 21v-5"/><path d="M12 3l6 7.5h-2.8L19 16H5l3.8-5.5H6z"/>',
   giardino: '<path d="M12 21V11"/><path d="M12 11c0-4 3-6 7-6 0 4-3 6-7 6zM12 13.5c0-3-2.5-5-6-5 0 3 2.5 5 6 5z"/>',
   sei: '<rect x="4" y="4" width="16" height="16" rx="3"/><g fill="currentColor" stroke="none"><circle cx="9" cy="8.5" r="1.3"/><circle cx="15" cy="8.5" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="15.5" r="1.3"/><circle cx="15" cy="15.5" r="1.3"/></g>',

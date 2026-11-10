@@ -7,8 +7,87 @@
 // the objects of the floors are untouched.
 
 import * as THREE from 'three';
-import { C, mat, goldMat, rbox, box, cyl, sphere, canvasTexture, roundRect, strokeText, inkOn, mixHex } from './kit.js';
-import { B, FLOORS, LEAVES, TRUNK } from './world.js';
+import { C, mat, goldMat, rbox, box as sharpBox, cyl, sphere, canvasTexture, roundRect, strokeText, inkOn, mixHex } from './kit.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { B, FLOORS, LEAVES, TRUNK, leafBall, leafMat } from './world.js';
+
+// ---------- a hairline chamfer on every box of the rooms ----------
+// Davide, 10/11/2026: «il setup dell'ufficio a livello macro è molto bello ma a livello micro vanno alzate la qualità
+// degli oggetti». Every box in a room keeps its square edges (the rule of the elements), cut by a flat 45° chamfer
+// a few millimetres wide: from the room's view it is under a pixel, close up each edge catches a thin line of light,
+// as a real piece of furniture does. The building and the city outside stay sharp (they use kit.js's box).
+const chamferCache = new Map();
+function chamferGeometry(w, h, d, c) {
+  const key = [w, h, d, c].map((v) => v.toFixed(5)).join();
+  if (chamferCache.has(key)) return chamferCache.get(key);
+  const half = [w / 2, h / 2, d / 2];
+  // every corner of the box becomes three points, one on each of its three faces
+  const pt = (axis, s) => new THREE.Vector3(...half.map((v, i) => s[i] * (i === axis ? v : v - c)));
+  const polys = [];
+  const S = [1, -1];
+  for (let a = 0; a < 3; a++) {
+    const [b, e] = [(a + 1) % 3, (a + 2) % 3];
+    for (const sa of S) {
+      // the face itself
+      const ring = [[1, 1], [1, -1], [-1, -1], [-1, 1]].map(([sb, se]) => {
+        const s = [];
+        s[a] = sa;
+        s[b] = sb;
+        s[e] = se;
+        return pt(a, s);
+      });
+      polys.push({ ring });
+      // the strip between this face and the next axis's face, along the third axis
+      for (const sb of S) {
+        const s1 = [];
+        s1[a] = sa;
+        s1[b] = sb;
+        s1[e] = 1;
+        const s2 = [...s1];
+        s2[e] = -1;
+        polys.push({ ring: [pt(a, s1), pt(b, s1), pt(b, s2), pt(a, s2)] });
+      }
+    }
+  }
+  // the small triangle at each corner
+  for (const sx of S) for (const sy of S) for (const sz of S) polys.push({ ring: [0, 1, 2].map((ax) => pt(ax, [sx, sy, sz])) });
+  const pos = [];
+  const nor = [];
+  const uvs = [];
+  const n = new THREE.Vector3();
+  const mid = new THREE.Vector3();
+  for (const { ring } of polys) {
+    mid.set(0, 0, 0);
+    ring.forEach((p) => mid.add(p));
+    n.subVectors(ring[1], ring[0]).cross(new THREE.Vector3().subVectors(ring[2], ring[0])).normalize();
+    const out = n.dot(mid) >= 0;
+    const pts = out ? ring : [...ring].reverse();
+    if (!out) n.negate();
+    for (let i = 1; i < pts.length - 1; i++) {
+      for (const p of [pts[0], pts[i], pts[i + 1]]) {
+        pos.push(p.x, p.y, p.z);
+        nor.push(n.x, n.y, n.z);
+        uvs.push(0.5, 0.5);
+      }
+    }
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  geo.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
+  chamferCache.set(key, geo);
+  return geo;
+}
+/** kit.js's box, chamfered: same size, same placing. Thin sheets (under 4 mm), boxes with a material per face and
+ *  boxes wearing a picture stay sharp. */
+function box(w, h, d, material, opts = {}) {
+  const c = Math.min(0.008, Math.min(w, h, d) * 0.12);
+  if (c < 0.0005 || Array.isArray(material) || material?.map) return sharpBox(w, h, d, material, opts);
+  const m = sharpBox(w, h, d, material, opts);
+  m.geometry.dispose();
+  m.geometry = chamferGeometry(w, h, d, c);
+  return m;
+}
 
 const K = 1.3; // furniture scale
 const DESK_TOP = 0.38 * K * 1.25;
@@ -317,14 +396,15 @@ const NIGHT_BLUE_LIGHT = tone(12, 0.5);
 // ---------- textures ----------
 /** The stage number on a stand: grey, or on the floor's colour for the next stage. It fills the face, so it reads from the room's view. */
 function standTexture(n, next, color) {
-  return canvasTexture(256, 256, (g, w, h) => {
+  // 512 px a side since 10/11/2026 (Davide: «i numeri sono sfocati»): at 256 the figure went soft on a phone up close
+  return canvasTexture(512, 512, (g, w, h) => {
     if (next) {
       g.fillStyle = color;
-      roundRect(g, 4, 4, w - 8, h - 8, 4);
+      roundRect(g, 8, 8, w - 16, h - 16, 8);
       g.fill();
     }
-    strokeText(g, String(n), w / 2, h / 2 + 14, 200, { fill: next ? inkOn(color) : '#867F75' });
-  });
+    strokeText(g, String(n), w / 2, h / 2 + 28, 400, { fill: next ? inkOn(color) : '#867F75' });
+  }, { aniso: 16 });
 }
 
 /** A square-edged frame standing proud of what it surrounds: the contract's, the board's, the wall stands'. */
@@ -342,7 +422,10 @@ function squareRim(w, h, rim, depth, material) {
 
 /** The white face of a board: its title, and the lines between columns if it has them. */
 function boardTexture(title, columns, { size = 30, y = 34, bg = '#FFFFFF' } = {}) {
-  return canvasTexture(512, 320, (g, w, h) => {
+  // drawn on 512 × 320 at twice that (10/11/2026: close up the title was soft)
+  return canvasTexture(1024, 640, (g) => {
+    g.scale(2, 2);
+    const [w, h] = [512, 320];
     g.fillStyle = bg;
     g.fillRect(0, 0, w, h);
     strokeText(g, title, w / 2, y, size, { fill: C.navy });
@@ -357,7 +440,10 @@ function boardTexture(title, columns, { size = 30, y = 34, bg = '#FFFFFF' } = {}
 
 /** The signed contract: its title, a few lines of text, your signature in ink and the Direzione's seal. */
 function contractTexture() {
-  return canvasTexture(400, 512, (g, w, h) => {
+  // drawn on 400 × 512 at twice that (10/11/2026: close up the lines were soft)
+  return canvasTexture(800, 1024, (g) => {
+    g.scale(2, 2);
+    const [w, h] = [400, 512];
     g.fillStyle = '#FFFDF8';
     g.fillRect(0, 0, w, h);
     strokeText(g, 'Contratto', w / 2, 64, 50, { fill: C.ink });
@@ -417,10 +503,31 @@ function disc(r, t, material, at = [0, 0, 0]) {
   return d;
 }
 
-/** A gold coin lying flat, its face up. */
+/** A gold coin lying flat, its face up. Its edge is rounded and catches the light (10/11/2026, Davide's «micro»:
+ *  before, a plain cylinder). */
+const coinCache = new Map();
+function coinBody(r, t) {
+  const key = `${r}:${t}`;
+  if (!coinCache.has(key)) {
+    const profile = [
+      [0, -0.5],
+      [0.9, -0.5],
+      [0.975, -0.43],
+      [1, -0.26],
+      [1, 0.26],
+      [0.975, 0.43],
+      [0.9, 0.5],
+      [0, 0.5],
+    ].map(([x, y]) => new THREE.Vector2(x * r, y * t));
+    coinCache.set(key, new THREE.LatheGeometry(profile, 36));
+  }
+  const m = new THREE.Mesh(coinCache.get(key), goldMat());
+  m.castShadow = m.receiveShadow = true;
+  return m;
+}
 function coin(r, t) {
   const g = new THREE.Group();
-  g.add(cyl(r, r, t, goldMat(), { seg: 32, center: true }));
+  g.add(coinBody(r, t));
   g.add(cyl(r * 0.7, r * 0.7, t * 0.25, mat(C.goldDark, { metalness: 0.4, roughness: 0.35 }), { seg: 32, center: true, at: [0, t * 0.6, 0] }));
   return g;
 }
@@ -462,49 +569,129 @@ function creditCard() {
 }
 
 // ---------- the objects of piano 1 · Direzione ----------
+/** A pale, fine grain that the leather's colour tints: one tile covers 2 cm of the object. */
+let grainTexture = null;
+function leatherGrain() {
+  if (!grainTexture) {
+    grainTexture = canvasTexture(
+      256,
+      256,
+      (c, w, h) => {
+        const img = c.createImageData(w, h);
+        let k = 11;
+        for (let i = 0; i < w * h; i++) {
+          k = (k * 16807) % 2147483647;
+          const v = 238 + (k % 18);
+          img.data.set([v, v, v, 255], i * 4);
+        }
+        c.putImageData(img, 0, 0);
+      },
+      { repeat: [50, 50], aniso: 8 },
+    );
+  }
+  return grainTexture;
+}
+
+/** A row of stitches along `points` (x, y, z), one short dash every `step`: one mesh for the whole seam. */
+function seam(points, material, { step = 0.0042, w = 0.0011, t = 0.0007 } = {}) {
+  const parts = [];
+  for (let i = 0; i < points.length - 1; i++) {
+    const [a, b] = [points[i], points[i + 1]];
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
+    for (let s = 0; s + step * 0.6 <= len; s += step) {
+      const k = (s + step * 0.3) / len;
+      const geo = new THREE.BoxGeometry(step * 0.6, w, t);
+      geo.rotateZ(Math.atan2(b.y - a.y, b.x - a.x));
+      geo.translate(a.x + (b.x - a.x) * k, a.y + (b.y - a.y) * k, a.z + (b.z - a.z) * k);
+      parts.push(geo);
+    }
+  }
+  const m = new THREE.Mesh(mergeGeometries(parts), material);
+  parts.forEach((p) => p.dispose());
+  return m;
+}
+
 /** Stage 1: the empty card holder (28/10/2026, from the meeting: a thin, elegant card case instead of a fat wallet
- *  spilling coins). Square-edged leather a deeper peach than the walls, standing up in a slot of a small wooden base
- *  so it reads from the room; its three pockets are empty, and out of the middle one sticks only a receipt: that is
- *  where the money went. */
+ *  spilling coins). Redone close up on 10/11/2026 (Davide: «a livello micro vanno alzate la qualità degli oggetti»;
+ *  before, a square slab with three flat strips, it read as a crate): leather a deeper peach than the walls, with its
+ *  grain and a pale stitched seam all round; three pockets in steps, each with the thumb's curve cut in its top, as
+ *  on a real card case; all three empty, and out of the middle one sticks only a receipt with a torn edge: that is
+ *  where the money went. It stands in the slot of a small wooden base, so it reads from the room. */
 function cardHolder() {
   const g = new THREE.Group();
-  const leather = mat(tone(1, -0.25), { roughness: 0.55 });
-  const pocket = mat(tone(1, 0.2), { roughness: 0.65 });
-  const [W, H, T] = [0.11, 0.078, 0.008];
+  const grain = leatherGrain();
+  const leather = new THREE.MeshStandardMaterial({ color: tone(1, -0.25), roughness: 0.55, map: grain });
+  const pocketLeather = new THREE.MeshStandardMaterial({ color: tone(1, -0.05), roughness: 0.6, map: grain });
+  const thread = mat('#F6E7D6', { roughness: 0.7 });
+  const [W, H, T, R] = [0.11, 0.078, 0.005, 0.008];
   const holder = new THREE.Group();
-  holder.add(box(W, H, T, leather, { center: true }));
-  // the receipt, out of the middle pocket: warm white, its lines a soft grey, one line in the floor's colour
-  const receipt = new THREE.Mesh(
-    new THREE.BoxGeometry(0.04, 0.07, 0.0012),
-    new THREE.MeshStandardMaterial({
-      map: canvasTexture(64, 112, (c, w, h) => {
-        c.fillStyle = '#FCFAF6';
-        c.fillRect(0, 0, w, h);
-        c.fillStyle = '#C9C1B5';
-        for (let i = 0; i < 4; i++) c.fillRect(10, 10 + i * 11, i === 3 ? 22 : 44, 4);
-        c.fillStyle = ORANGE;
-        c.fillRect(10, 56, 44, 6);
-      }),
-      roughness: 0.8,
-    }),
+  // the back of the case
+  const back = new THREE.Mesh(
+    new THREE.ExtrudeGeometry(roundedRectPath(new THREE.Shape(), -W / 2, -H / 2, W, H, R), { depth: T, bevelEnabled: true, bevelThickness: 0.0008, bevelSize: 0.0008, bevelSegments: 2, curveSegments: 10 }),
+    leather,
   );
-  receipt.geometry = new THREE.BoxGeometry(0.04, 0.07, 0.0008);
-  receipt.position.set(0.012, 0.02, T / 2 + 0.0012);
+  back.position.z = -T / 2;
+  holder.add(back);
+  // three pockets, the front one lowest: the outline of the case at the bottom, the thumb's curve at the top
+  const PT = 0.0012;
+  const pocketZ = (i) => T / 2 + 0.0008 + (2 - i) * 0.0022;
+  const heights = [0.032, 0.045, 0.058];
+  heights.forEach((h, i) => {
+    const s = new THREE.Shape();
+    const [x0, x1, y0, y1] = [-W / 2, W / 2, -H / 2, -H / 2 + h];
+    s.moveTo(x0 + R, y0);
+    s.lineTo(x1 - R, y0);
+    s.quadraticCurveTo(x1, y0, x1, y0 + R);
+    s.lineTo(x1, y1);
+    s.lineTo(W * 0.22, y1);
+    s.quadraticCurveTo(0, y1 - 0.016, -W * 0.22, y1);
+    s.lineTo(x0, y1);
+    s.lineTo(x0, y0 + R);
+    s.quadraticCurveTo(x0, y0, x0 + R, y0);
+    const geo = new THREE.ExtrudeGeometry(s, { depth: PT, bevelEnabled: true, bevelThickness: 0.0003, bevelSize: 0.0003, bevelSegments: 1, curveSegments: 12 });
+    const p = new THREE.Mesh(geo, pocketLeather);
+    p.position.z = pocketZ(i);
+    holder.add(p);
+  });
+  // the seam all round, a little inside the edge, on whichever layer is in front there
+  const inset = 0.0045;
+  const ring = roundedRectPath(new THREE.Shape(), -W / 2 + inset, -H / 2 + inset, W - 2 * inset, H - 2 * inset, R - inset * 0.6).getSpacedPoints(90);
+  const front = (y) => {
+    for (let i = 0; i < 3; i++) if (y < -H / 2 + heights[i] - 0.004) return pocketZ(i) + PT + 0.0003;
+    return T / 2 + 0.0008 + 0.0003;
+  };
+  holder.add(seam(ring.map((p) => new THREE.Vector3(p.x, p.y, front(p.y))), thread));
+  // the receipt, out of the middle pocket: thermal paper with a torn top, its lines printed, the total in the floor's colour
+  const receipt = cutout(0.038, 0.07, 3600, (c, W2, H2) => {
+    c.scale(W2 / 68, H2 / 126); // drawn on 68 × 126, at twice that
+    const [w, h] = [68, 126];
+    c.fillStyle = '#FCFAF6';
+    c.beginPath();
+    c.moveTo(0, h);
+    c.lineTo(0, 10);
+    const teeth = 9;
+    for (let i = 0; i <= teeth; i++) c.lineTo((i / teeth) * w, i % 2 ? 2 : 12);
+    c.lineTo(w, h);
+    c.closePath();
+    c.fill();
+    c.fillStyle = '#B9B0A3';
+    for (let i = 0; i < 5; i++) {
+      const y = 26 + i * 15;
+      c.fillRect(8, y, i === 4 ? 22 : 30, 4);
+      c.fillRect(w - 20, y, 12, 4);
+    }
+    c.fillStyle = ORANGE;
+    c.fillRect(8, 104, w - 16, 7);
+  });
+  receipt.position.set(0.01, -H / 2 + heights[1] - 0.012 + 0.035, (pocketZ(2) + PT + pocketZ(1)) / 2);
   receipt.rotation.z = -0.1;
   holder.add(receipt);
-  // three pockets in steps, as on a real card case: the front one lowest, each one behind a little taller. Each
-  // layer stands well off the one behind (the object is drawn about four times bigger: closer, they would flicker)
-  for (let i = 0; i < 3; i++) {
-    const h = 0.03 + i * 0.013;
-    const b = T / 2 + 0.0024 + (2 - i) * 0.0024; // the back of this pocket
-    holder.add(box(W - 0.008, h, 0.001, pocket, { at: [0, -H / 2 + 0.004, b + 0.0005] }));
-    holder.add(box(W - 0.008, 0.0035, 0.0008, leather, { at: [0, -H / 2 + 0.004 + h - 0.0035, b + 0.0018] }));
-  }
-  holder.position.set(0, 0.01 + H / 2, 0);
-  holder.rotation.x = -0.12;
+  holder.position.set(0, 0.009 + H / 2, 0);
+  holder.rotation.x = -0.06;
   g.add(holder);
-  // the small wooden base with its slot
-  g.add(box(0.124, 0.01, 0.034, C.wood, { at: [0, 0, -0.003] }));
+  // the small wooden base, with a slot held by two lips
+  g.add(box(0.126, 0.011, 0.036, C.wood, { at: [0, 0, -0.002] }));
+  for (const z of [-T / 2 - 0.0028, pocketZ(0) + PT + 0.0028]) g.add(box(0.122, 0.006, 0.0035, C.woodDark, { at: [0, 0.011, z] }));
   g.rotation.y = -0.3;
   return g;
 }
@@ -530,27 +717,63 @@ function whiteboard() {
   const cols = [-0.32, 0, 0.32];
   const signY = 0.1;
 
-  // the three departments, as small raised signs
+  // the three departments, as small raised signs (10/11/2026, Davide's «micro»: before, a cylinder for the
+  // megaphone, eight little blocks round a disc for the gear; now each is one clean shape with soft edges)
+  const raised = (shape, depth = 0.022) => {
+    const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.0035, bevelSegments: 3, curveSegments: 24 });
+    geo.translate(0, 0, -depth / 2);
+    return new THREE.Mesh(geo, ink);
+  };
+  // the megaphone: a horn that opens into a bell, the mouthpiece and the grip under it
   const megaphone = new THREE.Group();
-  const horn = cyl(0.022, 0.062, 0.1, ink, { seg: 20, center: true });
-  horn.rotation.z = Math.PI / 2;
-  megaphone.add(horn, rbox(0.03, 0.05, 0.03, ink, { center: true, r: 0.01, at: [-0.06, -0.02, 0] }));
-  const gear = new THREE.Group();
-  const hub = cyl(0.045, 0.045, 0.03, ink, { seg: 24, center: true });
-  hub.rotation.x = Math.PI / 2;
-  gear.add(hub);
-  for (let i = 0; i < 8; i++) {
-    const a = (i / 8) * Math.PI * 2;
-    const tooth = rbox(0.026, 0.03, 0.03, ink, { center: true, r: 0.006, at: [Math.cos(a) * 0.052, Math.sin(a) * 0.052, 0] });
-    tooth.rotation.z = a + Math.PI / 2;
-    gear.add(tooth);
+  const horn = new THREE.Mesh(
+    new THREE.LatheGeometry(
+      [
+        [0, -0.05],
+        [0.017, -0.05],
+        [0.021, -0.035],
+        [0.034, 0.0],
+        [0.054, 0.034],
+        [0.064, 0.048],
+        [0.062, 0.054],
+        [0, 0.054],
+      ].map(([x, y]) => new THREE.Vector2(x, y)),
+      32,
+    ),
+    ink,
+  );
+  horn.rotation.z = -Math.PI / 2;
+  megaphone.add(horn);
+  const mouth = cyl(0.011, 0.013, 0.022, ink, { seg: 20, center: true, at: [-0.06, 0, 0] });
+  mouth.rotation.z = Math.PI / 2;
+  megaphone.add(mouth, rbox(0.022, 0.05, 0.022, ink, { center: true, r: 0.008, at: [-0.025, -0.045, 0] }));
+  megaphone.position.x = 0.01;
+  // the gear: eight teeth with sloping sides and a round hole
+  const gearShape = new THREE.Shape();
+  const [tip, root, teeth] = [0.07, 0.054, 8];
+  for (let i = 0; i < teeth; i++) {
+    const a = (i / teeth) * Math.PI * 2;
+    const step = (Math.PI * 2) / teeth;
+    const at = (r, t) => [Math.cos(a + t * step) * r, Math.sin(a + t * step) * r];
+    const pts = [at(root, 0), at(root, 0.08), at(tip, 0.2), at(tip, 0.44), at(root, 0.56), at(root, 0.78)];
+    pts.forEach(([x, y], k) => (i === 0 && k === 0 ? gearShape.moveTo(x, y) : gearShape.lineTo(x, y)));
   }
-  const hole = cyl(0.016, 0.016, 0.034, white, { seg: 16, center: true });
-  hole.rotation.x = Math.PI / 2;
-  gear.add(hole);
+  gearShape.closePath();
+  gearShape.holes.push(new THREE.Path().absarc(0, 0, 0.02, 0, Math.PI * 2, true));
+  const gear = new THREE.Group();
+  gear.add(raised(gearShape));
+  gear.rotation.z = 0.2;
+  // the person: a round head over round shoulders
+  const bust = new THREE.Shape();
+  bust.moveTo(-0.052, -0.06);
+  bust.lineTo(0.052, -0.06);
+  bust.lineTo(0.052, -0.03);
+  bust.quadraticCurveTo(0.052, 0.006, 0.012, 0.006);
+  bust.lineTo(-0.012, 0.006);
+  bust.quadraticCurveTo(-0.052, 0.006, -0.052, -0.03);
+  bust.closePath();
   const person = new THREE.Group();
-  person.add(sphere(0.03, ink, [0, 0.04, 0], 16));
-  person.add(rbox(0.1, 0.055, 0.03, ink, { center: true, r: 0.026, at: [0, -0.03, 0] }));
+  person.add(raised(bust), sphere(0.03, ink, [0, 0.046, 0], 28));
   [megaphone, gear, person].forEach((sign, i) => {
     sign.position.set(cols[i], signY, Z + 0.015);
     g.add(sign);
@@ -563,14 +786,19 @@ function whiteboard() {
     c.position.set(cols[i], -0.12, Z + 0.011);
     g.add(c);
   }
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.009, 8, 40), frame);
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.072, 0.009, 12, 64), frame);
   ring.position.set(cols[2], -0.12, Z);
   g.add(ring);
 
   // the ledge under the board, with one marker lying on it
   g.add(box(0.62, 0.025, 0.08, frame, { at: [0, -H / 2 - 0.025, 0.04] }));
-  const marker = cyl(0.012, 0.012, 0.1, ORANGE, { at: [-0.12, -H / 2 + 0.012, 0.055], seg: 12, center: true });
+  // a marker with its cap and its tip
+  const marker = new THREE.Group();
+  marker.add(cyl(0.012, 0.012, 0.075, mat('#FBF8F3', { roughness: 0.5 }), { seg: 20, center: true, at: [0, -0.005, 0] }));
+  marker.add(cyl(0.0125, 0.0125, 0.04, ORANGE, { seg: 20, center: true, at: [0, 0.05, 0] }));
+  marker.add(cyl(0.004, 0.008, 0.012, mat(C.ink, { roughness: 0.6 }), { seg: 12, center: true, at: [0, -0.048, 0] }));
   marker.rotation.z = Math.PI / 2;
+  marker.position.set(-0.12, -H / 2 + 0.012, 0.055);
   g.add(marker);
   return g;
 }
@@ -578,7 +806,8 @@ function whiteboard() {
 /** The Field test: the month's piggy bank (28/10/2026, from the meeting: a classic piggy bank, see-through so the
  *  money shows). A clear body a third full of coins, snout, ears, legs and tail in the floor's peach, a coin halfway
  *  into the slot on its back. The inside of the glass a touch cloudier than the outside, as for every glass here, so
- *  its outline holds against the wall. */
+ *  its outline holds against the wall. Close up (10/11/2026, Davide's «micro»): two eyes, round soft ears instead of
+ *  three-sided cones, a rim on the snout with oval nostrils, a dark slot under the coin, rounder feet. */
 function piggyBank() {
   const g = new THREE.Group();
   const peach = mat(ORANGE, { roughness: 0.5 });
@@ -618,37 +847,71 @@ function piggyBank() {
   shine.rotation.set(0, -0.3, -0.5);
   shine.renderOrder = 3;
   g.add(shine);
-  // the snout at the front (+x), flat, with two nostrils a deeper peach
-  const snout = cyl(0.034, 0.036, 0.024, peach, { seg: 28, center: true, at: [RX - 0.002, cy - 0.01, 0] });
-  snout.rotation.z = Math.PI / 2;
+  const deep = mat(tone(1, -0.5), { roughness: 0.6 });
+  // the snout at the front (+x): a short round disc with a soft rim, two oval nostrils pressed into it
+  const snout = new THREE.Mesh(
+    new THREE.LatheGeometry(
+      [
+        [0, 0.013],
+        [0.027, 0.013],
+        [0.033, 0.0105],
+        [0.0355, 0.006],
+        [0.036, -0.012],
+      ].map(([x, y]) => new THREE.Vector2(x, y)),
+      36,
+    ),
+    peach,
+  );
+  snout.rotation.z = -Math.PI / 2;
+  snout.position.set(RX - 0.001, cy - 0.01, 0);
   g.add(snout);
   for (const z of [-0.011, 0.011]) {
-    const n = cyl(0.006, 0.006, 0.004, mat(tone(1, -0.5), { roughness: 0.6 }), { seg: 12, center: true, at: [RX + 0.011, cy - 0.01, z] });
-    n.rotation.z = Math.PI / 2;
+    const n = sphere(0.0062, deep, [RX + 0.0115, cy - 0.01, z], 16);
+    n.scale.set(0.35, 1.25, 0.85);
     g.add(n);
   }
-  // two small flat ears on top, towards the front, folded a little forward
-  for (const z of [-0.045, 0.045]) {
-    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.021, 0.03, 3), peach);
-    ear.scale.set(1, 1, 0.35);
-    ear.position.set(RX * 0.42, cy + RY * 0.92, z);
-    ear.rotation.set(0, Math.PI / 2, -0.55);
+  // two eyes above the snout, painted on the glass: dark and glossy, a dot of light in each
+  const eye = mat(C.ink, { roughness: 0.25 });
+  for (const side of [-1, 1]) {
+    // a point on the round body, and the way out of it there
+    const d = new THREE.Vector3(0.74, 0.42, side * 0.5).normalize();
+    const on = new THREE.Vector3(d.x * RX, cy + d.y * RY, d.z * RZ);
+    const out = new THREE.Vector3(on.x / RX ** 2, (on.y - cy) / RY ** 2, on.z / RZ ** 2).normalize();
+    const e = sphere(0.0085, eye, on.clone().addScaledVector(out, 0.0012).toArray(), 20);
+    e.scale.set(1, 1.15, 0.42); // flat along the way out, a little tall
+    e.lookAt(on.clone().addScaledVector(out, 1));
+    g.add(e);
+    const glint = sphere(0.0024, mat('#FFFFFF', { roughness: 0.2 }), on.clone().addScaledVector(out, 0.0042).add(new THREE.Vector3(0.002, 0.0035, 0)).toArray(), 10);
+    g.add(glint);
+  }
+  // two soft ears on top, towards the front, folded a little forward: rounded, flattened cones
+  for (const z of [-0.047, 0.047]) {
+    const ear = new THREE.Mesh(new THREE.ConeGeometry(0.028, 0.03, 24), peach);
+    ear.scale.set(1, 1, 0.36);
+    ear.position.set(RX * 0.38, cy + RY * 0.9, z);
+    ear.rotation.set(Math.sign(z) * 0.22, Math.PI / 2, -0.85);
     g.add(ear);
   }
-  // four short, stout legs under the belly, just touching it (through the glass a long leg would show whole)
+  // four short, stout legs under the belly, just touching it (through the glass a long leg would show whole), each
+  // with a round foot
   for (const x of [-0.065, 0.065]) {
     for (const z of [-0.04, 0.04]) {
       const belly = cy - RY * Math.sqrt(1 - (x / RX) ** 2 - (z / RZ) ** 2); // where the round belly is, above this leg
-      g.add(cyl(0.017, 0.019, belly + 0.008, peach, { seg: 20, at: [x, 0, z] }));
+      g.add(cyl(0.016, 0.0185, belly + 0.008 - 0.004, peach, { seg: 24, at: [x, 0.004, z] }));
+      const foot = new THREE.Mesh(new THREE.TorusGeometry(0.0145, 0.004, 8, 24), peach);
+      foot.rotation.x = Math.PI / 2;
+      foot.position.set(x, 0.004, z);
+      g.add(foot, cyl(0.0145, 0.0145, 0.004, peach, { seg: 24, at: [x, 0, z] }));
     }
   }
   // a curly tail at the back
-  const tail = new THREE.Mesh(new THREE.TorusGeometry(0.014, 0.005, 8, 16, Math.PI * 1.5), peach);
+  const tail = new THREE.Mesh(new THREE.TorusGeometry(0.014, 0.005, 10, 24, Math.PI * 1.5), peach);
   tail.position.set(-RX - 0.004, cy + 0.02, 0);
   tail.rotation.y = Math.PI / 2;
   g.add(tail);
-  // the slot on its back, and a coin halfway in
-  g.add(box(0.06, 0.008, 0.014, peach, { at: [-0.015, cy + RY - 0.007, 0] }));
+  // the slot on its back, a dark line in a peach rim, and a coin halfway in
+  g.add(box(0.06, 0.008, 0.016, peach, { at: [-0.015, cy + RY - 0.007, 0] }));
+  g.add(box(0.046, 0.0012, 0.0045, deep, { at: [-0.015, cy + RY + 0.001, 0] }));
   const last = coin(0.026, 0.008);
   last.position.set(-0.015, cy + RY + 0.004, 0);
   last.rotation.x = Math.PI / 2;
@@ -2478,12 +2741,10 @@ function sideboard() {
   return g;
 }
 
-/** A faceted crown like the trees outside: sharp edges, but it reads as leaves. */
+/** A smooth crown like the trees outside (10/11/2026: they turned smooth on 30/10, the plants inside had stayed
+ *  faceted, and close up the facets looked cheap). */
 function crown(r, at, stretch = 1, leaf = LEAVES[0]) {
-  const o = new THREE.Mesh(new THREE.IcosahedronGeometry(r, 0), mat(leaf, { roughness: 0.85, flatShading: true }));
-  o.position.set(...at);
-  o.scale.set(1, stretch, 1);
-  return o;
+  return leafBall(r, at, leafMat(Math.max(0, LEAVES.indexOf(leaf))), [1, stretch, 1]);
 }
 
 /** A square white pot with its soil showing. */
@@ -2504,10 +2765,10 @@ function pottedBush() {
   return g;
 }
 
-/** A slim tree in its pot: a square trunk and a tall faceted crown, like the column trees in front of the building. */
+/** A slim tree in its pot: a thin round trunk and a tall smooth crown, like the column trees in front of the building. */
 function pottedTree() {
   const g = squarePot(0.26, 0.28);
-  g.add(box(0.05, 0.34, 0.05, TRUNK, { at: [0, 0.28, 0] }));
+  g.add(cyl(0.022, 0.028, 0.4, TRUNK, { seg: 16, at: [0, 0.27, 0] }));
   g.add(crown(0.2, [0, 0.28 + 0.34 + 0.26, 0], 1.55, LEAVES[1]));
   g.rotation.y = 0.35;
   return g;
@@ -2533,18 +2794,29 @@ function squareDesk() {
   return g;
 }
 
-/** Your chair, behind the desk and turned towards you: a wooden frame, a cream seat and a cream back with a
- *  wooden rail on top, which is what shows above the desk. */
+/** Your chair, behind the desk and turned towards you. Above the desk only its back shows: until 10/11/2026 two tall
+ *  posts and a wooden rail framed a cream panel, and from the room it read as a picture frame (Davide's «micro»).
+ *  Now the back is one thick upholstered cushion, square-edged, with two stitched seams across it, held from behind
+ *  by two short wooden posts that the cushion hides, in a wooden shell that outlines it; the legs stop under the seat. */
 function squareChair() {
   const g = new THREE.Group();
   const cushion = mat('#EADFCF', { roughness: 0.85 });
-  for (const x of [-0.21, 0.21]) {
-    g.add(box(0.045, 0.4, 0.045, C.woodDark, { at: [x, 0, 0.18] }));
-    g.add(box(0.045, 0.98, 0.045, C.woodDark, { at: [x, 0, -0.19] }));
+  const seamMat = mat('#D9CBB6', { roughness: 0.9 });
+  for (const x of [-0.19, 0.19]) {
+    for (const z of [0.17, -0.17]) g.add(box(0.045, 0.36, 0.045, C.woodDark, { at: [x, 0, z] }));
+    g.add(box(0.04, 0.4, 0.04, C.woodDark, { at: [x * 0.7, 0.42, -0.23] })); // behind the back, out of sight
   }
-  g.add(box(0.46, 0.09, 0.44, cushion, { at: [0, 0.38, 0] }));
-  g.add(box(0.38, 0.3, 0.07, cushion, { at: [0, 0.6, -0.19] }));
-  g.add(box(0.46, 0.05, 0.07, C.wood, { at: [0, 0.93, -0.19] }));
+  g.add(box(0.46, 0.035, 0.44, C.wood, { at: [0, 0.36, 0] }));
+  g.add(box(0.44, 0.07, 0.42, cushion, { at: [0, 0.395, 0] }));
+  // the back: a wooden shell a little wider than the cushion in front of it, so a band of wood outlines the cushion
+  // against the wall; the cushion leans back a little, its two seams on the side facing you
+  const back = new THREE.Group();
+  back.add(box(0.48, 0.42, 0.04, C.wood, { center: true, at: [0, 0, -0.03] }));
+  back.add(box(0.43, 0.37, 0.07, cushion, { center: true, at: [0, -0.01, 0.02] }));
+  for (const y of [-0.07, 0.05]) back.add(box(0.38, 0.008, 0.004, seamMat, { center: true, at: [0, y, 0.0565] }));
+  back.position.set(0, 0.72, -0.19);
+  back.rotation.x = -0.08;
+  g.add(back);
   return g;
 }
 
@@ -3260,7 +3532,7 @@ function furnishFormazione(room, world) {
   const books = narrowBookcase();
   books.position.set(1.92, 0, B.inB + 0.16);
   room.add(books);
-  // the chairs show you their backs: a second light near the glass, or in the evening they turn dark
+  // the chairs show you their backs: a second light near the glass, or they turn dark
   const front = new THREE.PointLight('#FFE7C7', 2.2, 7, 1);
   front.position.set(-0.4, 1.3, 1.35);
   room.add(front);
@@ -3727,9 +3999,9 @@ function furnishEsteri(room) {
 }
 
 /** Inside the rooms a little light comes from every side, so whatever turns its back to the room lamp (a chair seen
- *  from behind, the side of a drawer, an object in the card) never goes dark in the evening, on any floor, without a
+ *  from behind, the side of a drawer, an object in the card) never goes dark, on any floor, without a
  *  lamp of its own. Each material gets a copy that glows faintly in its own colour; main.js sets how much
- *  (`world.roomFill`), by day and by evening. Lamps, gold and glass keep their own light. */
+ *  (`world.roomFill`). Lamps, gold and glass keep their own light. */
 const evenLit = new Map();
 function lightEvenly(m, world) {
   world.roomFillMats ??= [];

@@ -5,7 +5,8 @@ import { FLOORS } from './world.js';
 import { inkOn, motion, buzz } from './kit.js';
 import { TROPHIES, emblem } from './trophies.js';
 import { PEOPLE } from './people.js';
-import { miniMap, trapFloors, signSvg } from './avvio.js';
+import { FIGURES } from './figures.js';
+import { miniMap, signSvg } from './avvio.js';
 import { IN_APP } from './app.js';
 import { reminders } from './avvisi.js';
 
@@ -26,6 +27,7 @@ export function makeMe(api) {
   // the settings live in main.js, saved with the progress (salva.js, 07/11/2026)
   const settings = api.settings;
   let privacyOpen = false;
+  let mapOpen = false;
 
   function character() {
     const who = api.who();
@@ -48,27 +50,29 @@ export function makeMe(api) {
     </section>`;
   }
 
-  /** Your character, from the test of the first start (07/11/2026, CLAUDE.md §7): pregio, trappola, the point on
-   *  the map, and the version you did not choose, who is your partner. */
+  /** Your character, from the test of the first start (07/11/2026, CLAUDE.md §7). Since 10/11/2026 (Davide: «la pagina tu
+   *  è troppo lunga… il personaggio diamogli aria in png non in quadrato»): the whole figure, free, beside its name and
+   *  motto; the pregio and the trappola in a line each; the map opens from the type, under it; the partner in a line. */
   function yours(who) {
     const p = who.profile;
+    const where = p.floors.map((f) => FLOORS[f.n - 1].name).join(' e ');
     return `<section class="me-card me-who">
       <div class="who-hero">
-        <span class="who-bust"><img src="${PEOPLE[who.me]}" alt="" /></span>
+        <span class="who-figure"><img src="${FIGURES[who.me]}" alt="" /></span>
         <div class="who-name">
-          <span class="who-chip">${p.what}</span>
           <h2>${who.me}</h2>
           <p class="who-motto">${p.motto}</p>
+          <button class="who-chip" data-act="map" aria-expanded="${mapOpen}" aria-controls="who-map"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 4v16M4 12h16"/></svg>${p.what}</button>
         </div>
       </div>
-      <p class="me-note">${p.portrait}</p>
-      <div class="av-trait good"><b>Il tuo pregio</b>${p.pregio}</div>
-      <div class="av-trait trap"><b>La tua trappola</b>${p.trappola}</div>
-      <ul class="av-floors">${trapFloors(p)}</ul>
-      ${miniMap(who)}
+      <div class="who-map" id="who-map"${mapOpen ? '' : ' hidden'}>${miniMap(who)}</div>
+      <dl class="who-traits">
+        <div class="good"><dt>Pregio</dt><dd>${p.pregio}</dd></div>
+        <div class="trap"><dt>Trappola</dt><dd>${p.trappola} <span>Ne parliamo a ${where}.</span></dd></div>
+      </dl>
       <div class="who-partner">
         <span class="who-face"><img src="${PEOPLE[who.partner]}" alt="" /></span>
-        <div><b>${who.partner}</b><span>${cap(who.partnerWord)}: stesso tipo, stessa trappola</span></div>
+        <div><b>${who.partner}</b><span>${cap(who.partnerWord)}</span></div>
       </div>
     </section>`;
   }
@@ -78,16 +82,15 @@ export function makeMe(api) {
     // signed with one touch (avvio.js, sign-alt): «Firmato» written, as on the contract, not a squiggle you never drew
     const typed = '<svg class="contract-name" viewBox="0 0 120 40"><text x="60" y="28" text-anchor="middle">Firmato</text></svg>';
     const drawn = who?.sign?.length ? signSvg(who.sign, 'contract-sign') : who ? typed : '<svg viewBox="0 0 120 40"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
-    const when = who?.signed ? `firmato il ${who.signed}` : 'firmato al primo avvio';
-    const between = who ? `Tra te e ${who.partner}, ${when}` : `F${when.slice(1)}`;
+    const when = who?.signed ? `il ${who.signed}` : 'al primo avvio';
     return `<section class="me-card contract">
       <div class="contract-paper" aria-hidden="true">
-        <i></i><i></i><i style="width:70%"></i><i></i><i style="width:55%"></i>
+        <i></i><i></i><i style="width:70%"></i>
         ${drawn}
       </div>
       <div>
-        <h2>Il contratto tra soci</h2>
-        <p class="me-note">${between}: ti impegni solo a imparare. Nessun obiettivo, nessuna conseguenza se ti fermi.</p>
+        <h2>Contratto tra soci</h2>
+        <p class="me-note">${who ? `Con ${who.partner}, firmato ${when}.` : `Firmato ${when}.`}</p>
       </div>
     </section>`;
   }
@@ -95,17 +98,15 @@ export function makeMe(api) {
   /** The Traguardi, in two groups (28/10/2026, the user: «raggrupperei i traguardi… tipo i traguardi di FIFA»): the
    *  trophies, with a name and a line of their own, and under them the diary of what happened. No counters. */
   function milestones() {
+    // a grid of emblems with their names (10/11/2026, Davide: the Tu too long): a touch tells what it is (toast)
     const cards = TROPHIES.map((t) => {
       const on = api.trophies.has(t.id);
       const name = on || !t.secret ? t.name : 'Segreto';
-      const text = on ? t.line : t.secret ? 'Si scopre giocando.' : t.how;
       const style = on && t.color ? ` style="--c:${t.color};--on-c:${inkOn(t.color)}"` : '';
-      return `<li class="trophy${on ? ' on' : ''}"${style}><span class="trophy-emblem">${emblem(on || !t.secret ? t.id : 'segreto')}</span><b>${name}</b><span>${text}</span></li>`;
+      return `<li><button class="trophy${on ? ' on' : ''}" data-trophy="${t.id}"${style} aria-label="${name}${on ? ', preso' : ''}"><span class="trophy-emblem">${emblem(on || !t.secret ? t.id : 'segreto')}</span><b>${name}</b></button></li>`;
     }).join('');
     return `<section class="me-card"><h2>Traguardi</h2>
-      <h3 class="me-sub-h">Sorprese</h3>
       <ul class="trophies">${cards}</ul>
-      <h3 class="me-sub-h">Il diario</h3>
       ${diary()}
     </section>`;
   }
@@ -145,7 +146,7 @@ export function makeMe(api) {
         <li class="privacy-row"><button class="link" data-act="privacy" aria-expanded="${privacyOpen}" aria-controls="privacy">Informazioni e privacy<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${privacy()}</li>
         <li class="wipe-row"><button class="link danger" data-act="wipe" aria-expanded="false" aria-controls="wipe-ask">Ricomincia da capo</button>
           <div class="wipe-ask" id="wipe-ask" role="group" aria-labelledby="wipe-q" hidden>
-            <p id="wipe-q">Cancelli l’azienda, il personaggio, la firma e i traguardi, e riparti dal benvenuto. Non si torna indietro.</p>
+            <p id="wipe-q">Cancelli l’azienda, il personaggio, la firma e i traguardi, e riparti dal test. Non si torna indietro.</p>
             <button class="pill pill-light wide" data-act="wipe-no">Annulla</button>
             <button class="pill pill-danger wide" data-act="wipe-yes">Cancella tutto</button>
           </div></li>
@@ -167,8 +168,9 @@ export function makeMe(api) {
 
   function render() {
     body.innerHTML = character() + contract() + milestones() + settingsCard();
+    // the floor you are on by its name, no number on a square (10/11/2026, Davide)
     const top = FLOORS[api.state.floor - 1];
-    document.getElementById('me-sub').innerHTML = `<span class="me-dot" style="background:${top.color};color:${inkOn(top.color)}">${top.n}</span> Piano ${top.n} · ${top.name}`;
+    document.getElementById('me-sub').innerHTML = `<span class="me-dot" style="background:${top.color}"></span>${top.name}`;
   }
 
   // the time of the reminders, chosen again from here (10/11/2026, Luca: after the first start it stayed at 18:00 for
@@ -203,6 +205,17 @@ export function makeMe(api) {
         body.querySelector('.time-row').hidden = !on;
         api.toast(on ? `Avvisi accesi: alle ${reminders.time}, mai se oggi hai già fatto una lezione.` : 'Avvisi spenti. Si riaccendono da qui.');
       }
+      return;
+    }
+    if (t.dataset.trophy) {
+      const tr = TROPHIES.find((x) => x.id === t.dataset.trophy);
+      const on = api.trophies.has(tr.id);
+      return api.toast(on ? tr.line : tr.secret ? 'Si scopre giocando.' : tr.how);
+    }
+    if (t.dataset.act === 'map') {
+      mapOpen = !mapOpen;
+      t.setAttribute('aria-expanded', String(mapOpen));
+      body.querySelector('#who-map').hidden = !mapOpen;
       return;
     }
     if (t.dataset.act === 'privacy') {

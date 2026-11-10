@@ -46,9 +46,8 @@
   <!-- top: the floor you are on -->
   <header class="top">
     <div class="plate" id="plate">
-      <div class="plate-num" id="plate-num">1</div>
       <div class="plate-body">
-        <div class="plate-title" id="plate-title">Direzione</div>
+        <div class="plate-head"><div class="plate-title" id="plate-title">Direzione</div><span class="plate-level" id="plate-level">Livello 1</span></div>
         <div class="plate-progress">
           <div class="pips" id="pips" aria-hidden="true"></div>
           <span class="pips-count" id="pips-count">0 di 8</span>
@@ -56,10 +55,6 @@
       </div>
     </div>
     <div class="top-right">
-      <button class="round" id="btn-sound" aria-label="Suoni" aria-pressed="true">
-        <svg viewBox="0 0 24 24" class="ic-on"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" /><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" /></svg>
-        <svg viewBox="0 0 24 24" class="ic-off"><path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" /><path d="M16 10l4 4M20 10l-4 4" /></svg>
-      </button>
       <button class="round round-text" id="btn-demo" aria-label="Demo: comandi della prova">Demo</button>
     </div>
   </header>
@@ -111,7 +106,6 @@
       <p>Nell’app vera le lezioni si fanno nel Percorso. Qui puoi fare finta di averle finite e vedere cosa succede in ufficio.</p>
       <button class="pill pill-dark wide" data-act="next">Finisci la prossima tappa</button>
       <button class="pill pill-light wide" data-act="floor">Finisci tutto il piano</button>
-      <button class="pill pill-light wide" data-act="night">Giorno / sera</button>
       <button class="pill pill-light wide" data-act="glow">Alone sugli oggetti: sì</button>
       <button class="pill pill-light wide" data-act="mode">Lezioni: si gioca la lezione di prova</button>
       <button class="pill pill-light wide" data-act="lezione">Gioca la lezione di prova</button>

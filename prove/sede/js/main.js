@@ -58,12 +58,7 @@ scene.add(sun, sun.target);
 const fill = new THREE.DirectionalLight('#BFD9FF', 0.55);
 fill.position.set(8, 5, 6);
 scene.add(fill);
-// in the evening the object in the card gets a light of its own, so it reads as it does by day;
-// it reaches only a short way, so the room behind stays an evening room
-const showLight = new THREE.PointLight('#FFF4E6', 0, 3.2, 1);
-scene.add(showLight);
-
-const world = { anim: [], mixers: [], roomLights: [], roomLampMats: [], signMats: [] };
+const world = { anim: [], mixers: [], roomLights: [], roomLampMats: [] };
 window.__feen = { camera, scene, world };
 // `floor` is the floor in progress (the top one built), `earned` the stages done on it
 // the prova opens on floor 1 with no stage done, as for a new player (the user's choice, 28/10/2026, before
@@ -72,7 +67,7 @@ const LAST = Math.max(...Object.keys(ROOMS).map(Number));
 // tab: the bar's tab on screen; the prova opens on the Percorso (riunione del 28/10/2026)
 // lessons: «Lezioni» in DEMO. 'prova': the lessons of the Percorso without an approved card play the test lesson
 // (07/11/2026); 'giuste' or 'errore': they are pretend, all right or with one wrong and right at «Ci riprovi»
-const state = { floor: 1, earned: 0, night: false, busy: false, view: 'overview', viewFloor: 1, glow: true, tab: 'percorso', lessons: 'prova' };
+const state = { floor: 1, earned: 0, busy: false, view: 'overview', viewFloor: 1, glow: true, tab: 'percorso', lessons: 'prova' };
 const built = new Map(); // n → { shell, office }; office is null for a floor not furnished yet
 let roofSite, sky;
 const cur = () => built.get(state.floor)?.office ?? null;
@@ -154,16 +149,19 @@ function go(name, arg, { instant = false, keepZoom = false } = {}) {
   showSigns();
 }
 
-/** From outside each floor shows only its number, big enough to read; from close, the plate with the name. */
+/** Every floor shows its name (10/11/2026, Davide: no numbers like a bingo card), bigger from outside so it reads;
+ *  inside a floor the plate at the top adds its level. */
 function showSigns() {
   const inside = state.view !== 'overview';
   // close on an object (it lands, or floats in its card) the plate of the floor would be cut by the edge of the screen
   // or half hidden behind the object: it steps aside until the room is seen whole again (09/11/2026, rule 7)
   const close = rig.preset?.[0] === 'slot' || !!shown;
   for (const { shell } of built.values()) {
-    shell.userData.signName.visible = inside && !close;
-    shell.userData.signNumber.visible = !inside;
+    const sign = shell.userData.signName;
+    sign.visible = !(inside && close);
+    sign.scale.setScalar(inside ? 1 : 1.35);
   }
+  $('plate').classList.toggle('in-floor', inside);
 }
 
 /** What stands on the plaza in front of the building steps aside when you look inside. */
@@ -592,7 +590,9 @@ function renderPlate() {
   platedFloor = plateFloor();
   const f = FLOORS[platedFloor - 1];
   paintFloor($('plate'), f);
-  $('plate-num').textContent = f.n;
+  // the name, never a number on its own (10/11/2026, Davide: «sti numeri così mi sanno di tombola»); the level comes
+  // when you go into the floor, as a building tapped in a city game tells its level (showSigns)
+  $('plate-level').textContent = `Livello ${f.n}`;
   $('plate-title').textContent = f.name;
   renderPips();
 }
@@ -663,7 +663,7 @@ function renderCta() {
     // the first stage of a floor with a new colleague starts with the interview;
     // looking into another floor, the pill says which floor its stage belongs to
     const hire = state.earned === 0 && room.hire;
-    if (plateFloor() !== n) $('cta-tag').textContent = `Piano ${n} · ${hire ? 'Colloquio' : st.tag}`;
+    if (plateFloor() !== n) $('cta-tag').textContent = `${FLOORS[n - 1].name} · ${hire ? 'Colloquio' : st.tag}`;
     else $('cta-tag').textContent = hire ? `Colloquio · ${st.tag}` : st.tag;
     $('cta-title').textContent = st.title;
   } else {
@@ -695,7 +695,6 @@ function showcase(n, i) {
     s.obj.position.lerpVectors(from, to, k);
     s.obj.scale.setScalar(1 + (S - 1) * k);
     s.obj.rotation.set(tilt * k, turn * k, 0);
-    lightShow(k);
   }, { easing: ease.out });
 }
 /** Where the object of the card floats, in the room's coordinates: between the plate (and «Sede») at the top and the
@@ -723,9 +722,6 @@ function showSpot(office, s, S) {
   const d = Math.max(size.y / (q * 2 * tanV), size.x / (0.72 * 2 * tanV * camera.aspect), 1.2);
   const spot = cam.clone().addScaledVector(g.target.clone().sub(cam).normalize(), d);
   spot.y += (0.5 - (top + bottom) / 2 / H) * 2 * d * tanV - lift;
-  // the evening light stands in front of the object, a little above it
-  showLight.position.copy(spot).setY(spot.y + lift).addScaledVector(cam.clone().sub(spot).normalize(), 1.5);
-  showLight.position.y += 0.7;
   return office.room.worldToLocal(spot);
 }
 function unshow() {
@@ -740,15 +736,7 @@ function unshow() {
     s.obj.position.lerpVectors(from, s.home, k);
     s.obj.rotation.set(r0.x * (1 - k), r0.y * (1 - k), 0);
     s.obj.scale.setScalar(sc + (1 - sc) * k);
-    lightShow(1 - k);
   }).then(showSigns); // the plate of the floor comes back with the object home
-}
-/** The light on the object in the card: `k` goes from 0 to 1 while the object comes forward; by day it stays off. */
-const SHOW_NIGHT = 10;
-let showK = 0;
-function lightShow(k = showK) {
-  showK = k;
-  showLight.intensity = SHOW_NIGHT * showK * dayK;
 }
 
 let cardIndex = 0;
@@ -1047,61 +1035,33 @@ function updateFx(dt) {
   }
 }
 
-// ---------- day and evening ----------
+// ---------- the light: always day ----------
+// FEEN is never set at night (the user, 10/11/2026: «l'app non è mai ambientata di notte»): no evening after sunset,
+// no lit windows, lamp pools or glowing plates, no «Giorno / sera» in the Demo. The light/dark theme of the interface
+// still follows the phone. Before, the sede lit up by itself after sunset (`isEvening`, `toggleNight`, a NIGHT preset).
 // glow: how strong the halo of the earned objects is
 // the sky «terso» (strada A of three sketches, the user's choice, 30/10/2026, `1. LAVORO/cielo/`): the palette's blues
 // down to the horizon and a light blue haze, no more cream, so the city round the block reads clear
-const DAY = { glow: 0.8, top: '#4E9FE6', mid: '#9ECBF0', bottom: '#E3EEF7', fog: '#D9E7F3', hemiSky: '#F2F6FF', hemiGround: '#C4D2AE', hemi: 1.6, sun: 2.3, sunCol: '#FFF4E6', fill: 0.7, lamps: 0.15, room: 2.2, bulbs: 0.7, glass: 0, signs: 0, windows: 0, even: 0.06, roof: 0 };
-const NIGHT = { glow: 0.85, top: '#0A1530', mid: '#16244A', bottom: '#2B3A66', fog: '#26314F', hemiSky: '#5A6699', hemiGround: '#272B38', hemi: 0.6, sun: 0.45, sunCol: '#AFC0FF', fill: 0.22, lamps: 2.4, room: 3.0, bulbs: 2.2, glass: 0.55, signs: 0.7, windows: 0.7, even: 0.3, roof: 2.6 };
-let dayK = 0;
-function applyDay(k) {
-  dayK = k;
-  const mix = (a, b) => new THREE.Color(a).lerp(new THREE.Color(b), k);
+const LIGHT = { glow: 0.8, top: '#4E9FE6', mid: '#9ECBF0', bottom: '#E3EEF7', fog: '#D9E7F3', hemiSky: '#F2F6FF', hemiGround: '#C4D2AE', hemi: 1.6, sun: 2.3, sunCol: '#FFF4E6', fill: 0.7, lamps: 0.15, room: 2.2, bulbs: 0.7, even: 0.06 };
+/** The light of the sede, set again whenever rooms are built (their lamps and lights take it). */
+function applyLight() {
   const u = sky.userData.uniforms;
-  u.top.value.copy(mix(DAY.top, NIGHT.top));
-  u.mid.value.copy(mix(DAY.mid, NIGHT.mid));
-  u.bottom.value.copy(mix(DAY.bottom, NIGHT.bottom));
-  scene.fog.color.copy(mix(DAY.fog, NIGHT.fog));
-  hemi.color.copy(mix(DAY.hemiSky, NIGHT.hemiSky));
-  hemi.groundColor.copy(mix(DAY.hemiGround, NIGHT.hemiGround));
-  hemi.intensity = THREE.MathUtils.lerp(DAY.hemi, NIGHT.hemi, k);
-  sun.intensity = THREE.MathUtils.lerp(DAY.sun, NIGHT.sun, k);
-  sun.color.copy(mix(DAY.sunCol, NIGHT.sunCol));
-  fill.intensity = THREE.MathUtils.lerp(DAY.fill, NIGHT.fill, k);
-  for (const m of world.lampMats) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.lamps, NIGHT.lamps, k);
-  for (const m of world.roomLampMats) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.bulbs, NIGHT.bulbs, k);
-  for (const l of world.roomLights) l.intensity = THREE.MathUtils.lerp(DAY.room, NIGHT.room, k);
-  for (const l of world.roofLights ?? []) l.intensity = THREE.MathUtils.lerp(DAY.roof, NIGHT.roof, k);
-  for (const m of world.signMats) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.signs, NIGHT.signs, k);
-  for (const m of world.windowMats ?? []) m.emissiveIntensity = THREE.MathUtils.lerp(DAY.windows, NIGHT.windows, k); // the city round the block
+  u.top.value.set(LIGHT.top);
+  u.mid.value.set(LIGHT.mid);
+  u.bottom.value.set(LIGHT.bottom);
+  scene.fog.color.set(LIGHT.fog);
+  hemi.color.set(LIGHT.hemiSky);
+  hemi.groundColor.set(LIGHT.hemiGround);
+  hemi.intensity = LIGHT.hemi;
+  sun.intensity = LIGHT.sun;
+  sun.color.set(LIGHT.sunCol);
+  fill.intensity = LIGHT.fill;
+  for (const m of world.lampMats) m.emissiveIntensity = LIGHT.lamps;
+  for (const m of world.roomLampMats) m.emissiveIntensity = LIGHT.bulbs;
+  for (const l of world.roomLights) l.intensity = LIGHT.room;
   // the light that comes from every side inside the rooms (office.js, `lightEvenly`), also for floors built later
-  world.roomFill = THREE.MathUtils.lerp(DAY.even, NIGHT.even, k);
+  world.roomFill = LIGHT.even;
   for (const m of world.roomFillMats ?? []) m.emissiveIntensity = world.roomFill;
-  for (const p of world.pools) p.opacity = k * 0.85;
-  path?.applyDay(k);
-  for (const { shell: s } of built.values()) {
-    s.userData.glassMat.emissive = new THREE.Color('#FFC86B');
-    s.userData.glassMat.emissiveIntensity = THREE.MathUtils.lerp(DAY.glass, NIGHT.glass, k);
-  }
-  lightShow();
-}
-/** After sunset the campus lights up. Sunrise and sunset are estimated for Italy from the date. */
-function isEvening(date = new Date()) {
-  const year = date.getFullYear();
-  const day = (date - new Date(year, 0, 1)) / 864e5;
-  const daylight = 12 + 3.2 * Math.sin((2 * Math.PI * (day - 80)) / 365);
-  const summerTime = date.getTimezoneOffset() < new Date(year, 0, 1).getTimezoneOffset() ? 1 : 0;
-  const noon = 12.25 + summerTime;
-  const h = date.getHours() + date.getMinutes() / 60;
-  return h > noon + daylight / 2 + 0.25 || h < noon - daylight / 2 - 0.25;
-}
-
-function toggleNight() {
-  state.night = !state.night;
-  const from = dayK;
-  const to = state.night ? 1 : 0;
-  sfx.whoosh();
-  return tween(1.6, (e) => applyDay(from + (to - from) * e));
 }
 
 // ---------- the flow: a stage is done, the floor is done ----------
@@ -1224,10 +1184,10 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   const clean = outcome === 0;
   if (!played.has(n)) played.set(n, []);
   played.get(n)[i] = clean;
-  // the trophies taken on the way: «Ci riprovi» made right, a stage done in the evening, a floor without a mistake
+  // the trophies taken on the way: «Ci riprovi» made right, a floor without a mistake
   // (the stages skipped with «Finisci tutto il piano» count as done right)
   const perfect = { 2: 'pin', 3: 'asso', 4: 'scudo' }[n];
-  const prizes = [fixed && 'riprovi', state.night && 'luci', perfect && i + 1 === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false) && perfect].filter((id) => id && !trophies.has(id));
+  const prizes = [fixed && 'riprovi', perfect && i + 1 === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false) && perfect].filter((id) => id && !trophies.has(id));
   // a card follows (an object landed, or the stage was started from the Percorso: always so in the app): the line on
   // the result and the trophies go into it, where they stay until «Continua», and the trophies are earned without the
   // pop, which would pass during the flight. Without a card (the green pill on a stage without an object, only in the
@@ -1298,7 +1258,7 @@ function paintUp(office, n, dur) {
  *  28/10/2026). Only an object at rest in its place: not while it lands or floats in the card. */
 function updateGlow(dt) {
   const near = state.glow && closeUp();
-  const level = THREE.MathUtils.lerp(DAY.glow, NIGHT.glow, dayK);
+  const level = LIGHT.glow;
   const k = 1 - Math.exp(-dt * 6);
   for (const { office } of built.values()) {
     for (const s of office?.slots ?? []) {
@@ -1397,7 +1357,7 @@ async function floorComplete() {
   go('overview');
   await wait(0.6);
   const next = buildFloor(n + 1, 0);
-  applyDay(dayK);
+  applyLight();
   next.shell.scale.y = 0.01;
   sfx.build();
   puffs(floorY(n + 1) + 0.2);
@@ -1507,15 +1467,14 @@ function setup(floor, earned) {
   built.clear();
   world.roomLights.length = 0;
   world.roomLampMats.length = 0;
-  world.signMats.length = 0;
   state.floor = floor;
   state.earned = earned;
   for (let n = 1; n <= floor; n++) buildFloor(n, n < floor ? 8 : earned);
   roofSite.position.y = floorY(floor + 1);
   roofFinished(floor === FLOORS.length && earned >= 8);
   fitShadow();
-  // the rooms just built take the light of the hour
-  applyDay(dayK);
+  // the rooms just built take the light
+  applyLight();
 }
 
 /** On the finished building the roof is the stage of the launch; until then it is a building site with the crane. */
@@ -1591,10 +1550,7 @@ function reset(floor = 1, earned = 0) {
   }
   hideSheets();
   shown = null;
-  lightShow(0);
   setup(floor, earned);
-  if (state.night !== isEvening()) toggleNight();
-  applyDay(dayK);
   renderPlate();
   renderCta();
   go('overview');
@@ -1624,16 +1580,11 @@ $('btn-demo').onclick = () => {
   sfx.tap();
   openSheet($('demo-wrap'));
 };
+// the sounds are switched in the Tu's settings only (10/11/2026, Davide: «togliere il pulsante del sound»)
 function toggleSound() {
   sound.on = !sound.on;
-  $('btn-sound').classList.toggle('muted', !sound.on);
-  $('btn-sound').setAttribute('aria-pressed', String(sound.on));
   persist();
 }
-$('btn-sound').onclick = () => {
-  toggleSound();
-  sfx.tap();
-};
 for (const t of document.querySelectorAll('.tab')) {
   t.onclick = () => {
     if (state.busy || t.dataset.tab === state.tab) return;
@@ -1806,7 +1757,6 @@ $('demo-wrap').addEventListener('click', (e) => {
     if (back) setTab('ufficio');
     finishFloor().then(() => back && setTab('percorso'));
   }
-  if (act === 'night') toggleNight();
   if (act === 'glow') {
     state.glow = !state.glow;
     e.target.closest('[data-act]').textContent = `Alone sugli oggetti: ${state.glow ? 'sì' : 'no'}`;
@@ -1922,15 +1872,7 @@ async function start() {
   liftDecals(scene);
   document.querySelector('[data-act="last"]').textContent = `Salta al piano ${LAST}, a metà`;
 
-  state.night = isEvening();
-  applyDay(state.night ? 1 : 0);
-  let clockEvening = state.night;
-  setInterval(() => {
-    const e = isEvening();
-    if (e === clockEvening) return;
-    clockEvening = e;
-    if (state.night !== e) toggleNight();
-  }, 60000);
+  applyLight();
   renderPlate();
   renderCta();
   go('overview', undefined, { instant: true });
@@ -1941,8 +1883,7 @@ async function start() {
   setTimeout(() => ($('loading').hidden = true), 450);
   trophies = makeTrophies({ sfx, onChange: () => state.tab === 'tu' && me?.render() });
   if (saved) trophies.restore(saved.trophies);
-  path = makePath({ renderer, state, earnedOn, built, DAY, NIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false), who: () => avvio?.who(), soon: comingSoon });
-  path.applyDay(dayK);
+  path = makePath({ renderer, state, earnedOn, built, LIGHT, toast, play, trophy, roofSays: ROOF_SAYS, openStage: (n, i) => openCard(n, i, false), who: () => avvio?.who(), soon: comingSoon });
   me = makeMe({ state, earnedOn, toast, sfx, sound, toggleSound, trophies, settings, applySettings, persist, who: () => avvio.who(), wipe: wipeAll });
   // the reminders are checked and scheduled again at every opening, and when FEEN comes back to the front
   window.feenAvvisiSync = () => syncAvvisi({ force: true });
@@ -1996,19 +1937,24 @@ async function start() {
     else if (force || state.tab === 'ufficio') renderer.render(scene, camera);
   };
   // for checking the prova from the browser tools: advance the scene by n frames
-  Object.assign(window.__feen, { go, state, built, setup, completeNext, finishFloor, toggleNight, reset, tap, setTab, LAST, IN_APP });
+  Object.assign(window.__feen, { go, state, built, setup, completeNext, finishFloor, reset, tap, setTab, LAST, IN_APP });
   window.__feen.step = (n = 60) => {
     for (let i = 0; i < n; i++) frame(1 / 60, true);
   };
-  // lighter rendering on slower phones: measure the first seconds, then adapt once
-  let probe = { frames: 0, time: 0, done: false };
+  // lighter rendering on slower phones: measure a few seconds of the Office, then adapt once. Only while the Office is
+  // on screen and still, after its first second (10/11/2026, Davide: «i numeri sono sfocati»: the probe measured from
+  // the start, where the loading, the first run and the Percorso count too, and a phone that could draw the Office
+  // sharp dropped to 1.25 for good)
+  let probe = { frames: 0, time: 0, done: false, skip: 60 };
   renderer.setAnimationLoop(() => {
     const now = performance.now();
     const raw = (now - last) / 1000;
     const dt = Math.min(0.05, raw);
     last = now;
     frame(dt);
-    if (!probe.done && !document.hidden && raw < 0.5) {
+    const measurable = state.tab === 'ufficio' && !state.busy && !document.hidden && raw < 0.5 && $('loading').hidden && $('avvio').hidden;
+    if (!probe.done && measurable && probe.skip > 0) probe.skip--;
+    else if (!probe.done && measurable) {
       probe.frames++;
       probe.time += raw;
       if (probe.time > 2.5) {

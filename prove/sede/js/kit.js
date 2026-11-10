@@ -108,14 +108,14 @@ export function sphere(r, material, at = [0, 0, 0], seg = 20) {
 }
 
 // ---------- canvas textures ----------
-export function canvasTexture(w, h, draw, { repeat = null, srgb = true } = {}) {
+export function canvasTexture(w, h, draw, { repeat = null, srgb = true, aniso = 4 } = {}) {
   const cv = document.createElement('canvas');
   cv.width = w;
   cv.height = h;
   draw(cv.getContext('2d'), w, h);
   const t = new THREE.CanvasTexture(cv);
   if (srgb) t.colorSpace = THREE.SRGBColorSpace;
-  t.anisotropy = 4;
+  t.anisotropy = aniso; // three.js caps it at what the phone can do
   if (repeat) {
     t.wrapS = t.wrapT = THREE.RepeatWrapping;
     t.repeat.set(repeat[0], repeat[1]);

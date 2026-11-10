@@ -4,7 +4,8 @@
 // a trunk and its branches. A stone core on the right rises the whole height and every floor comes out of
 // it as a thin plate, with no columns in front; edges are sharp, the garden is squared like the building.
 // 30/10/2026, Nello's idea and the user's choice (strada A of three sketches, `1. LAVORO/citta/`): the campus is a
-// green block in a city, with streets round it and low buildings beyond, whose windows light up in the evening.
+// green block in a city, with streets round it and low buildings beyond. Always by day: FEEN is never set at night
+// (the user, 10/11/2026); the evening, its lit windows, lamp pools and glowing plates are gone.
 
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
@@ -152,51 +153,20 @@ function stoneMats(w, h, d) {
 
 /** The floor's name plate: a dark square-cornered plate, the number on a square in the floor's colour. */
 export function signTexture(info) {
-  return canvasTexture(512, 112, (g, w, h) => {
+  // the floor's name on the dark plate, after a band in the floor's colour: no number on a square, which looked like
+  // a bingo card (10/11/2026, Davide). Twice the old size, so it stays sharp close up on a phone.
+  return canvasTexture(1024, 224, (g, w, h) => {
     g.fillStyle = C.ink;
-    roundRect(g, 0, 0, w, h, 10);
+    roundRect(g, 0, 0, w, h, 20);
     g.fill();
     g.fillStyle = info.color;
-    roundRect(g, 14, 14, h - 28, h - 28, 6);
+    roundRect(g, 26, 34, 18, h - 68, 9);
     g.fill();
-    strokeText(g, String(info.n), h / 2, h / 2 + 3, info.n > 9 ? 46 : 56, { fill: inkOn(info.color) });
-    strokeText(g, info.name, h + 16, h / 2 + 3, 56, { fill: '#FFFFFF', align: 'left', weight: 700 });
-  });
-}
-/** From outside the name is too small to read: only the number, big, on the square in the floor's colour. */
-export function signNumberTexture(info) {
-  return canvasTexture(128, 128, (g, w, h) => {
-    g.fillStyle = info.color;
-    roundRect(g, 0, 0, w, h, 10);
-    g.fill();
-    strokeText(g, String(info.n), w / 2, h / 2 + 5, info.n > 9 ? 76 : 96, { fill: inkOn(info.color) });
+    strokeText(g, info.name, 72, h / 2 + 6, info.name.length > 13 ? 96 : 112, { fill: '#FFFFFF', align: 'left', weight: 700 });
   });
 }
 
 // ---------- pieces of the campus ----------
-const poolTex = canvasTexture(128, 128, (g, w, h) => {
-  const r = g.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, w / 2);
-  r.addColorStop(0, 'rgba(255,214,140,0.9)');
-  r.addColorStop(0.5, 'rgba(255,190,110,0.35)');
-  r.addColorStop(1, 'rgba(255,190,110,0)');
-  g.fillStyle = r;
-  g.fillRect(0, 0, w, h);
-});
-
-/** A warm circle of light on the ground, seen only in the evening. */
-export function lightPool(x, z, size, world) {
-  const m = new THREE.Mesh(
-    new THREE.PlaneGeometry(size, size),
-    new THREE.MeshBasicMaterial({ map: poolTex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }),
-  );
-  m.rotation.x = -Math.PI / 2;
-  m.position.set(x, 0.1, z);
-  m.renderOrder = 1;
-  m.raycast = () => {};
-  world.pools.push(m.material);
-  return m;
-}
-
 function lampPost(x, z, lampMats) {
   const g = new THREE.Group();
   g.add(box(0.16, 0.08, 0.16, C.navy));
@@ -298,7 +268,7 @@ export function hedge(x, z, w, d) {
 }
 
 /** The crane on the core while the building grows: warm white, its small parts and the cable of light wood (no thin
- *  dark lines), a wooden beam on the hook, and a small light on top that comes on in the evening. */
+ *  dark lines), a wooden beam on the hook, and a small warm lamp on top. */
 function crane(lampMats) {
   const g = new THREE.Group();
   const white = mat('#F7F4EE', { roughness: 0.5 });
@@ -375,8 +345,7 @@ export function makeRoofSite(world) {
 
 /** The roof of the finished building, where the launch happens (27/10/2026, road A chosen by the user): a low white
  *  stage at the back with the 12 colours of the floors along its front, a wooden backdrop, two spotlights, the product
- *  on a plinth under a cloth, two benches waiting for the audience, a glass parapet. The product is never shown:
- *  in the evening a light behind it leaves it against the light. */
+ *  on a plinth under a cloth, two benches waiting for the audience, a glass parapet. The product is never shown. */
 function launchStage(world) {
   const g = new THREE.Group();
   const SX = -0.45; // the middle of the stage
@@ -420,11 +389,6 @@ function launchStage(world) {
   g.add(box(B.xC - x0, 0.36, 0.03, glass, { at: [(x0 + B.xC) / 2, 0.12, B.zCore - 0.08] }));
   g.add(box(B.xC - x0, 0.04, 0.06, C.white, { at: [(x0 + B.xC) / 2, 0.48, B.zCore - 0.08] }));
   shadows(g, true, true);
-  // the light behind the product, on in the evening (main.js, applyDay)
-  const glow = new THREE.PointLight('#FFD9A8', 0, 2.4, 1.4);
-  glow.position.set(SX, stageH + 0.7, PZ - 0.32);
-  g.add(glow);
-  world.roofLights = [glow];
   return g;
 }
 
@@ -480,31 +444,16 @@ export function makeFloorShell(info, world) {
   g.add(box(B.xC - B.xL, 0.16, D + 0.04, band, { at: [(B.xL + B.xC) / 2, B.ih, (B.zB + B.zF + 0.04) / 2] }));
   const plateD = B.zCore - 0.02 - B.zB;
   g.add(box(B.xC - B.xL + B.lip, B.slab - 0.16, plateD, C.white, { at: [(B.xL - B.lip + B.xC) / 2, B.ih + 0.16, B.zB + plateD / 2] }));
-  const sign = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.5, 1.5 * (112 / 512)),
-    new THREE.MeshStandardMaterial({ map: signTexture(info), transparent: true, roughness: 0.6 }),
-  );
-  // far enough from the left edge that, close to a floor, the number stays inside the phone's screen
-  sign.position.set(-0.8, B.ih + B.slab / 2, B.zB + plateD + 0.006);
-  sign.visible = false;
+  // the floor's name: anchored on its left edge, so from outside it grows to the right and reads (main.js showSigns)
+  const signGeo = new THREE.PlaneGeometry(1.5, 1.5 * (224 / 1024));
+  signGeo.translate(0.75, 0, 0);
+  const sign = new THREE.Mesh(signGeo, new THREE.MeshStandardMaterial({ map: signTexture(info), transparent: true, roughness: 0.6 }));
+  // far enough from the left edge that, close to a floor, the name stays inside the phone's screen
+  sign.position.set(-1.55, B.ih + B.slab / 2, B.zB + plateD + 0.006);
   g.add(sign);
-  // from outside: the number alone, a little taller than the plate, where the name plate begins
-  const N = 0.42;
-  const numberTex = signNumberTexture(info);
-  const signNumber = new THREE.Mesh(
-    new THREE.PlaneGeometry(N, N),
-    // in the evening the plates light up a little, like the windows, so they still read
-    new THREE.MeshStandardMaterial({ map: numberTex, emissive: '#FFFFFF', emissiveMap: numberTex, emissiveIntensity: 0, transparent: true, roughness: 0.6 }),
-  );
-  world.signMats.push(sign.material, signNumber.material);
-  sign.material.emissive.set('#FFFFFF');
-  sign.material.emissiveMap = sign.material.map;
-  sign.material.emissiveIntensity = 0;
-  signNumber.position.set(-0.8 - 0.75 + N / 2, B.ih + B.slab / 2, B.zB + plateD + 0.008);
-  g.add(signNumber);
-  // main.js shows one or the other, by the view
+
+  // main.js sizes it by the view
   g.userData.signName = sign;
-  g.userData.signNumber = signNumber;
   // the ceiling seen from inside, slightly warm
   const under = new THREE.Mesh(new THREE.PlaneGeometry(W - 0.2, D - 0.2), mat('#FFF8EC', { side: THREE.DoubleSide, emissive: '#FFF3E2', emissiveIntensity: 0.55 }));
   under.rotation.x = Math.PI / 2;
@@ -540,27 +489,9 @@ const FACADES = [
 ];
 const windowRect = (g, i, j, c) => g.fillRect(i * c + c * 0.22, j * c + c * 0.24, c * 0.56, c * 0.5);
 
-/** The facades, one material per colour; in the evening one window in three lights up (`world.windowMats`). */
-function facadeMats(world) {
-  const lit = canvasTexture(
-    512,
-    512,
-    (g, w) => {
-      const c = w / CELLS;
-      g.fillStyle = '#000';
-      g.fillRect(0, 0, w, w);
-      let s = 7;
-      const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-      for (let i = 0; i < CELLS; i++)
-        for (let j = 0; j < CELLS; j++) {
-          if (r() > 0.36) continue;
-          g.fillStyle = `rgb(255, ${215 + Math.floor(r() * 40)}, ${160 + Math.floor(r() * 60)})`;
-          windowRect(g, i, j, c);
-        }
-    },
-    { repeat: [1, 1] },
-  );
-  world.windowMats = FACADES.map(([wall, glass]) => {
+/** The facades, one material per colour. */
+function facadeMats() {
+  return FACADES.map(([wall, glass]) => {
     const map = canvasTexture(
       512,
       512,
@@ -576,9 +507,8 @@ function facadeMats(world) {
       },
       { repeat: [1, 1] },
     );
-    return new THREE.MeshStandardMaterial({ map, emissiveMap: lit, emissive: '#FFD08A', emissiveIntensity: 0, roughness: 0.85 });
+    return new THREE.MeshStandardMaterial({ map, roughness: 0.85 });
   });
-  return world.windowMats;
 }
 
 /** A box with the windows on its four sides, the facade texture starting at window `ou`, floor `ov`. */
@@ -611,7 +541,6 @@ const TOWERS = [
 /** The towers, in their own materials (clones of the facades that can fade): `world.towers`, `world.towerMats`. */
 function makeTowers(world, facades) {
   const mats = facades.map((m) => Object.assign(m.clone(), { transparent: true }));
-  world.windowMats.push(...mats); // their windows light up in the evening like the city's
   const cap = mat('#F7F4EE', { roughness: 0.8, transparent: true });
   const parts = mats.map(() => []);
   const caps = [];
@@ -642,7 +571,7 @@ function makeCity(world) {
   const g = new THREE.Group();
   let seed = 11;
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  const mats = facadeMats(world);
+  const mats = facadeMats();
   const walls = mats.map(() => []);
   const machines = [];
   const slabs = new Map(); // material → geometries of the flat pieces on the ground
@@ -725,14 +654,14 @@ function makeCity(world) {
       slab(x - 0.3, x + 0.3, z - 0.3, z + 0.3, 0.075, pit);
       trees.push(tree(x, z, 0.72, Math.floor(rnd() * 3) === 1 ? 0 : Math.floor(rnd() * 3)));
     }
-  // two street lamps in warm white in front of the sede, with their pools of light in the evening
+  // two street lamps in warm white in front of the sede
   const lampHead = mat('#FFF6DE', { emissive: '#FFD58A', emissiveIntensity: 0.15 });
   world.lampMats.push(lampHead);
   for (const x of [-4.6, 4.4]) {
     const l = new THREE.Group();
     l.add(box(0.07, 1.9, 0.07, '#F2EDE4'), box(0.5, 0.06, 0.16, '#F2EDE4', { at: [0.2, 1.86, 0] }), box(0.26, 0.08, 0.14, lampHead, { at: [0.36, 1.78, 0] }));
     l.position.set(x, 0.07, L.z1 + WALK / 2);
-    g.add(l, lightPool(x + 0.36, L.z1 + WALK / 2, 2.4, world));
+    g.add(l);
   }
 
   for (const [m, geos] of slabs) {
@@ -756,7 +685,6 @@ function makeCity(world) {
 export function makeCampus(world) {
   const g = new THREE.Group();
   world.frontProps = [];
-  world.pools = [];
   world.lampMats = [];
   // the street is the ground; the lawn is the sede's block, a little higher; the plaza (6 cm) stands on it
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), mat(ASPHALT, { roughness: 0.95 }));
@@ -812,6 +740,6 @@ export function makeCampus(world) {
     [-3.6, 4.7],
     [4.3, 4.7],
   ])
-    g.add(front(lampPost(x, z, world.lampMats)), lightPool(x, z, 2.6, world));
+    g.add(front(lampPost(x, z, world.lampMats)));
   return g;
 }
