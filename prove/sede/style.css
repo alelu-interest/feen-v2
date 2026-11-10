@@ -1708,9 +1708,14 @@ html:not([data-app]) .path-plate {
   --mm-me-name: #14213d;
   --mm-chip: #14213d;
   --mm-chip-ink: #ffffff;
+  /* the eight shadows of the opening and of the choice (10/11/2026): the ink of the app, and the light over them */
+  --sil: #14213d;
+  --sil-hi: #5d6f92;
 }
 @media (prefers-color-scheme: dark) {
   :root {
+    --sil: #24324f;
+    --sil-hi: #4a5f88;
     --agree: #6fb3fe; /* blue 300 of the palette */
     --disagree: #9aa9c0;
     --mid: #586782; /* 3.2:1 on the page (was #4e5d78, 2.7:1) */
@@ -1820,6 +1825,97 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border-radius: 28px;
   background: var(--surface);
   box-shadow: var(--shadow-sm);
+}
+
+/* the opening (10/11/2026, sketch A of 1. LAVORO/apertura/): «Che investitore sei?» over the eight shadows, in their
+   four pairs where the map puts them; about 3 s, then the first statement (OPEN_TIME in avvio.js) */
+.avvio.av-open {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  padding: calc(var(--safe-t) + 18px) 20px calc(var(--safe-b) + 20px + 8vh);
+}
+.avvio.av-open > * {
+  transition: opacity 0.22s var(--ease), transform 0.22s var(--ease);
+}
+.avvio.av-open-out > * {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.avvio.av-open h1 {
+  margin: 0 0 38px;
+  font-size: calc(34px * var(--fs-l));
+  text-align: center;
+  animation: av-open-rise 0.5s var(--ease) 0.95s both;
+}
+.av-shadows {
+  width: 100%;
+  max-width: 440px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 30px;
+  column-gap: 14px;
+}
+.av-pair {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+/* a soft shadow on the floor under every pair */
+.av-pair::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 80%;
+  height: 16px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 16%, transparent), transparent);
+  animation: av-open-show 0.6s var(--ease) 0.3s both;
+}
+.av-sil {
+  display: block;
+  min-width: 0;
+  background: linear-gradient(105deg, var(--sil) 0 36%, var(--sil-hi) 50%, var(--sil) 64% 100%) 100% 0 / 320% 100%;
+  -webkit-mask: var(--m) center bottom / contain no-repeat;
+  mask: var(--m) center bottom / contain no-repeat;
+  animation:
+    av-open-rise 0.45s var(--ease) calc(150ms + var(--k) * 85ms) both,
+    av-open-sweep 0.9s ease-in-out calc(1550ms + var(--c) * 120ms) both;
+}
+.av-sil + .av-sil {
+  margin-left: -6px;
+}
+/* the picture only gives the shadow its size */
+.av-sil img {
+  display: block;
+  height: min(23vh, 200px);
+  width: auto;
+  max-width: 100%;
+  visibility: hidden;
+}
+@keyframes av-open-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@keyframes av-open-show {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes av-open-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
 }
 
 /* the test */
@@ -2221,6 +2317,30 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   height: min(52vh, 420px);
   transform-origin: 50% 100%;
   transition: transform 0.25s var(--ease);
+}
+/* at the choice the two shadows of the opening take their colours (10/11/2026): avvio.js lays each one on its figure */
+.av-figure .av-unveil {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  background: var(--sil);
+  -webkit-mask: var(--m) center / 100% 100% no-repeat;
+  mask: var(--m) center / 100% 100% no-repeat;
+  transform-origin: 50% 100%;
+  animation:
+    av-breathe 3.2s ease-in-out infinite,
+    av-unveil 1s var(--ease) 0.5s both;
+}
+.av-person:nth-child(2) .av-figure .av-unveil {
+  animation-delay: -1.6s, 0.68s;
+}
+.av-figure .av-unveil.placed {
+  visibility: visible;
+}
+@keyframes av-unveil {
+  to {
+    opacity: 0;
+  }
 }
 /* the light on the floor under the figure, and in the dark theme a soft glow behind it (the black suits on the navy) */
 .av-figure::before {
@@ -4036,4 +4156,13 @@ body[data-fine] .bottom {
 }
 :root[data-calm] .av-figure img {
   animation: none;
+}
+/* with reduced motion the opening is just there, still, and the figures of the choice have their colours at once */
+:root[data-calm] .avvio.av-open > *,
+:root[data-calm] .av-pair::after,
+:root[data-calm] .av-sil {
+  animation-delay: 0s !important;
+}
+:root[data-calm] .av-figure .av-unveil {
+  display: none;
 }

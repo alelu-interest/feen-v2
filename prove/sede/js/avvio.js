@@ -3,7 +3,8 @@
 // 10/11/2026, Davide (his word is law): no welcome screens, the test explains itself; no icons on the statements, the
 // statement up top and the circles in the middle; your type and the map on one screen, the map rising under it; no
 // «gioco, non diagnosi»; the two characters standing free, their names under them, nothing written to say «choose».
-// And everywhere less text: the screen says it, not a sentence.
+// And everywhere less text: the screen says it, not a sentence. 10/11/2026, the user: before the first statement an
+// animated opening, «Che investitore sei?» over the eight shadows (apertura; not a welcome: nothing is explained).
 // The test is Dorigo's (quiz.js); the user's choices of 07/11/2026: a touch on a circle moves on by itself, there is
 // no way back to the question before, no «Rifai il test». 09/11/2026, the user: no «Salta» on the welcome, and no
 // trappola screen in the reveal (it stays in the Tu and in the mentor's line of the Caso). Every step is kept
@@ -36,6 +37,11 @@ const today = () => new Date().toLocaleDateString('it-IT', { day: 'numeric', mon
 const STAMP_PAUSE = 2000;
 const PARTNER_SIGN = '<svg viewBox="0 0 120 40" aria-hidden="true"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
 
+// The opening (10/11/2026, the user: «una schermata animata all'apertura con almeno un "che investitore sei"», sketch A
+// of 1. LAVORO/apertura/): the eight characters as shadows, in their four pairs where the map puts them, the title,
+// a light passing over them; then the first statement comes by itself. About 3 s and no button: a touch goes on at
+// once. Only before the first answer. At the choice the two shadows of your type take their colours (scelta).
+const OPEN_TIME = 2900;
 const fresh = () => ({ step: 'domande', i: 0, answers: Array(QUESTIONS.length).fill(null), tie: {}, pick: null, line: 0, sign: null, avvisi: null });
 function load() {
   try {
@@ -62,7 +68,7 @@ export function whoOf(s) {
 }
 
 /** The little map of the four types with your point (reveal and Tu). */
-export function miniMap(who, { label = true } = {}) {
+export function miniMap(who, { label = true, names = true } = {}) {
   // The names sit on the outer edge of each quadrant; your point lives in the free field of your quadrant, between
   // its names and the middle, so at any text size it never covers them (09/11/2026: at the far corners it used to
   // sit on the description). Still in proportion: the further from the middle on the map, the further from the
@@ -77,8 +83,10 @@ export function miniMap(who, { label = true } = {}) {
   // «Tu» beside the point, on the side of the quadrant with more room
   const side = left > 50 ? ' to-left' : '';
   const you = `<i class="mm-field"><i class="mm-you${side}" style="--x:${left.toFixed(1)}%;--y:${top.toFixed(1)}%">${label ? '<span>Tu</span>' : ''}</i></i>`;
-  // only the names in the quadrants: the axes around already say what each one is (10/11/2026, Davide: less text)
-  const cells = ORDER.map((k) => `<div class="mm-q${k === who.quadrant ? ' me' : ''}"><b>${keep(PROFILES[k].names.join(' · '))}</b>${k === who.quadrant ? you : ''}</div>`).join('');
+  // only the names in the quadrants: the axes around already say what each one is (10/11/2026, Davide: less text);
+  // in the reveal not even the names (10/11/2026, the user: «elimina i nomi degli 8 personaggi qua»): your quadrant
+  // and your point, the two characters come on the next screen
+  const cells = ORDER.map((k) => `<div class="mm-q${k === who.quadrant ? ' me' : ''}">${names ? `<b>${keep(PROFILES[k].names.join(' · '))}</b>` : ''}${k === who.quadrant ? you : ''}</div>`).join('');
   return `<div class="mm" role="img" aria-label="La mappa dei quattro tipi: il tuo punto è nel quadrante ${who.profile.what}">
     <span class="mm-axis n">Rischio alto</span><span class="mm-axis s">Rischio basso</span>
     <span class="mm-axis w">Innovativo</span><span class="mm-axis e">Tradizionale</span>
@@ -102,6 +110,8 @@ export function makeAvvio(api) {
   const root = document.getElementById('avvio');
   let s = load();
   let lock = false;
+  let opened = false; // the opening played (or was skipped) in this session
+  let openT = 0;
 
   const save = () => {
     try {
@@ -117,6 +127,7 @@ export function makeAvvio(api) {
   };
 
   function screen(cls, html) {
+    clearTimeout(openT);
     root.className = `avvio ${cls}`;
     root.innerHTML = html;
     root.scrollTop = 0;
@@ -126,7 +137,26 @@ export function makeAvvio(api) {
   }
 
   // ---------- the screens ----------
+  /** «Che investitore sei?» over the eight shadows, then the first statement (OPEN_TIME). */
+  function apertura() {
+    // the hidden picture gives each shadow its size; the shadow is the same picture as a mask, in the ink of the app
+    const shadow = (n, k, col) => `<i class="av-sil" style="--m:url('${FIGURES[n]}');--k:${k};--c:${col}"><img src="${FIGURES[n]}" alt="" /></i>`;
+    // high risk on top, innovative on the left; --c is the column, for the light that passes from left to right
+    const pairs = ORDER.map((q, i) => `<div class="av-pair">${PROFILES[q].names.map((n, j) => shadow(n, i * 2 + j, (i % 2) * 2 + j)).join('')}</div>`).join('');
+    screen('av-open', `<h1>Che investitore sei?</h1><div class="av-shadows" aria-hidden="true">${pairs}</div>`);
+    openT = setTimeout(() => {
+      root.classList.add('av-open-out');
+      openT = setTimeout(endOpen, 230);
+    }, OPEN_TIME);
+  }
+  function endOpen() {
+    clearTimeout(openT);
+    opened = true;
+    question();
+  }
+
   function question() {
+    if (!opened && s.i === 0 && s.answers.every((a) => a === null)) return apertura();
     const q = QUESTIONS[s.i];
     const pips = QUESTIONS.map((_, k) => `<i class="${k < s.i ? 'on' : k === s.i ? 'now' : ''}"></i>`).join('');
     const dots = SCALE.values
@@ -170,7 +200,7 @@ export function makeAvvio(api) {
       <h1>${p.motto}</h1>
       <p class="av-axes"><span>${keep(p.what)}</span></p>
       <p class="av-good">${p.pregio}</p>
-      <div class="av-pop">${miniMap(who)}</div>
+      <div class="av-pop">${miniMap(who, { names: false })}</div>
       <div class="av-fill"></div>
       <button class="pill pill-dark wide" data-act="next">Avanti</button>`,
     );
@@ -180,7 +210,10 @@ export function makeAvvio(api) {
   function scelta() {
     const p = whoOf({ ...s, pick: '-' }).profile;
     const cards = p.names
-      .map((n) => `<button class="av-person" data-pick="${n}" aria-pressed="${s.pick === n}" aria-label="${n}"><span class="av-figure"><img src="${FIGURES[n]}" alt="" /></span><b>${n}</b></button>`)
+      .map(
+        (n) =>
+          `<button class="av-person" data-pick="${n}" aria-pressed="${s.pick === n}" aria-label="${n}"><span class="av-figure"><img src="${FIGURES[n]}" alt="" /><i class="av-unveil" style="--m:url('${FIGURES[n]}')"></i></span><b>${n}</b></button>`,
+      )
       .join('');
     screen(
       `av-page av-pick${s.pick ? ' picked' : ''}`,
@@ -188,6 +221,20 @@ export function makeAvvio(api) {
       <div class="av-people">${cards}</div>
       <button class="pill pill-dark wide" data-act="pick">${s.pick ? `Gioco con ${s.pick}` : ''}</button>`,
     );
+    // the two shadows of the opening take their colours: each shadow lies exactly on its figure (the layout box,
+    // without the breathing, which the shadow does too); if the picture never decodes, the figures are simply there
+    for (const f of root.querySelectorAll('.av-figure')) {
+      const img = f.querySelector('img');
+      const sh = f.querySelector('.av-unveil');
+      img
+        .decode()
+        .catch(() => {})
+        .then(() => {
+          if (!img.offsetHeight) return;
+          Object.assign(sh.style, { left: `${img.offsetLeft}px`, top: `${img.offsetTop}px`, width: `${img.offsetWidth}px`, height: `${img.offsetHeight}px` });
+          sh.classList.add('placed');
+        });
+    }
   }
 
   function azienda() {
@@ -362,6 +409,8 @@ export function makeAvvio(api) {
 
   // ---------- touches ----------
   root.addEventListener('click', (e) => {
+    // a touch during the opening: the first statement, at once
+    if (root.classList.contains('av-open')) return endOpen();
     const b = e.target.closest('button');
     if (!b || b.disabled || lock) return;
     const act = b.dataset.act;
@@ -451,6 +500,7 @@ export function makeAvvio(api) {
     /** «Ricomincia da capo» and DEMO: everything goes, the test comes back. */
     restart() {
       s = fresh();
+      opened = false; // starting again from the test starts again from the opening
       save();
       show();
     },
