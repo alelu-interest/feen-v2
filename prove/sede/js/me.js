@@ -25,7 +25,6 @@ export function makeMe(api) {
   const body = document.getElementById('me-body');
   // the settings live in main.js, saved with the progress (salva.js, 07/11/2026)
   const settings = api.settings;
-  let wipeArmed = null;
   let privacyOpen = false;
 
   function character() {
@@ -76,11 +75,11 @@ export function makeMe(api) {
 
   function contract() {
     const who = api.who();
-    // signed with one touch (avvio.js, sign-alt): the name written, as on the contract, not a squiggle you never drew
-    const typed = `<svg class="contract-name" viewBox="0 0 120 40"><text x="60" y="28" text-anchor="middle"${who?.me?.length > 6 ? ' textLength="112" lengthAdjust="spacingAndGlyphs"' : ''}>${who?.me ?? ''}</text></svg>`;
+    // signed with one touch (avvio.js, sign-alt): «Firmato» written, as on the contract, not a squiggle you never drew
+    const typed = '<svg class="contract-name" viewBox="0 0 120 40"><text x="60" y="28" text-anchor="middle">Firmato</text></svg>';
     const drawn = who?.sign?.length ? signSvg(who.sign, 'contract-sign') : who ? typed : '<svg viewBox="0 0 120 40"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
     const when = who?.signed ? `firmato il ${who.signed}` : 'firmato al primo avvio';
-    const between = who ? `Tra ${who.me} e ${who.partner}, ${when}` : `F${when.slice(1)}`;
+    const between = who ? `Tra te e ${who.partner}, ${when}` : `F${when.slice(1)}`;
     return `<section class="me-card contract">
       <div class="contract-paper" aria-hidden="true">
         <i></i><i></i><i style="width:70%"></i><i></i><i style="width:55%"></i>
@@ -139,11 +138,17 @@ export function makeMe(api) {
       <h2>Impostazioni</h2>
       <ul class="settings">
         ${row('avvisi', 'Avvisi', settings.avvisi, `Uno al giorno al massimo, alle ${reminders.time}`)}
+        <li class="time-row"${settings.avvisi ? '' : ' hidden'}><label class="set-time"><span>Ora del promemoria</span><input type="time" id="set-ora" value="${reminders.time}" step="900" /></label></li>
         ${row('suoni', 'Suoni', api.sound.on)}
         ${row('vibrazione', 'Vibrazione', settings.vibrazione)}
         ${row('movimento', 'Movimento ridotto', motion.calm, 'Meno animazioni e voli più brevi')}
         <li class="privacy-row"><button class="link" data-act="privacy" aria-expanded="${privacyOpen}" aria-controls="privacy">Informazioni e privacy<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${privacy()}</li>
-        <li><button class="link danger" data-act="wipe">Ricomincia da capo</button></li>
+        <li class="wipe-row"><button class="link danger" data-act="wipe" aria-expanded="false" aria-controls="wipe-ask">Ricomincia da capo</button>
+          <div class="wipe-ask" id="wipe-ask" role="group" aria-labelledby="wipe-q" hidden>
+            <p id="wipe-q">Cancelli l’azienda, il personaggio, la firma e i traguardi, e riparti dal benvenuto. Non si torna indietro.</p>
+            <button class="pill pill-light wide" data-act="wipe-no">Annulla</button>
+            <button class="pill pill-danger wide" data-act="wipe-yes">Cancella tutto</button>
+          </div></li>
       </ul>
     </section>`;
   }
@@ -166,6 +171,17 @@ export function makeMe(api) {
     document.getElementById('me-sub').innerHTML = `<span class="me-dot" style="background:${top.color};color:${inkOn(top.color)}">${top.n}</span> Piano ${top.n} · ${top.name}`;
   }
 
+  // the time of the reminders, chosen again from here (10/11/2026, Luca: after the first start it stayed at 18:00 for
+  // good, while «l'orario lo sceglie il ragazzo», CLAUDE.md §5)
+  body.addEventListener('change', (e) => {
+    if (e.target.id !== 'set-ora' || !e.target.value) return;
+    reminders.time = e.target.value;
+    const note = body.querySelector('#set-avvisi');
+    if (note) note.textContent = `Uno al giorno al massimo, alle ${reminders.time}`;
+    api.persist();
+    api.toast(`Promemoria alle ${reminders.time}.`);
+  });
+
   body.addEventListener('click', (e) => {
     const t = e.target.closest('button');
     if (!t) return;
@@ -183,7 +199,10 @@ export function makeMe(api) {
       t.setAttribute('aria-checked', String(on));
       api.persist();
       if (key === 'vibrazione' && on) buzz(15);
-      if (key === 'avvisi') api.toast(on ? `Avvisi accesi: alle ${reminders.time}, mai se oggi hai già fatto una lezione.` : 'Avvisi spenti. Si riaccendono da qui.');
+      if (key === 'avvisi') {
+        body.querySelector('.time-row').hidden = !on;
+        api.toast(on ? `Avvisi accesi: alle ${reminders.time}, mai se oggi hai già fatto una lezione.` : 'Avvisi spenti. Si riaccendono da qui.');
+      }
       return;
     }
     if (t.dataset.act === 'privacy') {
@@ -192,21 +211,23 @@ export function makeMe(api) {
       body.querySelector('#privacy').hidden = !privacyOpen;
       return;
     }
-    if (t.dataset.act === 'wipe') {
-      // a double confirmation: the first touch only arms the button
-      if (!wipeArmed) {
-        t.textContent = 'Cancella tutto: tocca di nuovo per confermare';
-        wipeArmed = setTimeout(() => {
-          wipeArmed = null;
-          t.textContent = 'Ricomincia da capo';
-        }, 4000);
-        return;
-      }
-      clearTimeout(wipeArmed);
-      wipeArmed = null;
-      // as in the app: everything goes, back to the welcome, the test and the choice of the character
-      api.wipe();
+    // «Ricomincia da capo» (10/11/2026, the ten testers): the second touch used to confirm in the same spot as the
+    // first, so a double tap wiped the whole company, and the question went away by itself after 4 s with no way to
+    // say no. Now the first touch opens a question under the row that waits for an answer: «Annulla» where the finger
+    // already is, «Cancella tutto» under it, and the tap guard of app.js between them.
+    const ask = body.querySelector('#wipe-ask');
+    const wipeBtn = body.querySelector('[data-act="wipe"]');
+    if (t.dataset.act === 'wipe' || t.dataset.act === 'wipe-no') {
+      const open = t.dataset.act === 'wipe' && ask.hidden;
+      ask.hidden = !open;
+      wipeBtn.setAttribute('aria-expanded', String(open));
+      if (open) ask.querySelector('[data-act="wipe-no"]').focus({ preventScroll: true });
+      else wipeBtn.focus({ preventScroll: true });
+      if (open) ask.scrollIntoView({ block: 'nearest', behavior: motion.calm ? 'auto' : 'smooth' });
+      return;
     }
+    // as in the app: everything goes, back to the welcome, the test and the choice of the character
+    if (t.dataset.act === 'wipe-yes') api.wipe();
   });
 
   return { render };

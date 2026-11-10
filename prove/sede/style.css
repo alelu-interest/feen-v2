@@ -425,6 +425,14 @@ svg {
 .pill.wide {
   width: 100%;
 }
+/* a button not ready yet («Firmo», «Verifica», «Tocca chi ti somiglia»): grey and flat, but its words read, because
+   they say what to do (10/11/2026, Chiara: white on light blue at 0.4 opacity was under 2:1) */
+.pill-dark[disabled] {
+  background: var(--surface-2);
+  color: var(--ink-2);
+  border: 2px dashed var(--line);
+  box-shadow: none;
+}
 
 /* ---------- bottom ---------- */
 .bottom {
@@ -540,7 +548,7 @@ svg {
   border-radius: 20px;
   color: var(--muted);
   font-weight: 600;
-  font-size: 12px;
+  font-size: calc(12px * var(--fs)); /* with the phone's text, as the rest (10/11/2026: it stayed at 12 px) */
   transition: background 0.15s var(--ease);
 }
 .tab svg {
@@ -1577,6 +1585,36 @@ body[data-tab='percorso'] #scene {
 .link.danger {
   color: var(--error-ink);
 }
+/* «Ricomincia da capo» asks under its row and waits (10/11/2026): «Annulla» first, «Cancella tutto» below */
+.settings .wipe-row {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+}
+.wipe-ask {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 0 18px;
+}
+.wipe-ask[hidden] {
+  display: none;
+}
+.wipe-ask p {
+  margin: 0;
+  font-size: calc(14px * var(--fs));
+  line-height: 1.45;
+  color: var(--ink);
+}
+.pill-danger {
+  background: var(--error-soft);
+  color: var(--error-ink);
+  border: 2px solid var(--error-ink);
+  box-shadow: 0 4px 0 var(--error-ink);
+}
+.pill-danger:active {
+  box-shadow: 0 1px 0 var(--error-ink);
+}
 /* «Informazioni e privacy» opens under its row (cubotto 9.8, 09/11/2026) */
 .settings .privacy-row {
   flex-direction: column;
@@ -1746,7 +1784,6 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   color: var(--muted);
 }
 .avvio .pill[disabled] {
-  opacity: 0.45;
   pointer-events: none;
 }
 
@@ -1933,7 +1970,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   --c: var(--agree);
 }
 .av-dot.d3 {
-  --s: 22px;
+  --s: 26px; /* 22 px was hard to see (10/11/2026, Chiara) */
   --c: var(--mid);
 }
 .av-dot.d4,
@@ -2500,6 +2537,30 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   padding: 8px 10px;
 }
 
+/* the time of the reminders in the Tu (10/11/2026), under the switch */
+.settings .time-row[hidden] {
+  display: none;
+}
+.set-time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+  color: var(--ink);
+}
+.set-time input {
+  min-height: 44px;
+  font: 700 calc(17px * var(--fs-l)) var(--title);
+  color: var(--ink);
+  background: var(--surface-2);
+  border: 0;
+  border-radius: 12px;
+  padding: 6px 10px;
+}
 /* the character in the Tu */
 .me-who {
   display: grid;
@@ -2677,16 +2738,68 @@ body.in-lesson .toast {
     transform: scaleY(1.5);
   }
 }
+/* «5 di fila»: bigger, and a jump at every right answer in a row (10/11/2026: at 12 px nobody saw it) */
 .lz-streak {
   position: absolute;
   right: 0;
-  top: 16px;
-  padding: 2px 8px;
+  top: 12px;
+  padding: 4px 12px;
   border-radius: 999px;
   background: var(--reward-soft);
   color: var(--reward-ink);
-  font-size: calc(12px * var(--fs));
+  font-size: calc(14px * var(--fs));
   font-weight: 800;
+  animation: lz-streak 0.5s var(--ease) both;
+}
+@keyframes lz-streak {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* the reveal of your type comes in a piece at a time (avvio.js, pregio) */
+.av-tada > * {
+  animation: av-tada 0.5s var(--ease) both;
+}
+.av-tada > :nth-child(2) {
+  animation-delay: 0.12s;
+}
+.av-tada > :nth-child(3) {
+  animation-delay: 0.32s;
+}
+.av-tada > :nth-child(4) {
+  animation-delay: 0.5s;
+}
+.av-tada > :nth-child(5) {
+  animation-delay: 0.7s;
+}
+.av-tada > :nth-child(n + 6) {
+  animation-delay: 0.9s;
+}
+.av-tada h1 {
+  animation-name: av-tada-big;
+}
+@keyframes av-tada {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+@keyframes av-tada-big {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+  }
+  70% {
+    transform: scale(1.03);
+  }
 }
 @media (prefers-color-scheme: dark) {
   .lz-streak {
@@ -2706,8 +2819,9 @@ body.in-lesson .toast {
 /* the touch area is over 44 px tall (Apple), the line stays as it was: the padding is taken back by the margin */
 .lz-word {
   display: inline;
-  padding: 12px 2px;
-  margin: -12px -2px;
+  /* 6 px at the sides: a short word as «saldo» was 42 px wide, under the 44 (10/11/2026, B-013) */
+  padding: 12px 6px;
+  margin: -12px -6px;
   font: inherit;
   color: inherit;
   text-decoration: underline;
@@ -3178,7 +3292,6 @@ body.in-lesson .toast {
   padding: 10px 20px calc(var(--safe-b) + 16px);
 }
 .lz-foot .pill[disabled] {
-  opacity: 0.4;
   pointer-events: none;
 }
 /* the feedback rises from the bottom: right or wrong, never «almost» */
@@ -3374,6 +3487,9 @@ body.in-lesson .toast {
 .cs-chat {
   flex: 1;
   overflow-y: auto;
+  /* the older messages fade out under the photo of the room instead of being cut by its edge (10/11/2026, A-065) */
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 22px);
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -3470,6 +3586,16 @@ body.in-lesson .toast {
   line-height: 1.45;
   font-style: italic;
   color: var(--ink-2);
+}
+/* a wrong answer's scene: what would have happened, marked as such (10/11/2026) */
+.cs-if {
+  display: inline-block;
+  margin-bottom: 4px;
+  font-size: calc(12px * var(--fs));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--error-ink);
 }
 /* the told ending: «Un mese dopo», a little stronger */
 .cs-scene.cs-end {
@@ -3817,4 +3943,14 @@ body[data-fine] .bottom {
 /* partita 09/11 · Claude: an elided article and its hard word stay on one line (js/lezione.js, words) */
 .lz-nowrap {
   white-space: nowrap;
+}
+
+/* signed: under the stamp «Rifai» and «Firmo con un tocco» no longer offer anything (10/11/2026) */
+.avvio.av-signed [data-act='redo'],
+.avvio.av-signed [data-act='sign-alt'] {
+  visibility: hidden;
+}
+/* with reduced motion the reveal is just there, without waiting for its pieces */
+:root[data-calm] .av-tada > * {
+  animation-delay: 0s !important;
 }

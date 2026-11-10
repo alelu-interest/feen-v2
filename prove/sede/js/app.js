@@ -31,3 +31,24 @@ function setFontScale(x) {
 }
 window.feenFontScale = setFontScale;
 setFontScale(q.get('fs') ?? window.FEEN_FONT_SCALE ?? 1);
+
+// One tap, one action (10/11/2026, the ten testers of 1. LAVORO/revisione-ux/tester-2026-11-09/SINTESI.md). A tap that
+// changes the screen often leaves the next screen's button right under the finger: «Avanti» → «Inizia il test»,
+// «Verifica» → «Continua», «Vediamo il contratto» → «Firmo con un tocco», «Continua» → «Non ora». A quick second tap
+// then pressed a button nobody had read: it skipped the feedback of a wrong answer, signed the contract, refused the
+// reminders for good. The cure is here, once for every screen present and future, instead of a fix per button: after
+// a tap is taken, the taps of the next TAP_GAP ms are dropped before any handler sees them. Fields stay out (the
+// slider, the time of the reminders: dragging and then tapping «Verifica» is not a double tap), and so do clicks
+// that come from the keyboard or a screen reader (detail 0), which never double.
+const TAP_GAP = 450;
+let lastTap = -Infinity;
+addEventListener('click', (e) => {
+  if (e.detail === 0 || e.target.closest?.('input, select, textarea, label')) return;
+  const now = performance.now();
+  if (now - lastTap < TAP_GAP) {
+    e.stopImmediatePropagation();
+    e.preventDefault();
+    return;
+  }
+  lastTap = now;
+}, true);

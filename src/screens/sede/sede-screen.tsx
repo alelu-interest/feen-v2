@@ -9,7 +9,7 @@ import { Asset } from 'expo-asset';
 import * as Haptics from 'expo-haptics';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useRef, useState } from 'react';
-import { AppState, StyleSheet, View, useColorScheme, useWindowDimensions } from 'react-native';
+import { AppState, BackHandler, StyleSheet, View, useColorScheme, useWindowDimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
 import { planReminders, readPlan } from './reminders';
@@ -42,6 +42,8 @@ function onMessage(e: WebViewMessageEvent, page: WebView<object> | null) {
   try {
     const msg = JSON.parse(e.nativeEvent.data);
     if (typeof msg.buzz === 'number') buzz(msg.buzz);
+    // the page had nothing left to go back from (js/main.js back): Android's back key closes FEEN, as anywhere else
+    if (msg.exit === true) BackHandler.exitApp();
     const plan = readPlan(msg.avvisi);
     if (plan) {
       // the phone's answer to a permission request goes back to the page (js/avvisi.js)
@@ -75,6 +77,17 @@ export function SedeScreen() {
   useEffect(() => {
     const sub = AppState.addEventListener('change', (st) => {
       if (st === 'active') web.current?.injectJavaScript('window.feenAvvisiSync && window.feenAvvisiSync(); true;');
+    });
+    return () => sub.remove();
+  }, []);
+
+  // Android's back key goes to the page first (CLAUDE.md §6): in a lesson it asks «Vuoi uscire?», then it closes a
+  // card, leaves a room, goes back to the Percorso; only when the page has nothing left does FEEN close (onMessage)
+  useEffect(() => {
+    const sub = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (!web.current) return false;
+      web.current.injectJavaScript('window.feenBack ? window.feenBack() : window.ReactNativeWebView.postMessage(JSON.stringify({ exit: true })); true;');
+      return true;
     });
     return () => sub.remove();
   }, []);

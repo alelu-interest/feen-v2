@@ -170,7 +170,9 @@ export function makeCase(api) {
     api.buzz([30, 60, 30]);
     foot().innerHTML = '';
     later(() => {
-      scene(o.scene, 'cs-what');
+      // the scene of a wrong answer is a «what if», not the story: it says so on top, so its «Un mese dopo» is never
+      // taken for the ending (10/11/2026, the album: A-065 opened like the finale)
+      say(`<span class="cs-if">Se fosse andata così</span><p>${esc(o.scene)}</p>`, 'cs-scene cs-what');
       later(() => {
         line('mentore', `${COVER} ${b.text}`, 'cs-ask');
         choices(b);

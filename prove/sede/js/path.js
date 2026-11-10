@@ -689,9 +689,9 @@ export function makePath(api) {
       card.className = 'bubble soon';
       card.style.setProperty('--c', info.color);
       card.style.setProperty('--c-deep', info.deep);
-      card.innerHTML = `<span class="bubble-tag">Piano ${n} · ${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">Arriva con il prossimo aggiornamento dell’app.</span>`;
+      card.innerHTML = `<span class="bubble-tag">Piano ${n} · ${info.name}</span><span class="bubble-title">In costruzione</span><span class="bubble-note">La gru ci lavora: apre con il prossimo aggiornamento di FEEN.</span>`;
       card.setAttribute('role', 'note');
-      card.setAttribute('aria-label', `Il piano ${n} è in costruzione. Arriva con il prossimo aggiornamento dell’app.`);
+      card.setAttribute('aria-label', `Il piano ${n} è in costruzione. La gru ci lavora: apre con il prossimo aggiornamento di FEEN.`);
       layer.append(card);
       // anchored a little past the wall of the floor to come, so the card stands above the last stage and its object
       // instead of covering them (with large text the card grows upwards, never down onto the stage)
@@ -887,9 +887,11 @@ export function makePath(api) {
   const FIT_COST = [0, 260, 160, 2400]; // the short one only when the others would cover a good part of a stage
   const SIDES = { above: 0, right: 320, left: 320, below: 900 };
   const KEEP = 80; // a covered pixel of the next stage, of a person or a name: only when nothing else is left
-  const HEAD = 6; // of the icon or the object of another stage, what says what the stage is
-  const BODY = 1; // of the stand of another stage
-  const EGG = 0.6; // of a surprise of the garden
+  // (10/11/2026, A-077: after the Caso the bubble of lesson 4 covered half the Caso's stand and the letterbox: the
+  // stages done and the surprises weigh more than before, 6 → 10, 1 → 2, 0.6 → 2)
+  const HEAD = 10; // of the icon or the object of another stage, what says what the stage is
+  const BODY = 2; // of the stand of another stage
+  const EGG = 2; // of a surprise of the garden
   const TIP_GAP = 13; // from the edge of the bubble to the stand (the tip is 10 px long)
   const TIP_IN = 24; // the tip keeps this far from the corners of the bubble (its radius is 18)
   const STEPS = 8; // points along the edge for the tip

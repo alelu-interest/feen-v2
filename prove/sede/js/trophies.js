@@ -68,7 +68,7 @@ export function makeTrophies({ sfx, onChange }) {
         pop.hidden = true;
         next();
       }, 300);
-    }, 2800);
+    }, 4500); // 4.5 s (10/11/2026: at 2.8 s four testers found trophies in the Tu they had never seen arrive)
   }
   function earn(id) {
     const t = TROPHIES.find((x) => x.id === id);

@@ -553,7 +553,9 @@ function toast(text, { low = false } = {}) {
   void t.offsetWidth;
   t.style.animation = '';
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => (t.hidden = true), Math.max(2600, 1500 + text.length * 50));
+  // long enough to read slowly (10/11/2026: Kevin and Chiara lost «Si apre dopo…» after 3.6 s): about 75 ms a letter,
+  // never under 4 s; a touch closes it earlier
+  toastTimer = setTimeout(() => (t.hidden = true), Math.max(4000, 2000 + text.length * 75));
   say(text);
 }
 $('toast').onclick = () => {
@@ -822,17 +824,40 @@ function closeSheet(wrap) {
   if (sheetFrom?.isConnected && !sheetFrom.hidden) sheetFrom.focus({ preventScroll: true });
   sheetFrom = null;
 }
-document.addEventListener('keydown', (e) => {
-  if (e.key !== 'Escape') return;
-  if (!$('card-wrap').hidden) closeCard(); // a fresh card has no X: Esc does what «Continua» does
+/** One step back: Android's back key and Esc on a computer (10/11/2026; CLAUDE.md §6: «La X (e il tasto Indietro su
+ *  Android) apre "La lezione riparte dall'inizio…"»). Before, the key did nothing in the page, and in the app on
+ *  Android it would have closed FEEN in the middle of a lesson. Inside a lesson, the Caso or the Prova it asks
+ *  «Vuoi uscire?» (and a second press says «Resto»); then a card closes, a room goes back to the building, a tab
+ *  goes back to the Percorso. False when there is nothing left to go back from: the app may close. */
+function back() {
+  for (const id of ['lezione', 'caso', 'campo']) {
+    const r = $(id);
+    if (r.hidden) continue;
+    const ask = r.querySelector('.lz-ask');
+    (ask && !ask.hidden ? ask.querySelector('[data-act="stay"]') : r.querySelector('[data-act="x"]'))?.click();
+    return true;
+  }
+  if (!$('avvio').hidden) return false; // the first start has no back: every step is saved, the app may close
+  if (state.busy) return true; // a flight, a landing: it ends by itself
+  if (!$('card-wrap').hidden) closeCard(); // a fresh card has no X: back does what «Continua» does
   else if (!$('demo-wrap').hidden) closeSheet($('demo-wrap'));
-  else if (state.view !== 'overview' && !state.busy) {
+  else if (state.tab === 'ufficio' && state.view !== 'overview') {
     sfx.whoosh();
     const n = state.viewFloor;
     go('overview', { n });
     if (document.activeElement === document.body) focusFloor(n);
-  }
+  } else if (state.tab !== 'percorso') setTab('percorso');
+  else return false;
+  return true;
+}
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || e.defaultPrevented) return; // a lesson's definition closes first (lezione.js)
+  back();
 });
+// the app's back key (sede-screen.tsx): the phone asks, the page goes back one step or says there is nothing left
+window.feenBack = () => {
+  if (!back()) window.ReactNativeWebView?.postMessage(JSON.stringify({ exit: true }));
+};
 /** The button of floor n in the list: where the keyboard lands when what it was on disappears. */
 const focusFloor = (n) => $('a11y').querySelector(`[data-n="${n}"]:not([data-i])`)?.focus();
 $('card-close').onclick = () => {
@@ -1097,7 +1122,7 @@ function lessonFor(n, s) {
 function comingSoon(n) {
   return IN_APP && n > 1 && !Object.keys(LESSONS).some((k) => k.startsWith(`p${n}-`));
 }
-const SOON = (n) => `Il piano ${n} è in costruzione. Arriva con il prossimo aggiornamento dell’app.`;
+const SOON = (n) => `Il piano ${n} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
 /** The Caso of floor n (compito C1, 07/11/2026): its approved card or, until it arrives, the test Caso. */
 function caseFor(n, s) {
   if (s.tag !== 'Caso') return null;
@@ -1191,8 +1216,29 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     await wait(hire ? 2.2 : 1.35);
     $('fake-lesson').hidden = true;
   }
-  // a stage with an object: it lands in its place; every stage colours a piece of the walls
+  // The stage is done: it is saved now, before the flight to the office (10/11/2026, Luca's test: the save came at
+  // the end of the flight, 2–3.5 s after the last «Continua», and closing the app in between lost the whole lesson).
+  // The flight and the card are only the show: from here on, closing the app loses nothing that counts.
   const place = office.slotOf(i);
+  // how the lesson went: played, or pretend as «Lezioni» in DEMO says
+  const clean = outcome === 0;
+  if (!played.has(n)) played.set(n, []);
+  played.get(n)[i] = clean;
+  // the trophies taken on the way: «Ci riprovi» made right, a stage done in the evening, a floor without a mistake
+  // (the stages skipped with «Finisci tutto il piano» count as done right)
+  const perfect = { 2: 'pin', 3: 'asso', 4: 'scudo' }[n];
+  const prizes = [fixed && 'riprovi', state.night && 'luci', perfect && i + 1 === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false) && perfect].filter((id) => id && !trophies.has(id));
+  // a card follows (an object landed, or the stage was started from the Percorso: always so in the app): the line on
+  // the result and the trophies go into it, where they stay until «Continua», and the trophies are earned without the
+  // pop, which would pass during the flight. Without a card (the green pill on a stage without an object, only in the
+  // prova) the banner says the line and the pop comes as before.
+  const withCard = !!place || fromPath;
+  if (withCard) trophies.restore(prizes);
+  // no reminder today (avvisi.js)
+  reminders.stageDone();
+  earnedSaved = i + 1;
+  persist();
+  // a stage with an object: it lands in its place; every stage colours a piece of the walls
   if (place) {
     go('slot', { n, i });
     sfx.whoosh();
@@ -1205,28 +1251,12 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     await paintUp(office, i + 1, 1.1);
   }
   state.earned++;
+  earnedSaved = null;
   office.markNext(state.earned);
   renderPips(i);
   $('plate').classList.remove('pop');
   void $('plate').offsetWidth;
   $('plate').classList.add('pop');
-  // how the lesson went: played, or pretend as «Lezioni» in DEMO says
-  const clean = outcome === 0;
-  if (!played.has(n)) played.set(n, []);
-  played.get(n)[i] = clean;
-  // the trophies taken on the way: «Ci riprovi» made right, a stage done in the evening, a floor without a mistake
-  // (the stages skipped with «Finisci tutto il piano» count as done right)
-  const perfect = { 2: 'pin', 3: 'asso', 4: 'scudo' }[n];
-  const prizes = [fixed && 'riprovi', state.night && 'luci', perfect && state.earned === 8 && [...Array(8)].every((_, k) => played.get(n)[k] !== false) && perfect].filter((id) => id && !trophies.has(id));
-  // a card follows (an object landed, or the stage was started from the Percorso: always so in the app): the line on
-  // the result and the trophies go into it, where they stay until «Continua», and the trophies are earned without the
-  // pop, which would pass during the flight. Without a card (the green pill on a stage without an object, only in the
-  // prova) the banner says the line and the pop comes as before.
-  const withCard = !!place || fromPath;
-  if (withCard) trophies.restore(prizes);
-  // the stage is done: saved now, so closing the app from here on loses nothing; no reminder today (avvisi.js)
-  reminders.stageDone();
-  persist();
   // the Prova sul campo has no mark (CLAUDE.md §6): «completata» as the lessons, not «superata» (09/11/2026)
   const title = s.tag === 'Caso' ? 'Caso risolto' : s.tag === 'Prova sul campo' ? 'Prova completata' : 'Lezione completata';
   // the line on the result, never a number nor a mark; on a stage without an object, how far the colour got too
@@ -1395,12 +1425,16 @@ async function floorComplete() {
 // when it waits for an update of the app), the next floor rising now, or after the last floor the roof. No dates,
 // no guilt, never what the launch is, nothing male or female about whoever plays (CLAUDE.md §4, §8).
 const toFloor = (f) => f.the.replace(/^la /, 'alla ').replace(/^il /, 'al '); // «alla Tesoreria», «al piano dei Soci»
-const agree = (f, fem, masc) => (f.the.startsWith('la ') ? fem : masc); // the Tesoreria is «finita», the Gaming «finito»
+// How far the launch is, in the words of the partner (10/11/2026: Tommaso and five more did not know how much was
+// left; the floor waiting for an update said «la gru lavora già» and then the Percorso «arriva con il prossimo
+// aggiornamento dell'app», two stories at once: now the partner says both, once, and the Percorso the same)
+const COUNT = ['Un piano', 'Due piani', 'Tre piani', 'Quattro piani', 'Cinque piani', 'Sei piani', 'Sette piani', 'Otto piani', 'Nove piani', 'Dieci piani', 'Undici piani'];
 function floorDoneLine(n) {
   if (n === FLOORS.length) return 'Dodici piani, e portano tutti la tua firma. Manca solo il tetto: ci vediamo lassù.';
   const next = FLOORS[n];
-  if (comingSoon(n + 1)) return `Un piano intero, e porta la tua firma. Intanto la gru lavora già ${toFloor(next)}: appena è ${agree(next, 'finita', 'finito')}, si sale.`;
-  return `Un piano intero, e porta la tua firma. Guarda su: arriva ${next.the}.`;
+  const done = `${COUNT[n - 1]} su dodici, e ${n === 1 ? 'porta' : 'portano'} la tua firma.`;
+  if (comingSoon(n + 1)) return `${done} La gru lavora già ${toFloor(next)}: apre con il prossimo aggiornamento di FEEN. Intanto qui si ripassa quando vuoi.`;
+  return `${done} Guarda su: arriva ${next.the}.`;
 }
 const panel = document.createElement('div');
 panel.className = 'fine-piano';
@@ -1651,11 +1685,14 @@ function trophy(id, n) {
 }
 
 /** Everything that has to survive the app being closed (compito D1, 07/11/2026): written after every change. */
+// the stages done as saved: during the flight that follows a stage, the stage is already done for the save, though
+// the office has not shown it yet (completeNext)
+let earnedSaved = null;
 function persist() {
   if (!trophies) return; // not before the start has put back what was saved
   saveProgress({
     floor: state.floor,
-    earned: state.earned,
+    earned: earnedSaved ?? state.earned,
     played: Object.fromEntries(played),
     missed: Object.fromEntries(missed),
     eggs: [...eggsFound],

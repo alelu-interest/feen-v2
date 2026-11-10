@@ -52,6 +52,8 @@ export function makeLesson(api) {
   }
   function frame(body, { foot = true } = {}) {
     defWord = null;
+    sheetRoom?.disconnect();
+    sheetRoom = null;
     root.innerHTML = `<div class="lz-top">
         <button class="lz-x" data-act="x" aria-label="Esci dalla lezione"><svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="lz-barbox">${bar()}</div>
@@ -86,10 +88,14 @@ export function makeLesson(api) {
     const left = Math.min(Math.max(16, r.left + r.width / 2 - width / 2), W - 16 - width);
     tip.style.left = `${left}px`;
     tip.style.setProperty('--x', `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
+    // under the whole text the word is in, not under the word: right under the word it covered the next lines of the
+    // question, often the numbers it is about (10/11/2026, Kevin and the album, A-002). Over the text when there is
+    // no room below. The arrow still points at the word.
+    const para = (b.closest('p, li, .lz-q, .lz-say, .lz-opt, .lz-sentence') ?? b).getBoundingClientRect();
     const h = tip.offsetHeight;
-    const below = r.bottom + 10 + h <= H - 12;
+    const below = para.bottom + 10 + h <= H - 12;
     tip.classList.toggle('up', !below);
-    tip.style.top = `${below ? r.bottom + 10 : r.top - 10 - h}px`;
+    tip.style.top = `${below ? para.bottom + 10 : Math.max(8, para.top - 10 - h)}px`;
   }
   function undefine() {
     defWord?.setAttribute('aria-expanded', 'false');
@@ -286,6 +292,32 @@ export function makeLesson(api) {
       </div>`;
     sheet.hidden = false;
     sheet.querySelector('h3').focus({ preventScroll: true });
+    // the sheet rises over the answers: room for them above it, and the right one in sight (10/11/2026, the album:
+    // «Non è così» covered the right answer, and with «Spiegami» open every answer but the wrong one)
+    sheetRoom?.disconnect();
+    sheetRoom = new ResizeObserver(makeRoom);
+    sheetRoom.observe(sheet);
+  }
+
+  let sheetRoom = null;
+  function makeRoom() {
+    const body = root.querySelector('.lz-body');
+    const sheet = root.querySelector('#lz-sheet');
+    if (!body || !sheet || sheet.hidden) return;
+    // where the sheet will stand, not where its rising animation has it now (offsetTop ignores the transform)
+    const top = root.getBoundingClientRect().top + sheet.offsetTop;
+    const covered = body.getBoundingClientRect().bottom - top;
+    body.style.paddingBottom = `${Math.max(20, covered + 20)}px`;
+    // what to see: the answers marked right and wrong (or the sentence, the slider)
+    const marked = [...root.querySelectorAll('.lz-body .right, .lz-body .wrong')];
+    if (!marked.length) return;
+    const first = marked[0].getBoundingClientRect();
+    const last = marked[marked.length - 1].getBoundingClientRect();
+    const roomTop = body.getBoundingClientRect().top + 8;
+    const roomBottom = top - 12;
+    let dy = last.bottom - roomBottom; // down far enough to see the last one
+    dy = Math.min(dy, first.top - roomTop); // never so far that the first one goes under the bar
+    if (dy > 0) body.scrollBy({ top: dy, behavior: document.documentElement.hasAttribute('data-calm') ? 'auto' : 'smooth' });
   }
 
   /** What was right and what was not, on the answers themselves. */
@@ -416,7 +448,11 @@ export function makeLesson(api) {
   // the definition stays by its word: when the word moves (scrolling, a turned phone) or on Esc, it goes away
   root.addEventListener('scroll', () => defWord && undefine(), true);
   window.addEventListener('resize', () => defWord && undefine());
-  root.addEventListener('keydown', (ev) => ev.key === 'Escape' && defWord && undefine());
+  root.addEventListener('keydown', (ev) => {
+    if (ev.key !== 'Escape' || !defWord) return;
+    undefine();
+    ev.preventDefault(); // Esc closed the definition: it does not also ask «Vuoi uscire?» (main.js back)
+  });
 
   /** Pairs: a left item, then a right one (or the other way round); touching a paired item undoes its pair. */
   function matchTap(b) {

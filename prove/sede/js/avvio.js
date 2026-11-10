@@ -33,8 +33,11 @@ const ICONS = {
 };
 // what the partner says in the empty company, one line per touch: two lines since 09/11/2026 (revisione UX, stanza 4),
 // the partner and the launch, then the contract. Provisional, Claude's: the product of the launch is never said.
+// The player is never called by the character's name (10/11/2026, six testers out of ten: «Eccoti, Jordan!» and «Io,
+// Jordan, fondo…» made them play someone else's game; Claude's choice on the user's «fai tutto»): the name stays
+// with the character, the face you play with; the texts say «tu».
 const PARTNER = [
-  (w) => `Eccoti, ${w.me}! Sono ${w.partner}, ${w.partnerWord}. Ogni lezione fa crescere l’azienda, fino al grande lancio. Cosa lanciamo? Segreto tra soci.`,
+  (w) => `Eccoti! Sono ${w.partner}, ${w.partnerWord}. Ogni lezione fa crescere l’azienda, fino al grande lancio. Cosa lanciamo? Segreto tra soci.`,
   () => 'Prima però una firma. Niente paura: nessuna clausola scritta in piccolo.',
 ];
 // under the first line, while the room is on screen: what the numbers on the empty stands mean (Claude's, to confirm)
@@ -105,7 +108,12 @@ export function trapFloors(p) {
 /** The signature as drawn, in a box of 0..1: the Tu shows it under the contract. */
 export function signSvg(sign, cls = '') {
   if (!sign?.length) return '';
-  const d = sign.map((st) => st.map(([x, y], k) => `${k ? 'L' : 'M'}${(x * 300).toFixed(1)} ${(y * 100).toFixed(1)}`).join('')).join('');
+  // the same curves as the pad draws (avvio.js, pad)
+  const pt = ([x, y]) => `${(x * 300).toFixed(1)} ${(y * 100).toFixed(1)}`;
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const d = sign
+    .map((st) => `M${pt(st[0])}` + st.slice(1, -1).map((q, k) => `Q${pt(q)} ${pt(mid(q, st[k + 2]))}`).join('') + (st.length > 1 ? `L${pt(st[st.length - 1])}` : ''))
+    .join('');
   return `<svg class="${cls}" viewBox="0 0 300 100" aria-hidden="true"><path d="${d}"/></svg>`;
 }
 
@@ -206,8 +214,12 @@ export function makeAvvio(api) {
 
   function pregio() {
     const p = whoOf({ ...s, pick: '-' }).profile;
+    // the reveal is a moment, not a page (10/11/2026: «piatto» for six testers): it comes in a piece at a time,
+    // with the sound and the buzz of a reward (style.css, .av-tada)
+    api.sfx.reward?.();
+    api.buzz(25);
     screen(
-      'av-page av-reveal',
+      'av-page av-reveal av-tada',
       `<p class="av-eyebrow">Il tuo tipo</p>
       <h1>${p.motto}</h1>
       <p class="av-axes"><span>${keep(p.what)}</span></p>
@@ -240,10 +252,10 @@ export function makeAvvio(api) {
       'av-page av-reveal',
       `<p class="av-eyebrow">${keep(cap(p.what))}</p>
       <h1>Chi ti somiglia di più?</h1>
-      <p class="av-lead">Sono le due versioni del tuo tipo. Chi scegli è il tuo personaggio; l’altra versione fonda l’azienda con te.</p>
+      <p class="av-lead">Sono le due versioni del tuo tipo. Chi scegli è il volto con cui giochi; l’altra versione fonda l’azienda con te.</p>
       <div class="av-people">${cards}</div>
       <div class="av-fill"></div>
-      <button class="pill pill-dark wide" data-act="pick" ${s.pick ? '' : 'disabled'}>${s.pick ? `Sono ${s.pick}` : 'Tocca chi ti somiglia'}</button>`,
+      <button class="pill pill-dark wide" data-act="pick" ${s.pick ? '' : 'disabled'}>${s.pick ? `Gioco con ${s.pick}` : 'Tocca chi ti somiglia'}</button>`,
     );
   }
 
@@ -275,14 +287,14 @@ export function makeAvvio(api) {
       `<div class="av-paper">
         <h1>Contratto tra soci</h1>
         <ol class="av-articles">
-          <li><b>Art. 1</b> Io, ${who.me}, fondo questa azienda con ${who.partner}. Insieme prepariamo un grande lancio.</li>
+          <li><b>Art. 1</b> Io fondo questa azienda con ${who.partner}. Insieme prepariamo un grande lancio.</li>
           <li><b>Art. 2</b> Mi impegno a una cosa sola: capire come funzionano i soldi, una lezione alla volta.</li>
           <li><b>Art. 3</b> Niente scadenze, niente punteggi. Se mi fermo, l’azienda mi aspetta com’è.</li>
         </ol>
         <p class="av-date">${today()}</p>
         <div class="av-partner-sign">${PARTNER_SIGN}<span><b>${who.partner}</b> ha già firmato</span></div>
         <div class="av-sign"><canvas id="av-pad" aria-hidden="true"></canvas><span class="av-sign-hint">Firma qui col dito</span></div>
-        <div class="av-sign-line"><span>${who.me}</span><button class="av-redo" data-act="redo">Rifai</button></div>
+        <div class="av-sign-line"><span>La tua firma</span><button class="av-redo" data-act="redo">Rifai</button></div>
         <div class="av-stamp" aria-hidden="true"><b>FEEN</b><small>Soci<br />fondatori</small></div>
       </div>
       ${IN_APP ? '' : '<p class="av-note av-prov">Testo provvisorio.</p>'}
@@ -328,9 +340,13 @@ export function makeAvvio(api) {
       ctx.strokeStyle = '#0f70e0'; // the app's blue, like a pen (as the contract in the Tu)
       ctx.lineWidth = 2.6;
       ctx.lineCap = ctx.lineJoin = 'round';
+      // curves through the midpoints, like a pen, not straight segments (10/11/2026, Aurora: «spezzati come un grafico»)
       for (const st of strokes) {
+        const p = st.map(([x, y]) => [x * r.width, y * r.height]);
         ctx.beginPath();
-        st.forEach(([x, y], k) => (k ? ctx.lineTo(x * r.width, y * r.height) : ctx.moveTo(x * r.width, y * r.height)));
+        ctx.moveTo(...p[0]);
+        for (let k = 1; k < p.length - 1; k++) ctx.quadraticCurveTo(p[k][0], p[k][1], (p[k][0] + p[k + 1][0]) / 2, (p[k][1] + p[k + 1][1]) / 2);
+        if (p.length > 1) ctx.lineTo(...p[p.length - 1]);
         ctx.stroke();
       }
     };
@@ -427,10 +443,12 @@ export function makeAvvio(api) {
       s.answers[s.i] = Number(b.dataset.val);
       for (const d of root.querySelectorAll('.av-dot')) d.setAttribute('aria-pressed', String(d === b));
       save();
+      // the circle taken stays in sight a moment before the next statement (10/11/2026, Chiara: at 260 ms she could
+      // not see which one she had touched)
       setTimeout(() => {
         if (s.i < QUESTIONS.length - 1) return go('domande', { i: s.i + 1 });
         go(score(s.answers).ask.length ? 'spareggio' : 'pregio', { tie: {} });
-      }, 260);
+      }, 420);
       return;
     }
     api.sfx.tap();
@@ -458,21 +476,29 @@ export function makeAvvio(api) {
       // the stamp lands on the paper, then the first lesson (09/11/2026, the user: «migliora il contratto»)
       const sign = act === 'sign' ? pad.take() : null;
       if (act === 'sign-alt') {
-        // signed with one touch: your name goes on the line, written, instead of an empty pad under the stamp
+        // signed with one touch: «Firmato» goes on the line, written, instead of an empty pad under the stamp
         const box = root.querySelector('.av-sign');
         box?.classList.add('drawn', 'typed');
-        box?.insertAdjacentHTML('beforeend', `<span class="av-sign-typed">${s.pick}</span>`);
+        box?.insertAdjacentHTML('beforeend', '<span class="av-sign-typed">Firmato</span>');
       }
       root.querySelector('.av-paper')?.classList.add('stamped');
+      root.classList.add('av-signed'); // «Rifai» and «Firmo con un tocco» go: the contract is signed
+      // and the button says so, instead of looking switched off as if something had gone wrong (10/11/2026, Aurora)
+      const done = root.querySelector('[data-act="sign"]');
+      if (done) done.textContent = 'Firmato';
       root.querySelectorAll('[data-act]').forEach((x) => (x.disabled = true));
       // the stamp in sight, even when the page had scrolled down to «Firmo» (a short phone, large text)
       const calm = document.documentElement.hasAttribute('data-calm');
       root.querySelector('.av-stamp')?.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' });
       api.sfx.reward?.();
       api.buzz(25);
+      // signed is signed: the step is saved now, not when the stamp has finished (10/11/2026, Luca's test: closing the
+      // app during the 2 s of the stamp meant signing again). The stamp is the show.
+      Object.assign(s, { step: 'lezione', sign, signed: today() });
+      save();
       // the moment you become partners stays on screen long enough to read the stamp (partita 09/11/2026, punto 7:
       // with 0.9 s in all it hardly showed); with reduced motion the stamp is just there, the pause is the same
-      return setTimeout(() => go('lezione', { sign, signed: today() }), STAMP_PAUSE);
+      return setTimeout(show, STAMP_PAUSE);
     }
     if (act === 'remind' || act === 'no-remind') {
       const time = root.querySelector('#av-time')?.value || '18:00';
