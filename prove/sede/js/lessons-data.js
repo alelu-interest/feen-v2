@@ -31,13 +31,7 @@ export const LESSONS = {
           }
         ],
         "explain": "I regali sono l'entrata più diffusa: in Italia li riceve l'87% dei quindicenni, la paghetta senza fare niente il 59% (OCSE, PISA 2022). Lasciarli fuori vuol dire sbagliare il conto dall'inizio.",
-        "theory": "Un'entrata è ogni soldo che ti arriva: paghetta, regali, un lavoretto, una cosa venduta. Contarle tutte è il primo passo per sapere quanto hai davvero.",
-        "words": [
-          [
-            "entrata",
-            "i soldi che ti arrivano"
-          ]
-        ]
+        "theory": "Un'entrata è ogni soldo che ti arriva: paghetta, regali, un lavoretto, una cosa venduta. Contarle tutte è il primo passo per sapere quanto hai davvero."
       },
       {
         "n": 2,
@@ -134,7 +128,7 @@ export const LESSONS = {
         "mentor": "Una merenda da 2 € ogni giorno, per 30 giorni. Quanto fa?",
         "slider": {
           "min": 0,
-          "max": 120,
+          "max": 100,
           "step": 5,
           "unit": "€"
         },
@@ -168,7 +162,7 @@ export const LESSONS = {
         "label": "già noto",
         "moment": "rivedi la scelta",
         "idea": null,
-        "mentor": "Ultima. Vuoi la felpa e la merenda ogni giorno, senza finire sotto zero. Come fai?",
+        "mentor": "Vuoi la felpa e la merenda ogni giorno, senza finire sotto zero. Come fai?",
         "situation": "Questo mese hai 70 €. Le merende al bar, 2 € al giorno, fanno 60 €. In vetrina c'è una felpa da 45 €.",
         "options": [
           {

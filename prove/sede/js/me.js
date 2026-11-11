@@ -56,7 +56,8 @@ export function makeMe(api) {
    *  motto; the pregio and the trappola in a line each; the map opens from the type, under it; the partner in a line. */
   function yours(who) {
     const p = who.profile;
-    const where = p.floors.map((f) => FLOORS[f.n - 1].name).join(' e ');
+    // the two lessons can be on the same floor (Christine and Bill: both at Pianificazione): its name once
+    const where = [...new Set(p.floors.map((f) => FLOORS[f.n - 1].name))].join(' e ');
     return `<section class="me-card me-who">
       <div class="who-hero">
         <span class="who-figure"><img src="${FIGURES[who.me]}" alt="" /></span>
@@ -83,7 +84,8 @@ export function makeMe(api) {
     // signed with one touch (avvio.js, sign-alt): «Firmato» written, as on the contract, not a squiggle you never drew
     const typed = '<svg class="contract-name" viewBox="0 0 120 40"><text x="60" y="28" text-anchor="middle">Firmato</text></svg>';
     const drawn = who?.sign?.length ? signSvg(who.sign, 'contract-sign') : who ? typed : '<svg viewBox="0 0 120 40"><path d="M6 28c10-16 18-18 20-8s8 10 14-2 12-12 14 0 10 8 18-4 14-8 18 2 10 6 22-2"/></svg>';
-    const when = who?.signed ? `il ${who.signed}` : 'al primo avvio';
+    // «l’11 novembre», «l’1 marzo», «l’8 aprile»: the article is elided before a day that starts with a vowel sound
+    const when = who?.signed ? `${/^(1|8|11)\b/.test(who.signed) ? 'l’' : 'il '}${who.signed}` : 'al primo avvio';
     return `<section class="me-card contract">
       <div class="contract-paper" aria-hidden="true">
         <i></i><i></i><i style="width:70%"></i>

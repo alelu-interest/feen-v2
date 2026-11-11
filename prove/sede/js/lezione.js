@@ -1,8 +1,9 @@
 // FEEN · la sede — the lesson (compiti B2–B6, 07/11/2026; CLAUDE.md §6): full screen, the X and the bar at the top,
 // no timer and no lives. Each exercise: «IDEA NUOVA» when a concept arrives, the mentor asks, you answer,
 // «Verifica», the feedback rises from the bottom (right or wrong, never «almost»), «Spiegami» after every answer.
-// The theory card comes only after the first mistake on a new idea; the hard words are underlined and touched for
-// their definition; the bar celebrates five right in a row, a mistake stops the party without taking anything away.
+// The theory card comes only after the first mistake on a new idea, inside «Spiegami» (11/11/2026: less text after a
+// mistake); the hard words are underlined, once on a screen, and touched for their definition; the bar celebrates five
+// right in a row, a mistake stops the party without taking anything away.
 // At the end the mentor brings back the exercises gone wrong, once, as «Ci riprovi»: wrong again, the right answer
 // shows and the lesson goes on. The bar never goes back.
 // The exercises come from the approved cards (lessons-data.js, made by mobile/scripts/lezioni.mjs).
@@ -95,7 +96,15 @@ export function makeLesson(api) {
     // no room below. The arrow still points at the word.
     const para = (b.closest('p, li, .lz-q, .lz-say, .lz-opt, .lz-sentence') ?? b).getBoundingClientRect();
     const h = tip.offsetHeight;
-    const below = para.bottom + 10 + h <= H - 12;
+    const fitsBelow = para.bottom + 10 + h <= H - 12;
+    // Never over what has to be touched, when the other side is free (11/11/2026): under the sentence of «completa la
+    // frase» the bubble lay on the three words to choose from, the very thing the definition is read for. Over the
+    // text then, if it fits under the bar and covers no answer there.
+    const bar = root.querySelector('.lz-top')?.getBoundingClientRect().bottom ?? 8;
+    const fitsAbove = para.top - 10 - h >= bar;
+    const answers = [...root.querySelectorAll('.lz-answers button:not(.lz-word)')].map((x) => x.getBoundingClientRect());
+    const covers = (top) => answers.some((a) => a.bottom > top && a.top < top + h && a.right > left && a.left < left + width);
+    const below = fitsBelow && !(fitsAbove && covers(para.bottom + 10) && !covers(para.top - 10 - h));
     tip.classList.toggle('up', !below);
     tip.style.top = `${below ? para.bottom + 10 : Math.max(8, para.top - 10 - h)}px`;
   }
@@ -123,13 +132,17 @@ export function makeLesson(api) {
   }
   const mentorName = () => api.who()?.partner ?? 'Il mentore';
 
-  /** The hard words of the exercise, underlined in a text: touching one says its definition. */
-  function words(text, e) {
+  /** The hard words of the exercise, underlined in a text: touching one says its definition. `seen`: the words already
+   *  underlined on this screen, which are not underlined again (11/11/2026: «entrata» was underlined three times on
+   *  one screen, in the question, in the explanation and in the theory). */
+  function words(text, e, seen) {
     let html = esc(text);
     for (const [w] of e.words ?? []) {
+      if (seen?.has(w)) continue;
       // an elided article before the word («un'entrata», «dell'IBAN») stays on its line with it (partita 09/11/2026)
       const re = new RegExp(`(^|[^\\p{L}'’])(\\p{L}*['’])?(${w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?![\\p{L}])`, 'iu');
       html = html.replace(re, (_, pre, elided, found) => {
+        seen?.add(w);
         const button = `<button class="lz-word" data-word="${esc(w)}" aria-expanded="false">${found}</button>`;
         return `${pre}${elided ? `<span class="lz-nowrap">${elided}${button}</span>` : button}`;
       });
@@ -137,13 +150,28 @@ export function makeLesson(api) {
     return html;
   }
 
+  /** What the mentor says, in two voices (11/11/2026): what comes before the question (the rule, the numbers, the
+   *  situation of a mini-scenario) plain, the question strong, so the eye finds what is asked. Before, rule, numbers
+   *  and question were one block of bold, and the situation of a scenario came after its question. The question is
+   *  the last sentence, when it ends with «?»; a line without a question stays whole, strong, as it was. */
+  function voices(text) {
+    const t = text.trim();
+    if (!t.endsWith('?')) return ['', t];
+    let at = -1;
+    for (const m of t.matchAll(/[.!?…]\s+(?=[\p{Lu}«“])/gu)) at = m.index + m[0].length;
+    return at < 0 ? ['', t] : [t.slice(0, at).trim(), t.slice(at)];
+  }
   function mentorLine(e) {
     // «Vero o falso?» in the bubble only when the help line under it does not say it already
     const vf = e.type === 'vf' && !(e.help && !retry);
+    const [lead, ask] = voices(e.mentor);
+    const seen = new Set();
+    // all inside the title, so that a screen reader starting from it hears the situation before the question
+    const before = [e.type === 'scenario' ? e.situation : '', lead].filter(Boolean).map((t) => `<span class="lz-lead">${words(t, e, seen)}</span>`).join('');
     return `<div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b>
       ${retry ? '<span class="lz-again">Ci riprovi</span>' : ''}
       ${vf ? `<span class="lz-vf">${TYPE_ASK.vf}</span>` : ''}
-      <h2 class="lz-q" tabindex="-1">${words(e.mentor, e)}</h2></div></div>`;
+      <h2 class="lz-q" tabindex="-1">${before}${words(ask, e, seen)}</h2></div></div>`;
   }
 
   // ---------- one exercise ----------
@@ -157,7 +185,6 @@ export function makeLesson(api) {
       ex.options = e.type === 'vf' ? e.options : shuffle(e.options);
       const opts = ex.options.map((o, i) => `<button class="lz-opt" data-opt="${i}" aria-pressed="false">${esc(o.text)}</button>`).join('');
       if (e.type === 'completa') answers = `<p class="lz-sentence" aria-live="polite">${sentence(e, null)}</p><div class="lz-chips">${opts}</div>`;
-      else if (e.type === 'scenario') answers = `<p class="lz-situation">${words(e.situation, e)}</p><div class="lz-opts">${opts}</div>`;
       else answers = `<div class="lz-opts${e.type === 'vf' ? ' lz-two' : ''}">${opts}</div>`;
     }
     if (e.type === 'abbina') {
@@ -189,7 +216,10 @@ export function makeLesson(api) {
     }
     // the help line of a new type: the first time only, not in «Ci riprovi»
     const help = e.help && !retry ? `<p class="lz-help"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a6 6 0 0 1 3.5 10.9V17h-7v-2.6A6 6 0 0 1 12 3.5zM9.5 20.5h5"/></svg>${esc(e.help)}</p>` : '';
-    const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="lz-hint">${TYPE_ASK[e.type]}</p>` : '';
+    // one instruction on a screen, not two or three (11/11/2026, Davide: less text): what to do is said by the mentor's
+    // line and by the screen itself (two columns, a gap in the sentence, the place of the first step). How to touch
+    // stays for the screen reader, which does not see the screen.
+    const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="sr-only">${TYPE_ASK[e.type]}</p>` : '';
     frame(`${e.idea != null && !retry ? '<span class="lz-idea">Idea nuova</span>' : ''}
       ${mentorLine(e)}
       ${e.source ? `<p class="lz-source">Fonte: ${esc(e.source)}</p>` : ''}
@@ -258,11 +288,12 @@ export function makeLesson(api) {
     }
     if (e.type === 'abbina') {
       const bad = e.pairs.filter((p, i) => ex.right[ex.match[i]] !== p.right);
-      return { ok: !bad.length, why: bad.map((p) => p.why).join(' '), answer: e.pairs.map((p) => `${p.left} → ${p.right}`).join(' · ') };
+      // `pairs`: the ones gone wrong, to show one on a line; `answer` stays whole for whoever needs it in a sentence
+      return { ok: !bad.length, why: bad.map((p) => p.why).join(' '), answer: e.pairs.map((p) => `${p.left} → ${p.right}`).join(' · '), pairs: bad.map((p) => [p.left, p.right]) };
     }
     if (e.type === 'ordina') {
       const ok = ex.seq.every((t, i) => t === e.order[i]);
-      return { ok, why: ok ? '' : e.why, answer: e.order.join(' → ') };
+      return { ok, why: ok ? '' : e.why, answer: e.order.join(' → '), steps: e.order };
     }
     if (e.type === 'slider') {
       const [lo, hi] = e.range;
@@ -300,15 +331,22 @@ export function makeLesson(api) {
     root.querySelector('.lz-answers').inert = true;
     root.querySelector('.lz-foot').hidden = true;
     const sheet = root.querySelector('#lz-sheet');
+    // a hard word already underlined in the question is not underlined again down here
+    const seen = new Set((e.words ?? []).map(([w]) => w).filter((w) => [...root.querySelectorAll('.lz-body .lz-word')].some((b) => b.dataset.word === w)));
+    // the right answer in words only where the screen does not show it: among options it is the green one, in sight
+    // above the sheet (makeRoom); pairs, steps and a number need to be said. The screen reader hears it always.
+    const shownAbove = ['scelta', 'vf', 'completa', 'scenario'].includes(e.type);
     sheet.className = `lz-sheet ${v.ok ? 'ok' : 'no'}`;
     sheet.innerHTML = `<div class="lz-verdict">
         <span class="lz-mark" aria-hidden="true">${v.ok ? '<svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9.4"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>'}</span>
         <h3 tabindex="-1">${v.ok ? 'Giusto' : 'Non è così'}</h3>
       </div>
-      ${v.ok ? '' : `<p class="lz-right">La risposta giusta: <b>${esc(v.answer)}</b></p>`}
-      ${v.why ? `<p class="lz-why">${words(v.why, e)}</p>` : ''}
-      ${theory ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(e.theory ?? e.explain, e)}</p></div>` : ''}
-      <p class="lz-explain" id="lz-explain" tabindex="-1" hidden>${words(e.explain, e)}</p>
+      ${v.ok ? '' : rightAnswer(v, shownAbove)}
+      ${v.why ? `<p class="lz-why">${words(v.why, e, seen)}</p>` : ''}
+      <div class="lz-more" id="lz-explain" tabindex="-1" hidden>
+        ${theory ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(e.theory ?? e.explain, e, seen)}</p></div>` : ''}
+        ${theory && !e.theory ? '' : `<p class="lz-explain">${words(e.explain, e, seen)}</p>`}
+      </div>
       <div class="lz-sheet-acts">
         <button class="pill pill-light" data-act="explain" aria-expanded="false" aria-controls="lz-explain">Spiegami</button>
         <button class="pill pill-dark" data-act="next">Continua</button>
@@ -320,6 +358,16 @@ export function makeLesson(api) {
     sheetRoom?.disconnect();
     sheetRoom = new ResizeObserver(makeRoom);
     sheetRoom.observe(sheet);
+  }
+
+  /** The right answer under «Non è così». The steps of an order one on a line with their number, the pairs gone
+   *  wrong one on a line: before (11/11/2026) they were one sentence in bold with arrows, three lines long, to be
+   *  read like a paragraph. A number or an option stays a line. */
+  function rightAnswer(v, shownAbove) {
+    if (v.steps) return `<div class="lz-right"><span>La risposta giusta:</span><ol class="lz-right-list">${v.steps.map((t) => `<li>${esc(t)}</li>`).join('')}</ol></div>`;
+    if (v.pairs?.length)
+      return `<div class="lz-right"><span>La risposta giusta:</span><ul class="lz-right-list">${v.pairs.map(([l, r]) => `<li><b>${esc(l)}</b> → ${esc(r)}</li>`).join('')}</ul></div>`;
+    return `<p class="lz-right${shownAbove ? ' sr-only' : ''}">La risposta giusta: <b>${esc(v.answer)}</b></p>`;
   }
 
   let sheetRoom = null;
@@ -449,9 +497,16 @@ export function makeLesson(api) {
     if (b.dataset.seq !== undefined) {
       const at = [...root.querySelectorAll('.lz-pool .lz-cell')].indexOf(b);
       ex.seq.push(ex.items[Number(b.dataset.seq)]);
+      let tell = `Passo ${ex.seq.length}: ${ex.seq.at(-1)}.`;
+      // the last one left has one place only: it goes there by itself, without a touch that decides nothing (11/11/2026)
+      const left = ex.items.filter((t) => !ex.seq.includes(t));
+      if (left.length === 1) {
+        ex.seq.push(left[0]);
+        tell += ` Passo ${ex.seq.length}: ${left[0]}.`;
+      }
       drawOrder();
       ready();
-      said(`Passo ${ex.seq.length}: ${ex.seq.at(-1)}.`);
+      said(tell);
       return keepFocus(at);
     }
     if (b.dataset.unseq !== undefined) {

@@ -202,17 +202,57 @@ export function makeAvvio(api) {
         </div>
       </div>`,
     );
+    questionRoom(root.querySelector('.av-q'));
   }
 
+  /** Every statement keeps the room of the tallest of the twelve, so the circles stay where they are from the first
+   *  to the last (11/11/2026: they sat under the text, and went up and down by 31 px with its lines, under a finger
+   *  that answers in rhythm). Measured on this phone, at its width and its text size, and again when either changes. */
+  let roomKey = '';
+  let roomH = 0;
+  function questionRoom(h2) {
+    if (!h2) return;
+    const key = `${h2.clientWidth}|${getComputedStyle(h2).fontSize}|${document.fonts?.status ?? ''}`;
+    if (key !== roomKey) {
+      const probe = h2.cloneNode(false);
+      probe.removeAttribute('aria-label');
+      probe.setAttribute('aria-hidden', 'true');
+      Object.assign(probe.style, { position: 'absolute', visibility: 'hidden', pointerEvents: 'none', minHeight: '0', width: `${h2.clientWidth}px` });
+      h2.parentNode.appendChild(probe);
+      roomH = 0;
+      for (const q of QUESTIONS) {
+        probe.innerHTML = q.text;
+        roomH = Math.max(roomH, probe.offsetHeight);
+      }
+      probe.remove();
+      roomKey = key;
+    }
+    h2.style.minHeight = `${roomH}px`;
+  }
+  // the first statement can come before the app's typeface, or before the phone's text size (app.js, setFontScale,
+  // which says «resize»): measured again once they are there, and when the phone turns
+  document.fonts?.ready?.then(() => questionRoom(root.querySelector('.av-q')));
+  window.addEventListener('resize', () => questionRoom(root.querySelector('.av-q')));
+
+  /** One more question when an axis ends in the middle. In the frame of the twelve statements (11/11/2026): the bar
+   *  stays, full, with «Ancora una» where the count was; the question stands where the statements stood; the two
+   *  answers sit where the circles were, under the thumb that has just answered. Before, the bar went, the question
+   *  came 18 px higher and the answers stood at the top of the screen. */
   function tie() {
     const axis = score(s.answers, s.tie).ask[0];
+    // closed between the answer and the next screen (the answer is saved at the touch): nothing left to ask
+    if (!axis) return go('pregio');
     const t = TIEBREAKS[axis];
+    const pips = QUESTIONS.map(() => '<i class="on"></i>').join('');
     screen(
-      'av-page av-test',
-      `<p class="av-note av-tie-note">Ancora una:</p>
-      <h2 class="av-tie-q">${t.text}</h2>
-      <div class="av-choice">${t.options.map((o) => `<button data-axis="${axis}" data-side="${o.side}">${o.text}</button>`).join('')}</div>`,
+      'av-page av-test av-tie',
+      `<div class="av-progress" aria-hidden="true"><div class="av-pips">${pips}</div><span>Ancora una</span></div>
+      <h2 class="av-q" aria-label="Ancora una. ${t.text}">${t.text}</h2>
+      <div class="av-mid">
+        <div class="av-choice">${t.options.map((o) => `<button data-axis="${axis}" data-side="${o.side}" aria-pressed="false">${o.text}</button>`).join('')}</div>
+      </div>`,
     );
+    questionRoom(root.querySelector('.av-q'));
   }
 
   /** Your type and, rising under it, the map (10/11/2026, Davide: «molto più lean», the map «sotto come pop-up»). */
@@ -224,7 +264,8 @@ export function makeAvvio(api) {
     api.buzz(25);
     screen(
       'av-page av-reveal av-tada',
-      `<p class="av-eyebrow">Il tuo tipo</p>
+      // the opening asked «Che investitore sei?»: the answer says what it is the type of (11/11/2026)
+      `<p class="av-eyebrow">Il tuo tipo di investitore</p>
       <h1>${p.motto}</h1>
       <p class="av-axes"><span>${keep(p.what)}</span></p>
       <p class="av-good">${p.pregio}</p>
@@ -322,7 +363,7 @@ export function makeAvvio(api) {
           <div><p class="av-notif-head"><b>${REMIND.title}</b><span class="av-notif-when">ora</span></p><p class="av-notif-body">${REMIND.body}</p></div>
         </div>
       </div>
-      <h1>Un promemoria, ogni tanto?</h1>
+      <h1>Vuoi un promemoria?</h1>
       <p class="av-lead">Uno al giorno al massimo, mai se hai già fatto lezione.</p>
       <label class="av-time"><span>Ogni giorno alle</span><input type="time" id="av-time" value="18:00" step="900" /></label>
       <div class="av-fill"></div>
@@ -474,8 +515,16 @@ export function makeAvvio(api) {
     }
     api.sfx.tap();
     if (b.dataset.side) {
+      // the answer taken shows a moment, as a circle of the test does, and meanwhile a second touch does nothing
+      // (11/11/2026: the screen changed at once, and when two of these come in a row their answers stand in the same
+      // place, so a double touch answered both)
+      lock = true;
+      api.buzz(10);
+      b.setAttribute('aria-pressed', 'true');
       s.tie[b.dataset.axis] = Number(b.dataset.side);
-      return go(score(s.answers, s.tie).ask.length ? 'spareggio' : 'pregio');
+      save();
+      setTimeout(() => go(score(s.answers, s.tie).ask.length ? 'spareggio' : 'pregio'), 420);
+      return;
     }
     if (b.dataset.pick) {
       // the one touched steps forward, the other steps back, the button comes up with the name (no re-render: the

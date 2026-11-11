@@ -801,6 +801,9 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   $('card-object').textContent = s.object ?? '';
   $('card-object').closest('.chips').hidden = !s.object; // a lesson without an object: no chip
   $('card-idea').textContent = s.idea;
+  // at the end of a stage the card says how it went and what you took (CLAUDE.md §6); the idea in a line belongs to
+  // the object's card, opened from the Ufficio (§7): here it was a sixth thing to read (11/11/2026, Davide: less text)
+  $('card-idea').hidden = fresh;
   // «Ripassa» only where there is something to play again (the review, below): a lesson, a Caso, a Prova sul campo
   $('card-review').hidden = fresh || !canReview(n, i);
   $('card-continue').hidden = !fresh;
@@ -939,8 +942,17 @@ async function review(n, i) {
   trophy('ripasso');
   if (r.fixed) setTimeout(() => trophy('riprovi'), 900);
 }
+// The veil closes the card only when the touch began on the veil. In Chrome, so on Android, the click that follows a
+// touch goes to whatever is under the finger when it lifts: a touch on an object opened its card on the way up, then
+// its click fell on the veil just come up and closed the card again, so with a finger the card of an object never
+// stayed open (11/11/2026; the iPhone drops that click, which is why it did not show there, and the mouse sends it to
+// the scene).
+let veilPress = false;
+$('card-wrap').addEventListener('pointerdown', (e) => (veilPress = e.target === $('card-wrap')));
 $('card-wrap').addEventListener('click', (e) => {
-  if (e.target === $('card-wrap') && !$('card-close').hidden) closeCard();
+  const began = veilPress;
+  veilPress = false;
+  if (began && e.target === $('card-wrap') && !$('card-close').hidden) closeCard();
 });
 
 /** `sub` can be left out when the card that follows says it (the end of a stage): the screen reader still hears
@@ -1237,9 +1249,11 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   earnedSaved = null;
   office.markNext(state.earned);
   renderPips(i);
-  $('plate').classList.remove('pop');
+  // «bump», not «pop»: .pop is the card under a stage of the Percorso (10/11/2026), and its rule took the plate too:
+  // after a stage the plate lost its ground and its band and stretched across the screen until the page was loaded again
+  $('plate').classList.remove('bump');
   void $('plate').offsetWidth;
-  $('plate').classList.add('pop');
+  $('plate').classList.add('bump');
   // the Prova sul campo has no mark (CLAUDE.md §6): «completata» as the lessons, not «superata» (09/11/2026)
   const title = s.tag === 'Caso' ? 'Caso risolto' : s.tag === 'Prova sul campo' ? 'Prova completata' : 'Lezione completata';
   // the line on the result, never a number nor a mark; on a stage without an object, how far the colour got too
@@ -1724,8 +1738,10 @@ async function remind(time) {
   if (time) reminders.time = time;
   settings.avvisi = !!time;
   if (!time) {
+    // «Non ora» is an answer, not a problem: the Percorso opens clean, without a toast over its stages about what
+    // you just said no to (11/11/2026); the switch is in the Tu, where one looks for it
     persist();
-    return toast('Niente promemoria. Si accendono dal Tu, nelle Impostazioni.');
+    return;
   }
   if (!canRemind()) {
     persist();

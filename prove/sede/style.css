@@ -185,7 +185,7 @@ svg {
   border-radius: 2px;
   background: var(--accent);
 }
-.plate.pop {
+.plate.bump {
   animation: pop 0.4s var(--ease);
 }
 /* the level, only once you are in the floor, after the name on its line, so the plate keeps its height (10/11/2026,
@@ -554,6 +554,12 @@ body:not([data-tab='ufficio']) .bottom::before {
 .tab svg {
   width: 24px;
   height: 24px;
+  transition: transform 0.12s var(--ease);
+}
+/* the icon gives a little under the finger, as every button of the app does (11/11/2026: the bar did not answer the
+   touch until the page had changed) */
+.tab:active svg {
+  transform: scale(0.9);
 }
 .tab.active {
   color: var(--brand-ink);
@@ -681,6 +687,19 @@ body:not([data-tab='ufficio']) .bottom::before {
   height: 17px;
   fill: var(--reward);
   stroke: var(--reward);
+}
+/* the object's chip: the sign of the Ufficio, where the object now lives, in the floor's colour (11/11/2026: it was a
+   yellow star, which reads as a mark in an app that gives none) */
+.chip svg.chip-office {
+  fill: none;
+  stroke: var(--accent-deep);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.chip svg.chip-office .f {
+  fill: var(--accent);
+  stroke: var(--accent);
 }
 .card-idea {
   margin: 0 0 20px;
@@ -1088,7 +1107,9 @@ body:not([data-tab='ufficio']) :is(#scene, #plate, #btn-back, #cta, #coach, #a11
 :root {
   --node-off: #e3eaf3;
   --node-off-lip: #c9d4e2;
-  --node-off-ink: #8d9bb2;
+  /* the number on a closed stage: 3.0:1 on its face (11/11/2026; #8d9bb2 was 2.3:1, under the 3:1 of a big number:
+     a closed stage is still touched, and its number says how far it is) */
+  --node-off-ink: #7786a1;
 }
 .view.path {
   padding-top: 0;
@@ -1141,12 +1162,28 @@ body:not([data-tab='ufficio']) :is(#scene, #plate, #btn-back, #cta, #coach, #a11
 html:not([data-app]) .pf-head {
   margin-right: 92px;
 }
+/* what passes under the band fades into the page in its last pixels (11/11/2026: at the first sight of the Percorso
+   the surprise stood behind the band, and only its shadow showed under it, a grey smudge on nothing) */
+.pf-head::after {
+  content: '';
+  position: absolute;
+  left: -16px;
+  right: -16px;
+  top: calc(100% + 5px);
+  height: 20px;
+  background: linear-gradient(var(--page) 35%, transparent);
+  pointer-events: none;
+}
+html:not([data-app]) .pf-head::after {
+  right: -108px;
+}
+/* full ink (11/11/2026): at 0.78 the label was under 4.5:1 on eleven of the twelve floors (4.15 on the Direzione, 3.3
+   on the Soci); its size and its capitals already keep it under the name */
 .pf-label {
   font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.78;
 }
 .pf-name {
   font-family: var(--title);
@@ -1247,7 +1284,7 @@ html:not([data-app]) .pf-head {
 }
 .pn--locked .pn-badge {
   background: var(--node-off-lip);
-  color: var(--ink-2);
+  color: color-mix(in srgb, var(--ink) 25%, var(--ink-2)); /* 5.5:1 on the badge (the «Secondario» alone was 4.4:1) */
 }
 .pn--locked {
   --face: var(--node-off);
@@ -1327,6 +1364,7 @@ html:not([data-app]) .pf-head {
   position: absolute;
   z-index: 3;
   transform: translate(-50%, -100%);
+  min-height: 44px; /* it was 43 (11/11/2026) */
   padding: 9px 18px 10px;
   border: 2px solid var(--line);
   border-radius: 14px;
@@ -1395,12 +1433,12 @@ html:not([data-app]) .pf-head {
     opacity: 0;
   }
 }
+/* full ink, as the label of the band (11/11/2026: at 0.8 it was 4.3:1 on the Direzione and 3.6:1 on a closed stage) */
 .pop-tag {
   font-size: calc(12px * var(--fs));
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  opacity: 0.8;
 }
 .pop-title {
   font-family: var(--title);
@@ -2258,6 +2296,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .av-progress span {
   min-width: 40px;
+  white-space: nowrap; /* «Ancora una», on the extra question (avvio.js, tie) */
   text-align: right;
   font-size: calc(13px * var(--fs));
   font-weight: 700;
@@ -2276,8 +2315,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  /* the space under the circles a little bigger than above: they sit at the eye's middle, not the page's */
-  padding: 24px 0 12vh;
+  /* the space under the circles a little bigger than above: they sit at the eye's middle, not the page's. Every
+     statement now keeps the room of the tallest (avvio.js, questionRoom): 16vh, not 12, puts the circles back where
+     they were under a statement of three lines */
+  padding: 24px 0 16vh;
 }
 .av-scale {
   display: grid;
@@ -2353,19 +2394,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-ends span:last-child {
   color: var(--disagree);
 }
-.av-tie-note {
-  margin-top: 30px !important;
-  font-weight: 700;
-}
-.av-tie-q {
-  font-size: calc(26px * var(--fs-l));
-  font-weight: 700;
-  line-height: 1.2;
-}
+/* the extra question (avvio.js, tie): its two answers where the circles were, under the thumb (11/11/2026) */
 .av-choice {
   display: grid;
   gap: 12px;
-  margin-top: 8px;
 }
 .av-choice button {
   min-height: 64px;
@@ -2381,6 +2413,14 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-choice button:active {
   transform: translateY(3px);
   box-shadow: 0 1px 0 var(--line);
+}
+/* the answer taken stays in sight a moment, as a circle of the test does (11/11/2026) */
+.av-choice button[aria-pressed='true'] {
+  transform: translateY(3px);
+  border-color: var(--action);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  box-shadow: 0 1px 0 var(--action);
 }
 
 /* the reveal: the motto is the title, the two axes under it as a small label (09/11/2026, revisione UX, stanza 3);
@@ -2930,6 +2970,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-size: calc(13px * var(--fs));
   font-weight: 700;
 }
+/* «Rifai» comes with the first stroke: on an empty pad there is nothing to do again (11/11/2026) */
+.av-sign:not(.drawn) + .av-sign-line .av-redo {
+  visibility: hidden;
+}
 .av-redo {
   min-height: 44px;
   padding: 0 4px 0 14px;
@@ -3286,10 +3330,25 @@ body.in-lesson .toast {
   z-index: 31;
 }
 .lz-top {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 12px;
   padding: calc(var(--safe-t) + 12px) 16px 8px;
+}
+/* the exercise that scrolls up under the X and the bar (a sheet open, a small phone) fades into the page: before,
+   its words were cut in half along an edge that is not drawn (11/11/2026). In the lesson only: the Caso and the
+   Prova sul campo share this bar, and under it they have the picture of the room, which starts with a clean edge. */
+#lezione .lz-top::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 10px;
+  background: linear-gradient(var(--page), transparent);
+  pointer-events: none;
 }
 .lz-x {
   flex: none;
@@ -3593,8 +3652,7 @@ body.in-lesson .toast {
   font-size: calc(12px * var(--fs));
   color: var(--muted);
 }
-.lz-help,
-.lz-hint {
+.lz-help {
   margin: 0;
   font-size: calc(14px * var(--fs));
   line-height: 1.4;
@@ -3724,16 +3782,18 @@ body.in-lesson .toast {
   padding: 10px 18px;
   font-size: calc(17px * var(--fs));
 }
-.lz-situation {
-  margin: 0;
-  padding: 14px 16px;
-  border-radius: 18px;
-  /* a soft ground, not a dashed outline that looked unfinished (revisione della grafica, 10/11/2026 sera) */
-  background: color-mix(in srgb, var(--line) 45%, transparent);
+/* what the mentor says before the question (the rule, the numbers, the situation of a mini-scenario): the plain
+   voice, in the text's typeface; the question after it keeps the title's (11/11/2026: before, all one block of bold,
+   and the situation in a grey box under its own question) */
+.lz-lead {
+  display: block;
+  margin-bottom: 8px;
+  font-family: var(--text, inherit);
   font-size: calc(16px * var(--fs));
+  font-weight: 500;
   line-height: 1.45;
-  font-style: italic;
-  color: var(--ink-2);
+  letter-spacing: 0;
+  color: var(--ink);
 }
 /* match the pairs: two columns; a pair shares its number */
 .lz-match {
@@ -3990,11 +4050,78 @@ body.in-lesson .toast {
   border-radius: 14px;
   background: var(--surface);
 }
+/* the right order, the right pairs: one on a line, the steps with their number (lezione.js, rightAnswer) */
+.lz-right-list {
+  display: grid;
+  gap: 4px;
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+  font-weight: 600;
+}
+ol.lz-right-list li {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 8px;
+  align-items: baseline;
+  counter-increment: step;
+}
+ol.lz-right-list li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: currentColor;
+  color: inherit;
+  font-size: calc(13px * var(--fs));
+  font-weight: 800;
+  /* the number in the sheet's light colour on the text's ink */
+  -webkit-text-fill-color: var(--no-soft);
+}
+/* what «Spiegami» opens: the theory card, when it is due, then the why (11/11/2026: the card came by itself after a
+   mistake, and with the answer, its reason and «Spiegami» made five blocks of text under «Non è così») */
+.lz-more {
+  display: grid;
+  gap: 10px;
+  outline: none; /* it takes the focus when it opens, for the screen reader: no ring */
+}
+/* open, the button says so: pressed in, on the page's ground */
+.lz-sheet-acts [data-act='explain'][aria-expanded='true'] {
+  background: color-mix(in srgb, var(--line) 55%, var(--surface));
+  box-shadow: 0 1px 0 var(--line);
+  transform: translateY(3px);
+}
 .lz-sheet-acts {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
   gap: 10px;
   margin-top: 4px;
+}
+/* in the feedback sheet the two buttons stay in reach while a long explanation scrolls behind them (11/11/2026: on a
+   small phone with large text, «Spiegami» open, «Continua» was under the screen and had to be looked for). Only
+   there: «Vuoi uscire?» and the broken save use the same row inside a card, where this ground stuck out of the
+   card's round corners. */
+.lz-sheet > .lz-sheet-acts {
+  position: sticky;
+  bottom: 0; /* the bottom of the sheet's content: its padding (the safe area) stays under them, as before */
+  z-index: 1;
+  background: inherit;
+}
+/* their ground, in the sheet's own colour, down to the bottom of the screen; its top edge fades over the text */
+.lz-sheet > .lz-sheet-acts::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: -20px;
+  right: -20px;
+  top: -14px;
+  bottom: calc(-1 * (var(--safe-b) + 18px));
+  background: inherit;
+  -webkit-mask: linear-gradient(transparent, #000 14px);
+  mask: linear-gradient(transparent, #000 14px);
 }
 /* leaving: «Resto» and «Esco» of equal weight */
 /* a save that cannot be read (salva.js): above everything, even the loading screen */
@@ -4013,6 +4140,7 @@ body.in-lesson .toast {
 .lz-ask {
   position: absolute;
   inset: 0;
+  z-index: 4; /* over the X and the bar (.lz-top, 1) and a word's definition (3): the veil dims the whole lesson */
   display: grid;
   place-items: center;
   padding: 20px;
@@ -4497,6 +4625,21 @@ body[data-fine] .bottom {
   white-space: nowrap;
 }
 
+/* signed: «Firmato» with its tick, in the app's light blue: done, not switched off (11/11/2026; it was the grey of a
+   button that is not ready yet) */
+.avvio.av-signed .pill[data-act='sign'] {
+  gap: 8px;
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+}
+.avvio.av-signed .pill[data-act='sign']::before {
+  content: '';
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
 /* signed: under the stamp «Rifai» and «Firmo con un tocco» no longer offer anything (10/11/2026) */
 .avvio.av-signed [data-act='redo'],
 .avvio.av-signed [data-act='sign-alt'] {

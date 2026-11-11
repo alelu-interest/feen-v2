@@ -115,7 +115,7 @@ const GLOBE = { x: -1.05, z: -0.15, r: 0.27, y: 0.98 };
 export const ROOMS = {
   1: {
     stages: [
-      { tag: 'Lezione 1', title: 'Dove sono finiti?', object: 'Il porta carte vuoto', idea: 'Entrate e uscite: da dove arrivano i tuoi soldi e dove vanno.' },
+      { tag: 'Lezione 1', title: 'Dove sono finiti?', object: 'Il portacarte vuoto', idea: 'Entrate e uscite: da dove arrivano i tuoi soldi e dove vanno.' },
       { tag: 'Lezione 2', title: 'Perché una banconota vale', idea: 'Il denaro funziona perché ci fidiamo tutti. E cambia da Paese a Paese.' },
       { tag: 'Lezione 3', title: 'Ogni sì è un no', idea: 'Ogni scelta ha un costo: quello a cui rinunci.' },
       { tag: 'Caso', title: 'Il primo budget dell’azienda', object: 'La lavagna del budget', idea: 'Tre reparti, soldi per due: decidere vuol dire scegliere.' },

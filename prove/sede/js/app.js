@@ -40,15 +40,29 @@ setFontScale(q.get('fs') ?? window.FEEN_FONT_SCALE ?? 1);
 // a tap is taken, the taps of the next TAP_GAP ms are dropped before any handler sees them. Fields stay out (the
 // slider, the time of the reminders: dragging and then tapping «Verifica» is not a double tap), and so do clicks
 // that come from the keyboard or a screen reader (detail 0), which never double.
+// 11/11/2026: only the taps that land where the last one did, within TAP_NEAR px, which is what all those cases are:
+// a finger that has not moved. A tap somewhere else is a second action and is taken: an answer and then «Verifica»
+// at the bottom of the screen, in less than half a second, used to lose «Verifica» (the lesson's own rhythm, seven
+// times a stage; in the partita of 11/11 it looked like the tool's fault).
 const TAP_GAP = 450;
+const TAP_NEAR = 64;
 let lastTap = -Infinity;
+let lastAt = [0, 0];
 addEventListener('click', (e) => {
   if (e.detail === 0 || e.target.closest?.('input, select, textarea, label')) return;
   const now = performance.now();
-  if (now - lastTap < TAP_GAP) {
+  if (now - lastTap < TAP_GAP && Math.hypot(e.clientX - lastAt[0], e.clientY - lastAt[1]) < TAP_NEAR) {
     e.stopImmediatePropagation();
     e.preventDefault();
     return;
   }
   lastTap = now;
+  lastAt = [e.clientX, e.clientY];
 }, true);
+
+// The buttons sink under the finger (CLAUDE.md §8: «le pillole reagiscono al tocco: si abbassano»): style.css says it
+// with :active, on the pills, the stages, the circles of the test, the bar. On the iPhone WebKit shows :active on a
+// touch only when the page listens to the start of touches (WebKit bugs 138816 and 281755, still so in 2026); the page
+// listened to pointerdown and click only, so there the buttons may never have sunk. This listener does nothing: it is
+// there to be there (11/11/2026; passive, so scrolling is not slowed). To see with a finger on the iPhone.
+document.addEventListener('touchstart', () => {}, { passive: true });

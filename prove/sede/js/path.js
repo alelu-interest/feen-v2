@@ -283,7 +283,11 @@ const NODE = 70; // a stage: a round button, and under it its edge
 const PRIZE = 84; // a stage that brings an object: bigger, as the prizes on a way you scroll
 const EDGE = 7;
 const PITCH = 94; // from one stage to the next
-const ROOM_NEXT = 38; // more room over the stage to do now, for «Inizia»
+// more room over the stage to do now, for «Inizia»: 50 since 11/11/2026, so the bubble clears the stage above by
+// about 11 px (at 38 it touched it, and bobbing it climbed 5 px onto it; under a prize it stood 4 px inside it)
+const ROOM_NEXT = 50;
+// and a little under it, for its ring: the stage below stood 8 px from the ring, now 20 (11/11/2026)
+const ROOM_RING = 12;
 const TOP = 34; // from the floor's band to its first stage
 const BOTTOM = 40;
 const fontScale = () => Number(document.documentElement.style.getPropertyValue('--fs')) || 1;
@@ -431,9 +435,20 @@ export function makePath(api) {
   const pop = el('div', 'pop');
   pop.hidden = true;
   let popFor = null;
+  // The card of a floor's lowest stage ends under its way, in the room the page keeps for the bar: the button of
+  // stage 1 opened behind the bar, out of reach (11/11/2026). While that card is open its way makes room for it
+  // (tapStage), and gives it back when the card closes, after the page has come down.
+  let roomOf = null;
+  let roomT = 0;
+  const giveBack = () => {
+    clearTimeout(roomT);
+    if (roomOf) roomOf.style.minHeight = '';
+    roomOf = null;
+  };
 
   function build() {
     closePop();
+    giveBack();
     layer.replaceChildren();
     const top = state.floor;
     const fresh = last && last.n === top && last.e + 1 === earnedOn(top);
@@ -531,7 +546,7 @@ export function makePath(api) {
         track.append(go);
       }
       at[i] = { x, y, size };
-      y += PITCH + (size - NODE);
+      y += PITCH + (size - NODE) + (st === 'next' ? ROOM_RING : 0);
     }
     track.style.height = `${y - PITCH + NODE + EDGE + BOTTOM}px`;
 
@@ -676,14 +691,21 @@ export function makePath(api) {
       pop.append(go);
     }
     pop.hidden = false;
-    b.closest('.pf-track').append(pop);
+    const track = b.closest('.pf-track');
+    track.append(pop);
     b.setAttribute('aria-expanded', 'true');
     popFor = b;
     // the card stays whole on the screen: if it falls under the bar, the page moves up to show it
     requestAnimationFrame(() => {
-      const r = pop.getBoundingClientRect();
+      if (popFor !== b) return; // closed again in the meantime
+      // where the card ends in its way: its layout box, not its picture, which is still growing (pop-in)
+      const end = pop.offsetTop + pop.offsetHeight;
+      clearTimeout(roomT);
+      if (roomOf && roomOf !== track) roomOf.style.minHeight = '';
+      roomOf = track;
+      track.style.minHeight = `${end + 8}px`; // more than the way only under its lowest stage
       const bar = document.querySelector('.tabs')?.getBoundingClientRect().top || window.innerHeight;
-      const over = r.bottom + 16 - bar;
+      const over = track.getBoundingClientRect().top + end + 32 - bar; // 32: clear of the fade over the bar (it was 16)
       if (over > 0) root.scrollBy({ top: over, behavior: calm() ? 'auto' : 'smooth' });
       pop.querySelector('button')?.focus({ preventScroll: true });
     });
@@ -694,6 +716,17 @@ export function makePath(api) {
     popFor = null;
     pop.hidden = true;
     pop.remove();
+    // the room made for the card: if the page stands in it, it comes down first, then the room goes (a page that
+    // lost its end under the finger would jump)
+    const track = roomOf;
+    if (!track) return;
+    const extra = track.offsetHeight - parseFloat(track.style.height);
+    const rest = root.scrollHeight - extra - root.clientHeight; // the end of the page without that room
+    if (extra > 0 && root.scrollTop > rest + 1 && !calm()) {
+      root.scrollTo({ top: Math.max(0, rest), behavior: 'smooth' });
+      clearTimeout(roomT);
+      roomT = setTimeout(giveBack, 320);
+    } else giveBack();
   }
   root.addEventListener('click', (ev) => {
     if (!ev.target.closest('.pop')) closePop();
@@ -718,10 +751,13 @@ export function makePath(api) {
     const info = FLOORS[state.floor - 1];
     sub.textContent = `${info.name} · ${earnedOn(state.floor)} di 8`;
   }
-  /** The stage to do now, a little over the middle of the screen; at the end of the way, its last stage. */
+  /** The stage to do now, a little over the middle of the screen. With nothing left to do (the floor finished and the
+   *  next one not in the app yet, or after the launch) the top of the way, where the news is: the card of the floor that
+   *  is coming, the launch (11/11/2026: it opened at the bottom, on stages 1–6, since the way goes up the page; the
+   *  «last stage» it looked for was the last of the page, the first of the way). */
   function scrollToNext() {
-    const b = layer.querySelector('.pn--next') ?? [...layer.querySelectorAll('.pn')].pop();
-    if (!b) return;
+    const b = layer.querySelector('.pn--next');
+    if (!b) return void (root.scrollTop = 0);
     const r = b.getBoundingClientRect();
     const box = root.getBoundingClientRect();
     root.scrollTop += r.top - box.top - root.clientHeight * 0.46;
