@@ -4383,8 +4383,10 @@ ol.lz-right-list li::before {
   display: grid;
   gap: 10px;
 }
+/* a choice already tried: spent and struck through, but still read (11/11/2026: 0.6, 4.3:1; at 0.45 it was 2.8:1, and
+   it is what the player has just chosen) */
 .cs-opts .lz-opt[disabled] {
-  opacity: 0.45;
+  opacity: 0.6;
   text-decoration: line-through;
   box-shadow: none;
 }
