@@ -28,7 +28,12 @@ const DEG = Math.PI / 180;
 // ---------- renderer, scene, lights ----------
 const canvas = $('scene');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// How sharp the scene is drawn: as many pixels as the phone's own screen, up to 3 for each point (an iPhone since the
+// 12 has 3). Until 11/11/2026 it stopped at 2: on those screens the Office had 44% of the pixels and was stretched to
+// fit, soft under a sharp text (the user: «l'ufficio sembra sfocato sul telefono»). The steps below the first are only
+// for a phone that proves too slow to draw it: the probe at the end of start()
+const SHARP = [3, 2, 1.5, 1.25].map((r) => Math.min(window.devicePixelRatio || 1, r)).filter((r, i, all) => all.indexOf(r) === i);
+renderer.setPixelRatio(SHARP[0]);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.NeutralToneMapping;
@@ -1974,35 +1979,68 @@ async function start() {
   window.__feen.step = (n = 60) => {
     for (let i = 0; i < n; i++) frame(1 / 60, true);
   };
-  // lighter rendering on slower phones: measure a few seconds of the Office, then adapt once. Only while the Office is
-  // on screen and still, after its first second (10/11/2026, Davide: «i numeri sono sfocati»: the probe measured from
-  // the start, where the loading, the first run and the Percorso count too, and a phone that could draw the Office
-  // sharp dropped to 1.25 for good)
-  let probe = { frames: 0, time: 0, done: false, skip: 60 };
+  // Lighter rendering on the phones that need it. The Office starts as sharp as the screen (SHARP[0]) and goes down a
+  // step only when its frames come slower than the phone's own beat, and only if the step buys frames back.
+  // - `beat`: the fastest steady pace the frames have kept since the app opened, the Percorso and the first start
+  //   included, where no scene is drawn. 16.7 ms on most phones; 33 ms on an iPhone in Low Power Mode, which hands a
+  //   page 30 frames a second whatever it draws.
+  // - `gap`: the time between two frames of the Office, on screen and still, after its first second: 90 frames, the
+  //   slowest nine left out (a stumble is not the phone's pace).
+  // - A step down that leaves the gap as it was is taken back, and the probe ends there: it was not the pixels.
+  // Until 11/11/2026 the probe held the gap against a fixed 24 ms: an iPhone in Low Power Mode looked like a slow
+  // phone, and its Office went down to 1.5 for good, with a quarter of the screen's pixels and not one frame gained
+  // (the user: «l'ufficio sembra sfocato sul telefono»; Davide the day before: «i numeri sono sfocati», when the probe
+  // also counted the loading).
+  const sorted = (list) => [...list].sort((a, b) => a - b);
+  const probe = { step: 0, skip: 60, gaps: [], was: null, done: SHARP.length < 2 };
+  const pace = [];
+  let beat = Infinity;
+  const sharp = { ratio: SHARP[0], steps: SHARP, gap: null, beat: null, done: probe.done };
+  window.__feen.sharp = sharp; // for the checks
+  const setSharp = (step) => {
+    probe.step = step;
+    sharp.ratio = SHARP[step];
+    renderer.setPixelRatio(SHARP[step]);
+    // on the last step the shadows get lighter too
+    const size = step === SHARP.length - 1 ? 1024 : 2048;
+    if (sun.shadow.mapSize.x !== size) {
+      sun.shadow.mapSize.set(size, size);
+      sun.shadow.map?.dispose();
+      sun.shadow.map = null;
+    }
+    resize();
+  };
   renderer.setAnimationLoop(() => {
     const now = performance.now();
     const raw = (now - last) / 1000;
     const dt = Math.min(0.05, raw);
     last = now;
     frame(dt);
-    const measurable = state.tab === 'ufficio' && !state.busy && !document.hidden && raw < 0.5 && $('loading').hidden && $('avvio').hidden;
-    if (!probe.done && measurable && probe.skip > 0) probe.skip--;
-    else if (!probe.done && measurable) {
-      probe.frames++;
-      probe.time += raw;
-      if (probe.time > 2.5) {
-        probe.done = true;
-        const avg = probe.time / probe.frames;
-        if (avg > 0.024) {
-          renderer.setPixelRatio(Math.min(window.devicePixelRatio, avg > 0.034 ? 1.25 : 1.5));
-          if (avg > 0.034) {
-            sun.shadow.mapSize.set(1024, 1024);
-            sun.shadow.map?.dispose();
-            sun.shadow.map = null;
-          }
-          resize();
-        }
-      }
+    const steady = !document.hidden && raw < 0.5;
+    if (steady && pace.push(raw * 1000) === 20) {
+      beat = Math.min(beat, sorted(pace)[10]);
+      pace.length = 0;
+    }
+    if (probe.done || !steady || state.tab !== 'ufficio' || state.busy || !$('loading').hidden || !$('avvio').hidden) return;
+    if (probe.skip > 0) {
+      probe.skip--;
+      return;
+    }
+    if (probe.gaps.push(raw * 1000) < 90) return;
+    const kept = sorted(probe.gaps).slice(0, 81);
+    const gap = kept.reduce((a, b) => a + b) / kept.length;
+    probe.gaps = [];
+    Object.assign(sharp, { gap, beat });
+    if (probe.was !== null && gap > probe.was * 0.9) {
+      // the step bought nothing
+      setSharp(probe.step - 1);
+      sharp.done = probe.done = true;
+    } else if (gap <= Math.max(16.7, beat) * 1.25 || probe.step === SHARP.length - 1) {
+      sharp.done = probe.done = true;
+    } else {
+      probe.was = gap;
+      probe.skip = 20;
+      setSharp(probe.step + 1);
     }
   });
 }
