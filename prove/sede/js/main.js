@@ -14,7 +14,9 @@ import { makePath } from './path.js';
 import { makeMe } from './me.js';
 import { makeAvvio } from './avvio.js';
 import { makeLesson } from './lezione.js';
-import { LESSONS, CASES, TRAPS, FIELDS } from './lessons-data.js';
+import { LESSONS, CASES, TRAPS, FIELDS, STAGES } from './lessons-data.js';
+import { SIMS } from './sims-data.js';
+import { makeSim } from './simula.js';
 import { makeCase } from './caso.js';
 import { makeField } from './campo.js';
 import { loadProgress, saveProgress, askBroken } from './salva.js';
@@ -24,6 +26,11 @@ import { PEOPLE } from './people.js';
 
 const $ = (id) => document.getElementById(id);
 const DEG = Math.PI / 180;
+
+// The title and the line of every stage are the ones of the «casa sorgente», the team's file of the contents
+// (17/11/2026: «questi file sono l'attuale verità»; scripts/sorgente.mjs): they take the place of the ones written
+// in office.js in October. The tag of the stage and its object stay.
+for (const [n, list] of Object.entries(STAGES)) ROOMS[n]?.stages.forEach((st, i) => list[i] && Object.assign(st, list[i]));
 
 // ---------- renderer, scene, lights ----------
 const canvas = $('scene');
@@ -206,6 +213,23 @@ function showProps(show, instant) {
         if (state.view !== 'overview') o.visible = false;
       });
     }
+  }
+  // the crane too: from inside the top floor its arm and the beam on the hook hung in the sky over the room, cut
+  // from the mast that the frame leaves out (16/11/2026); on the finished roof it is gone already (roofFinished)
+  const cr = roofSite?.userData.crane;
+  if (!cr || roofSite.userData.stage.visible) return;
+  const base = (cr.userData.baseScale ??= cr.scale.x);
+  if (instant) {
+    cr.visible = show;
+    cr.scale.setScalar(base);
+  } else if (show) {
+    cr.visible = true;
+    tween(0.45, (k) => cr.scale.setScalar(Math.max(0.01, k * base)), { easing: ease.back, delay: 0.35 });
+  } else {
+    tween(0.25, (k) => cr.scale.setScalar(Math.max(0.01, (1 - k) * base)), { easing: ease.inOut }).then(() => {
+      if (state.view !== 'overview') cr.visible = false;
+      else cr.scale.setScalar(base);
+    });
   }
 }
 function updateCamera(dt) {
@@ -846,7 +870,7 @@ function closeSheet(wrap) {
  *  «Vuoi uscire?» (and a second press says «Resto»); then a card closes, a room goes back to the building, a tab
  *  goes back to the Percorso. False when there is nothing left to go back from: the app may close. */
 function back() {
-  for (const id of ['lezione', 'caso', 'campo']) {
+  for (const id of ['lezione', 'caso', 'campo', 'simula']) {
     const r = $(id);
     if (r.hidden) continue;
     const ask = r.querySelector('.lz-ask');
@@ -892,7 +916,7 @@ $('card-review').onclick = () => {
 // ---------- the review (CLAUDE.md §7 «Ripasso», cubotto 8, 09/11/2026) ----------
 // Only when you want it, from the card of a stage done (Percorso) or of an object (Ufficio). A lesson comes back short:
 // 5 of its exercises, the ones wrong at the first go first, with the answers in a new order (the lesson engine
-// shuffles them); nothing is new any more, so no «Idea nuova», no help line, no theory card. The X and the bar are the
+// shuffles them) and the sums with other numbers (otherNumbers); nothing is new any more, so no «Idea nuova», no help line, no theory card. The X and the bar are the
 // lesson's. A Caso is played again from the start. No object lands and nothing changes in the Ufficio: at the end a
 // line on how it went, and you are back where you were.
 const REVIEW_SIZE = 5;
@@ -900,7 +924,7 @@ const REVIEW_SIZE = 5;
  *  «ripassarla vuol dire rigiocarla», 09/11/2026). */
 function canReview(n, i) {
   const s = built.get(n)?.office?.stages[i];
-  return !!s && !!(lessonFor(n, s) || caseFor(n, s) || fieldFor(n, s));
+  return !!s && !!(lessonFor(n, s) || simFor(n, s) || caseFor(n, s) || fieldFor(n, s));
 }
 /** The short lesson of the review: the wrong ones first, then others picked at random, in the lesson's order. */
 function reviewLesson(n, i, lesson) {
@@ -914,17 +938,31 @@ function reviewLesson(n, i, lesson) {
   }
   const more = new Set(others.slice(0, Math.max(0, REVIEW_SIZE - first.length)));
   const pick = [...first, ...all.filter((e) => more.has(e))].slice(0, REVIEW_SIZE);
-  return { ...lesson, review: true, exercises: pick.map((e) => ({ ...e, idea: null, help: null })) };
+  return { ...lesson, review: true, exercises: pick.map((e) => ({ ...e, ...otherNumbers(lesson, e), idea: null, help: null, variants: undefined })) };
 }
-const REVIEW_LINE = ['Ripasso fatto: tutte giuste al primo colpo.', 'Ripasso fatto: tutte giuste, qualcuna al secondo colpo.', 'Ripasso fatto: qualcuna da rivedere con calma.'];
+/** A sum comes back with other numbers (CLAUDE.md §7; cubotto 8.4, 16/11/2026): one of the versions the card gives
+ *  in «Nei ripassi», made and checked by scripts/lezioni.mjs, and not the one of the review before. */
+const lastNumbers = new Map();
+function otherNumbers(lesson, e) {
+  const n = e.variants?.length;
+  if (!n) return null;
+  const key = `${lesson.id}/${e.n}`;
+  let k = Math.floor(Math.random() * n);
+  if (n > 1 && k === lastNumbers.get(key)) k = (k + 1) % n;
+  lastNumbers.set(key, k);
+  return e.variants[k];
+}
+const REVIEW_LINE = ['Ripasso fatto: tutte giuste al primo colpo.', 'Ripasso fatto: tutte giuste, con il secondo giro.', 'Ripasso fatto: qualcosa da rivedere con calma.'];
 async function review(n, i) {
   const s = built.get(n)?.office?.stages[i];
   if (!s || state.busy || !canReview(n, i)) return;
   state.busy = true;
   closeCard();
   const lesson = lessonFor(n, s);
+  const sim = lesson ? null : simFor(n, s);
   let r;
   if (lesson) r = await lezione.play(reviewLesson(n, i, lesson));
+  else if (sim) r = await simula.play(sim, { floorName: FLOORS[n - 1].name, tag: SIM_TAG[sim.which] });
   else {
     // the object of the card flies home first, or the photo would have it floating in front of the room
     await unshow();
@@ -942,7 +980,8 @@ async function review(n, i) {
   }
   state.busy = false;
   if (!r.done) return; // left with the X: nothing changes
-  if (r.field) toast(`Prova rigiocata: ${FIELD_LINE[Math.min(r.outcome, 1)].replace(/^M/, 'm')}.`);
+  if (r.sim) toast(sim.which === 1 ? 'Caso rigiocato.' : 'Prova rigiocata.');
+  else if (r.field) toast(`Prova rigiocata: ${FIELD_LINE[Math.min(r.outcome, 1)].replace(/^M/, 'm')}.`);
   else toast(lesson ? REVIEW_LINE[r.outcome] : `Caso rigiocato: ${['tre scelte giuste al primo colpo', 'finale raggiunto, con qualche passo indietro'][Math.min(r.outcome, 1)]}.`);
   trophy('ripasso');
   if (r.fixed) setTimeout(() => trophy('riprovi'), 900);
@@ -1101,7 +1140,8 @@ function applyLight() {
 }
 
 // ---------- the flow: a stage is done, the floor is done ----------
-const FINE = ['Tutte giuste al primo colpo', 'Tutte giuste, con un paio di ripassi', 'Fatta: qualcuna da rivedere con calma'];
+// true for one wrong answer and for many: the game knows none, all fixed or some still wrong, not how many (16/11/2026)
+const FINE = ['Tutte giuste al primo colpo', 'Tutte giuste, con il secondo giro', 'Fatta: qualcosa da rivedere con calma'];
 // the Prova sul campo has no mark (CLAUDE.md §6): the month is closed either way; the line says only how the two key
 // moments went (provisional, Claude's, 09/11/2026)
 const FIELD_LINE = ['Mese chiuso, con le scelte migliori al primo colpo', 'Mese chiuso, e le alternative migliori le hai trovate'];
@@ -1120,6 +1160,16 @@ function comingSoon(n) {
 }
 // by its name, as everywhere since Davide's «sti numeri così mi sanno di tombola» (10/11/2026)
 const SOON = (n) => `${cap(FLOORS[n - 1].the)} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
+/** The Caso of the team for stage s of floor n (17/11/2026): the page of that floor's two Casi (sims-data.js), the
+ *  first where the Caso is, the second where the Prova sul campo is. A floor without its page (today floor 1) keeps
+ *  the Caso and the Prova written as cards, below. */
+function simFor(n, s) {
+  const which = s.tag === 'Caso' ? 1 : s.tag === 'Prova sul campo' ? 2 : 0;
+  return which && SIMS[n] ? { html: SIMS[n], floor: n, which } : null;
+}
+const SIM_TAG = { 1: 'Il Caso', 2: 'Prova sul campo' };
+// the line at the end of a Caso of the team: it has no first go and second go the app can see (provisional, Claude's)
+const SIM_LINE = 'Chiuso con le tue scelte';
 /** The Caso of floor n (compito C1, 07/11/2026): its approved card or, until it arrives, the test Caso. */
 function caseFor(n, s) {
   if (s.tag !== 'Caso') return null;
@@ -1156,9 +1206,17 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   let outcome = state.lessons === 'errore' ? 1 : 0;
   let fixed = outcome === 1;
   const lesson = real && pretend ? lessonFor(n, s) : null;
-  const story = real && pretend && !lesson ? caseFor(n, s) : null;
-  const field = real && pretend && !lesson && !story ? fieldFor(n, s) : null;
-  if (story) {
+  const sim = real && pretend && !lesson ? simFor(n, s) : null;
+  const story = real && pretend && !lesson && !sim ? caseFor(n, s) : null;
+  const field = real && pretend && !lesson && !sim && !story ? fieldFor(n, s) : null;
+  if (sim) {
+    // a Caso of the team (simula.js): its page in a frame; left with the X, nothing changes
+    const r = await simula.play(sim, { floorName: FLOORS[n - 1].name, tag: SIM_TAG[sim.which] });
+    if (!r.done) {
+      state.busy = false;
+      return false;
+    }
+  } else if (story) {
     const r = await caso.play(story, { room: roomPhoto(n), floorName: FLOORS[n - 1].name });
     if (!r.done) {
       state.busy = false;
@@ -1176,9 +1234,10 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     outcome = r.outcome;
     fixed = r.fixed;
   } else if (lesson) {
-    const hire = i === 0 ? ROOMS[n].hire : null;
+    const hire = i === 0 && !IN_APP ? ROOMS[n].hire : null;
     if (hire) {
-      // the interview is not built yet (compito C7): a moment of pretend, then the lesson
+      // the interview is not built yet (compito C7): in the prova a moment of pretend, then the lesson; in the app
+      // nothing pretends (17/11/2026: the floors open with the lessons of the «casa sorgente»), straight to the lesson
       $('fake-tag').textContent = 'Colloquio';
       $('fake-title').textContent = `Scegli ${hire}`;
       $('fake-note').textContent = 'Il colloquio arriva più avanti. Facciamo finta che sia fatto…';
@@ -1264,7 +1323,7 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
   // the line on the result, never a number nor a mark; on a stage without an object, how far the colour got too
   // the Caso has its own line (provisional, Claude's): a story is not «all right», it reaches its end
   const caseLine = ['Tre scelte giuste al primo colpo', 'Finale raggiunto, con qualche passo indietro'][Math.min(outcome, 1)];
-  const line = story ? caseLine : field ? FIELD_LINE[Math.min(outcome, 1)] : lesson || place ? FINE[outcome] : `${cap(FLOORS[n - 1].the)} prende colore: ${i + 1} su 8`;
+  const line = sim ? SIM_LINE : story ? caseLine : field ? FIELD_LINE[Math.min(outcome, 1)] : lesson || place ? FINE[outcome] : `${cap(FLOORS[n - 1].the)} prende colore: ${i + 1} su 8`;
   if (withCard) banner(title, '', line); // the line once, in the card; the screen reader hears it now
   else {
     banner(title, lesson ? `${FINE[outcome]} · ${i + 1} su 8` : line);
@@ -1369,7 +1428,7 @@ async function floorComplete() {
   // «Continua» goes up there, to the scene of the launch, and then to the card «Condividi».
   if (n === FLOORS.length) {
     const crane = roofSite.userData.crane;
-    const s0 = crane.scale.x;
+    const s0 = crane.userData.baseScale ?? crane.scale.x;
     await tween(0.7, (k) => crane.scale.setScalar(s0 * Math.max(0.01, 1 - k)));
     roofFinished(true);
     crane.scale.setScalar(s0);
@@ -1653,6 +1712,7 @@ let avvio = null; // the first start (avvio.js, 07/11/2026)
 let lezione = null; // the lesson engine (lezione.js, 07/11/2026)
 let caso = null; // the Caso (caso.js, 07/11/2026)
 let campo = null; // the Prova sul campo (campo.js, 09/11/2026)
+let simula = null; // a Caso of the team, in its frame (simula.js, 17/11/2026)
 // the trophies of the Tu (trophies.js) and what the prova has to remember to give them: how each pretend lesson went
 // («Lezioni finte» in DEMO), the surprises of the garden found, the objects looked at floor by floor
 let trophies = null;
@@ -1953,6 +2013,7 @@ async function start() {
   caso = makeCase({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
   // the same line on the trap, after the key moments of the Prova sul campo
   campo = makeField({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
+  simula = makeSim({ sfx });
   if (avvio.done()) setTab(state.tab);
   else {
     // the Tu draws nothing: behind the screens of the test the phone rests

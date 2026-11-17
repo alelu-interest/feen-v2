@@ -4642,9 +4642,12 @@ body[data-fine] .bottom {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
 }
-/* signed: under the stamp «Rifai» and «Firmo con un tocco» no longer offer anything (10/11/2026) */
+/* signed: under the stamp «Rifai» and «Firmo con un tocco» no longer offer anything (10/11/2026); and once you
+   draw, signing with a tap is a second way to do what you are already doing: it steps aside until «Rifai» (16/11/2026).
+   Hidden, not removed, so «Firmo» does not move under the finger */
 .avvio.av-signed [data-act='redo'],
-.avvio.av-signed [data-act='sign-alt'] {
+.avvio.av-signed [data-act='sign-alt'],
+.avvio.av-inked [data-act='sign-alt'] {
   visibility: hidden;
 }
 /* with reduced motion the reveal is just there, without waiting for its pieces */
@@ -4663,4 +4666,23 @@ body[data-fine] .bottom {
 }
 :root[data-calm] .av-figure .av-unveil {
   display: none;
+}
+
+/* ---------- a Caso of the team, in its frame (js/simula.js, 17/11/2026) ---------- */
+.sim-tag {
+  font-family: var(--title);
+  font-size: calc(15px * var(--fs));
+  font-weight: 800;
+  color: var(--ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sim-frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: 0;
+  background: var(--page);
 }

@@ -57,7 +57,8 @@ export function makeMe(api) {
   function yours(who) {
     const p = who.profile;
     // the two lessons can be on the same floor (Christine and Bill: both at Pianificazione): its name once
-    const where = [...new Set(p.floors.map((f) => FLOORS[f.n - 1].name))].join(' e ');
+    // «ed» before a word that starts with e (Marketing ed Esteri, 16/11/2026)
+    const where = [...new Set(p.floors.map((f) => FLOORS[f.n - 1].name))].reduce((a, b) => `${a} ${/^e/i.test(b) ? 'ed' : 'e'} ${b}`);
     return `<section class="me-card me-who">
       <div class="who-hero">
         <span class="who-figure"><img src="${FIGURES[who.me]}" alt="" /></span>

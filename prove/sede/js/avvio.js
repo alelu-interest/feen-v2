@@ -413,6 +413,7 @@ export function makeAvvio(api) {
       cur = [at(e)];
       strokes.push(cur);
       root.querySelector('.av-sign').classList.add('drawn');
+      root.classList.add('av-inked'); // you are drawing: «Firmo con un tocco» steps aside (16/11/2026)
     });
     cv.addEventListener('pointermove', (e) => {
       if (!cur) return;
@@ -435,6 +436,7 @@ export function makeAvvio(api) {
       length = 0;
       btn.disabled = true;
       root.querySelector('.av-sign').classList.remove('drawn');
+      root.classList.remove('av-inked');
       draw();
     };
     pad.take = () => strokes.filter((st) => st.length > 1).map((st) => st.map(([x, y]) => [Math.round(x * 1000) / 1000, Math.round(y * 1000) / 1000]));

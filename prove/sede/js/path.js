@@ -19,6 +19,7 @@ import { EGGS } from './eggs.js';
 import { FLOORS } from './world.js';
 import { ROOMS } from './office.js';
 import { FIGURES } from './figures.js';
+import { IN_APP } from './app.js';
 
 const DEG = Math.PI / 180;
 const HIRES = { 2: ['Samir', 'Irene'], 5: ['Teo', 'Giada'], 8: ['Leo', 'Marta'], 10: ['Dario', 'Sofia'] };
@@ -560,8 +561,10 @@ export function makePath(api) {
     fig.style.left = `calc(50% + ${swing * 0.92}px)`;
     fig.style.top = `${caso.y + caso.size + EDGE}px`;
     track.append(fig);
-    // the two candidates of an interview, beside the first stage of their floor
-    const hire = HIRES[n];
+    // the two candidates of an interview, beside the first stage of their floor. Not in the app, until the interview
+    // is built (compito C7): there the floors open on their lessons, and the line would promise what does not come
+    // (17/11/2026)
+    const hire = IN_APP ? null : HIRES[n];
     if (hire) {
       const say = `Il colloquio: prima della prima lezione scegli tra ${hire[0]} e ${hire[1]}.`;
       hire.forEach((name, k) => {
@@ -679,7 +682,9 @@ export function makePath(api) {
         };
       } else {
         const again = api.canReview?.(n, i);
-        go.textContent = again ? 'Ripassa · 2 min' : 'Guarda la scheda';
+        // a lesson comes back short, 5 exercises; a Caso and a Prova sul campo are played again whole (16/11/2026)
+        const whole = s.tag === 'Caso' || s.tag === 'Prova sul campo';
+        go.textContent = again ? `Ripassa · ${whole ? 3 : 2} min` : 'Guarda la scheda';
         go.onclick = (ev) => {
           ev.stopPropagation();
           if (state.busy) return;
