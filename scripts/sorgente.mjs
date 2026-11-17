@@ -209,7 +209,8 @@ const one = (t) => sentences(sentence(t))[0] ?? '';
 /**
  * The «casa sorgente» in `dir` (1. LAVORO/lezioni/sorgente), or null when it is not there.
  * → lessons: the 72 lessons by id («p3-l2»); stages: for every floor its 8 stages, { title, idea }, lesson 1–3, the
- * first Caso, lesson 4–6, the second Caso; sims: the playable page of the Casi of a floor; notes: what to look at.
+ * first Caso, lesson 4–6, the second Caso; sims: the playable Casi of a floor, one page with both or { 1, 2 }, a page
+ * each; notes: what to look at.
  */
 export async function fromSource(dir) {
   let raw;
@@ -235,9 +236,16 @@ export async function fromSource(dir) {
   } catch {
     // no Casi yet
   }
-  for (const name of pages) {
-    const m = name.match(/^piano-(\d+)\.html$/);
-    if (m) sims[Number(m[1])] = await readFile(join(dir, 'casi', name), 'utf8');
+  // a floor's Casi come as one page with both («piano-2.html») or as a page each («piano-1-caso-1.html»): one page is
+  // kept as it is, a page each as { 1: …, 2: … }; when a floor has both, the page of one Caso wins for that Caso
+  const each = {};
+  for (const name of pages.sort()) {
+    const m = name.match(/^piano-(\d+)(?:-caso-(\d))?\.html$/);
+    if (!m) continue;
+    const html = await readFile(join(dir, 'casi', name), 'utf8');
+    if (m[2]) (each[Number(m[1])] ??= {})[Number(m[2])] = html;
+    else sims[Number(m[1])] = html;
   }
+  for (const [floor, byCase] of Object.entries(each)) sims[floor] = sims[floor] ? { all: sims[floor], ...byCase } : byCase;
   return { file: raw.file, lessons, stages, sims, notes };
 }

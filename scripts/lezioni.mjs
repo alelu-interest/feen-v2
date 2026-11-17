@@ -731,7 +731,8 @@ export const STAGES = ${JSON.stringify(source?.stages ?? {}, null, 2)};
 `;
 // a number never leaves its «€» on the line below: «2 €» gets a no-break space (partita 09/11/2026)
 await writeFile(out, body.replace(/(\d) €/g, '$1 €'));
-// the playable Casi of the team, one page per floor (js/simula.js plays them inside the app)
+// the playable Casi of the team: a floor's page with its two Casi, or { 1, 2 } when each Caso has a page of its own
+// (js/simula.js plays them inside the app)
 await writeFile(
   join(dirname(out), 'sims-data.js'),
   `// Made by mobile/scripts/lezioni.mjs from the pages in 1. LAVORO/lezioni/sorgente/casi/: do not edit here.

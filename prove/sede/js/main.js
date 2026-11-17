@@ -1160,12 +1160,14 @@ function comingSoon(n) {
 }
 // by its name, as everywhere since Davide's «sti numeri così mi sanno di tombola» (10/11/2026)
 const SOON = (n) => `${cap(FLOORS[n - 1].the)} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
-/** The Caso of the team for stage s of floor n (17/11/2026): the page of that floor's two Casi (sims-data.js), the
- *  first where the Caso is, the second where the Prova sul campo is. A floor without its page (today floor 1) keeps
- *  the Caso and the Prova written as cards, below. */
+/** The Caso of the team for stage s of floor n (17/11/2026): the first of that floor's two Casi where the Caso is, the
+ *  second where the Prova sul campo is. A floor's Casi come as one page with both, or as a page each (floor 1), see
+ *  sims-data.js. A Caso without its page keeps the Caso or the Prova written as a card, below. */
 function simFor(n, s) {
   const which = s.tag === 'Caso' ? 1 : s.tag === 'Prova sul campo' ? 2 : 0;
-  return which && SIMS[n] ? { html: SIMS[n], floor: n, which } : null;
+  const pages = which ? SIMS[n] : null;
+  const html = typeof pages === 'string' ? pages : (pages?.[which] ?? pages?.all);
+  return html ? { html, floor: n, which } : null;
 }
 const SIM_TAG = { 1: 'Il Caso', 2: 'Prova sul campo' };
 // the line at the end of a Caso of the team: it has no first go and second go the app can see (provisional, Claude's)

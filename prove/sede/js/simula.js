@@ -1,7 +1,7 @@
 // FEEN · la sede — the Casi of the team, played inside the app (17/11/2026: «questi file sono l'attuale verità… monta
-// l'app su questi tre file»). The team writes the two Casi of a floor as one playable page (1. LAVORO/lezioni/sorgente/
-// casi/, carried by sims-data.js): the first comes after lesson 3, where the Caso is, the second after lesson 6, where
-// the Prova sul campo is. Each is a small simulation of its own (choices, a chart, two questions, «Completa»), so it is
+// l'app su questi tre file»). The team writes the two Casi of a floor as one playable page, or at floor 1 as a page
+// each (1. LAVORO/lezioni/sorgente/casi/, carried by sims-data.js): the first comes after lesson 3, where the Caso is,
+// the second after lesson 6, where the Prova sul campo is. Each is a small simulation of its own (choices, a chart, two questions, «Completa»), so it is
 // not rewritten here: the page runs as it is inside a frame, under FEEN's own bar with the X, and tells the app when
 // the Caso is completed. What changes from the page of the team is only what is around the Caso: the tabs between the
 // two Casi and «Ricomincia il caso» are hidden (the X starts it again, as for a lesson), the colours and the typefaces
@@ -33,24 +33,30 @@ function typefaces() {
   return css;
 }
 
-/** What the page keeps of a Caso (its own key in the phone's memory, «feen-p2-c1-v1»): cleared, so it starts new. */
+/** What the page keeps of a Caso (its own key in the phone's memory, «feen-p2-c1-v1», or «feen-p1-caso1-v3» for a
+ *  Caso with a page of its own): cleared, so it starts new. */
 function forget(floor, which) {
   try {
     for (let i = localStorage.length - 1; i >= 0; i--) {
       const k = localStorage.key(i);
-      if (k?.startsWith(`feen-p${floor}-c${which}-`)) localStorage.removeItem(k);
+      if (k?.startsWith(`feen-p${floor}-c${which}-`) || k?.startsWith(`feen-p${floor}-caso${which}-`)) localStorage.removeItem(k);
     }
   } catch {
     // no memory: the page starts new anyway
   }
 }
 
-/** The page of the team with FEEN's look, opened on Caso `which`, and a line to the app when it is completed. */
+/** The page of the team with FEEN's look, opened on Caso `which`, and a line to the app when it is completed.
+ *  A page with the two Casi of a floor has `apriCaso` and its texts in `COMUNI`; a page with one Caso (floor 1) is
+ *  that Caso already, with its texts in `TESTI` and `render` to write them again. */
 function page(html, floor, which) {
   const add = `<style>${THEME}${typefaces()}</style>
 <script>(function () {
-  try { COMUNI.notaPiede = 'Importi e nomi sono inventati.'; } catch (e) {}
-  try { apriCaso(${which}, true); } catch (e) {}
+  var foot = 'Importi e nomi sono inventati.';
+  try {
+    if (typeof apriCaso === 'function') { COMUNI.notaPiede = foot; apriCaso(${which}, true); }
+    else { TESTI.notaPiede = foot; render(); }
+  } catch (e) {}
   var tell = function (what) { try { parent.postMessage({ feenSim: what }, '*'); } catch (e) {} };
   document.addEventListener('click', function (ev) {
     var el = ev.target.closest && ev.target.closest('[data-act="completa"]');
