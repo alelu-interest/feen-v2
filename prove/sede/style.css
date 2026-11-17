@@ -2897,9 +2897,18 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   }
 }
 
-/* the choice of the character (10/11/2026, Davide): the two figures standing free, their names under them; nothing
-   written to say «choose». They breathe, a little out of step, so they look touchable; the one touched steps forward
-   on its light, the other steps back; then the button comes up with the name. */
+/* the choice of the character (10/11/2026, Davide): the two figures standing free, their names under them. They
+   breathe, a little out of step, so they look touchable; the one touched steps forward on its light, the other steps
+   back; then the button comes up with the name. Over them one question (17/11/2026, the user: «ci sono soltanto loro
+   due»; until then nothing was written): centred and as large as the question of the opening, «Che investitore sei?»,
+   which this one closes. Coming from the map it waits for the two shadows to arrive (av-flown). */
+.avvio.av-pick > h1 {
+  font-size: calc(34px * var(--fs-l));
+  text-align: center;
+}
+.avvio.av-page.av-flown > h1 {
+  animation: st-late 0.4s var(--ease) 0.5s both;
+}
 .avvio.av-pick > .av-people {
   flex: 1 0 auto;
   display: grid;
@@ -4225,6 +4234,176 @@ body.in-lesson .toast {
 }
 .lz-foot .pill[disabled] {
   pointer-events: none;
+}
+/* ---------- one screen, no scrolling (17/11/2026, the user: «non voglio scorrere le domande, deve essere fisso come
+   Duolingo… tutto nella stessa pagina, non devo muovermi, devo solamente cliccare la risposta giusta») ----------
+   The exercise always stands between the bar and «Verifica», and the page cannot be dragged. lezione.js (fit) tries
+   the page as it is; if it is too tall, tighter and tighter: 1 the air between things, 2 the mentor's face and the
+   sizes a step down, 3 the face inside the bubble (the question gets the whole width) and the sizes another step;
+   then the text a little smaller at a time (--lz-k, down to 0.88: an answer never under 13 px, a touch never under
+   44). Only when not even that is enough (a small phone with very large text) the page scrolls as it used to
+   (data-fit="scroll"). After «Verifica» the page moves by itself to keep the marked answers above the sheet
+   (makeRoom in lezione.js): nobody has to scroll. 3. STRUMENTI/controllo-sede/lezione-misura.html counts, for every
+   exercise of every lesson, how tight it gets on which phone. */
+#lezione .lz-body {
+  overflow: hidden;
+}
+#lezione[data-fit='scroll'] .lz-body {
+  overflow-y: auto;
+}
+/* 1 · the air */
+#lezione[data-fit] .lz-body {
+  gap: 10px;
+  padding-top: 6px;
+  padding-bottom: 8px;
+}
+#lezione[data-fit] .lz-foot {
+  padding-top: 6px;
+}
+#lezione[data-fit] .lz-bubble {
+  padding: 10px 12px 12px;
+}
+#lezione[data-fit] .lz-q {
+  line-height: 1.2;
+}
+#lezione[data-fit] .lz-lead {
+  margin-bottom: 6px;
+  line-height: 1.38;
+}
+#lezione[data-fit] .lz-answers {
+  gap: 8px;
+  margin-top: 0;
+}
+#lezione[data-fit] .lz-opts,
+#lezione[data-fit] .lz-match,
+#lezione[data-fit] .lz-match > div {
+  gap: 8px;
+}
+#lezione[data-fit] .lz-opts:not(.lz-two) .lz-opt,
+#lezione[data-fit] .lz-pool .lz-cell,
+#lezione[data-fit] .lz-seq .lz-cell {
+  min-height: 48px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  line-height: 1.25;
+}
+#lezione[data-fit] .lz-two .lz-opt {
+  min-height: 84px;
+}
+#lezione[data-fit] .lz-match .lz-cell {
+  min-height: 56px;
+}
+#lezione[data-fit] .lz-sentence {
+  padding: 12px 14px;
+  line-height: 1.4;
+}
+#lezione[data-fit] .lz-slider {
+  gap: 6px;
+  padding: 12px 14px 10px;
+}
+#lezione[data-fit] .lz-help {
+  padding: 8px 10px;
+}
+/* 2 · the mentor's face smaller, the sizes a step down */
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) {
+  --lz-q: 19px;
+  --lz-lead: 15px;
+  --lz-o: 16px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-mentor {
+  gap: 10px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-face {
+  width: 44px;
+  height: 48px;
+  border-radius: 13px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-source {
+  margin-left: 54px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-idea {
+  padding: 3px 8px;
+  font-size: calc(11px * var(--fs));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-q {
+  font-size: calc(var(--lz-q) * var(--fs-l) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-lead {
+  font-size: calc(var(--lz-lead) * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-opts:not(.lz-two) .lz-opt,
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-pool .lz-cell,
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-seq .lz-cell {
+  min-height: 46px;
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-size: calc(var(--lz-o) * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-two .lz-opt {
+  min-height: 72px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-sentence {
+  font-size: calc(20px * var(--fs-l) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-value {
+  font-size: calc(34px * var(--fs-l));
+}
+/* 3 · the face inside the bubble, beside the name: the question gets the whole width; the sizes another step */
+#lezione:is([data-fit='3'], [data-fit='scroll']) {
+  --lz-q: 17.5px;
+  --lz-lead: 14.5px;
+  --lz-o: 15px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-body {
+  gap: 8px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-mentor {
+  position: relative;
+  display: block;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-face {
+  position: absolute;
+  z-index: 1;
+  left: 12px;
+  top: 9px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-bubble {
+  border-radius: 18px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-bubble > b {
+  display: flex;
+  align-items: center;
+  min-height: 26px;
+  padding-left: 34px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-source {
+  margin-left: 0;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-answers,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-opts,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-match,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-match > div {
+  gap: 6px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-opts:not(.lz-two) .lz-opt,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-pool .lz-cell,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-seq .lz-cell {
+  min-height: 44px;
+  padding: 8px 14px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-two .lz-opt {
+  min-height: 60px;
+  font-size: calc(20px * var(--fs-l));
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-match .lz-cell {
+  min-height: 48px;
+  font-size: calc(14px * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-sentence {
+  font-size: calc(18px * var(--fs-l) * var(--lz-k, 1));
 }
 /* the feedback rises from the bottom: right or wrong, never «almost» */
 .lz-sheet {

@@ -2,7 +2,8 @@
 // character → the empty company with the partner → the contract → the first lesson → the reminders → Percorso.
 // 10/11/2026, Davide (his word is law): no welcome screens, the test explains itself; no icons on the statements, the
 // statement up top and the circles in the middle; your type and the map on one screen, the map rising under it; no
-// «gioco, non diagnosi»; the two characters standing free, their names under them, nothing written to say «choose».
+// «gioco, non diagnosi»; the two characters standing free, their names under them, nothing written to say «choose»
+// (until 17/11/2026: the user, in front of the screen, found «soltanto loro due», and one question went back over them).
 // And everywhere less text: the screen says it, not a sentence. 10/11/2026, the user: before the first statement an
 // animated opening, «Che investitore sei?» over the eight shadows (apertura; not a welcome: nothing is explained).
 // The test is Dorigo's (quiz.js); the user's choices of 07/11/2026: a touch on a circle moves on by itself, there is
@@ -311,7 +312,9 @@ export function makeAvvio(api) {
     );
   }
 
-  /** The two versions of your type, standing free: a touch brings one forward, the button says who you play with. */
+  /** The two versions of your type, standing free: a touch brings one forward, the button says who you play with.
+   *  Over them one question, in the user's words (17/11/2026: «non c'è più scegli chi dei due ti rappresenta, ci sono
+   *  soltanto loro due»; from 10/11 to then nothing was written here, on Davide's word: the screen alone did not say it). */
   function scelta() {
     const p = whoOf({ ...s, pick: '-' }).profile;
     // coming from the map, the two shadows walk from where they stood into the figures (17/11/2026)
@@ -325,7 +328,7 @@ export function makeAvvio(api) {
       .join('');
     screen(
       `av-page av-pick${s.pick ? ' picked' : ''}${from ? ' av-flown' : ''}`,
-      `<h1 class="sr-only">Scegli il tuo personaggio</h1>
+      `<h1>Chi dei due ti rappresenta?</h1>
       <div class="av-people">${cards}</div>
       <button class="pill pill-dark wide" data-act="pick">${s.pick ? `Gioco con ${s.pick}` : ''}</button>`,
     );

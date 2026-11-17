@@ -7,6 +7,8 @@
 // At the end the mentor brings back the exercises gone wrong, once, as «Ci riprovi»: wrong again, the right answer
 // shows and the lesson goes on. The bar never goes back.
 // The exercises come from the approved cards (lessons-data.js, made by mobile/scripts/lezioni.mjs).
+// An exercise stands in one screen, without scrolling (17/11/2026, the user: «non voglio scorrere le domande, deve
+// essere fisso come Duolingo»): fit() makes it as tight as the phone needs.
 import { PEOPLE } from './people.js';
 import { askLeave, stay } from './esci.js';
 
@@ -30,6 +32,12 @@ const mix = (a) => {
 const TYPE_ASK = { vf: 'Vero o falso?', abbina: 'Tocca una voce a sinistra, poi la sua a destra.', ordina: 'Tocca le voci nell’ordine giusto.', completa: 'Scegli la parola che manca.' };
 const COUNT = ['', 'quella', 'le due', 'le tre', 'le quattro', 'le cinque', 'le sei', 'le sette'];
 const STREAK = 5;
+// how tight an exercise can get to stand in one screen (style.css, #lezione[data-fit]): as it is, then 1 the air,
+// 2 the face and the sizes a step down, 3 the face inside the bubble and another step; then the text smaller, K_STEP
+// at a time down to K_MIN (an answer stays over 13 px); after that the page scrolls, as it used to
+const FIT = ['', '1', '2', '3'];
+const K_MIN = 0.88;
+const K_STEP = 0.03;
 
 export function makeLesson(api) {
   const root = document.getElementById('lezione');
@@ -56,6 +64,8 @@ export function makeLesson(api) {
     defWord = null;
     sheetRoom?.disconnect();
     sheetRoom = null;
+    delete root.dataset.fit;
+    root.style.removeProperty('--lz-k');
     root.innerHTML = `<div class="lz-top">
         <button class="lz-x" data-act="x" aria-label="Esci dalla lezione"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
         <div class="lz-barbox">${bar()}</div>
@@ -68,6 +78,47 @@ export function makeLesson(api) {
       <div class="lz-ask" id="lz-ask" hidden></div>`;
     root.querySelector('.lz-q, .lz-say')?.focus({ preventScroll: true });
   }
+
+  // ---------- one screen, no scrolling ----------
+  /** The exercise stands between the bar and «Verifica», and the page cannot be dragged (17/11/2026, the user: «tutto
+   *  nella stessa pagina, non devo muovermi, devo solamente cliccare la risposta giusta»). The page as it is; if it is
+   *  too tall, the next of FIT, then the text a step smaller at a time; if not even K_MIN is enough (a small phone
+   *  with very large text) it scrolls as it used to. `keep`: during an exercise (a step put in order, a word in the
+   *  sentence) the page only gets tighter, never looser under the finger. Measured, not guessed: it holds for any
+   *  phone, any text size and any lesson that comes from the team. */
+  function fit(keep = false) {
+    const body = root.querySelector('.lz-body');
+    if (!body || root.hidden || checked) return;
+    if (keep && root.dataset.fit === 'scroll') return;
+    const tall = () => body.scrollHeight > body.clientHeight + 1;
+    let at = keep ? Math.max(0, FIT.indexOf(root.dataset.fit ?? '')) : 0;
+    if (!keep) root.style.removeProperty('--lz-k');
+    for (; at < FIT.length; at++) {
+      if (FIT[at]) root.dataset.fit = FIT[at];
+      else delete root.dataset.fit;
+      if (!tall()) return;
+    }
+    let k = (keep && Number(root.style.getPropertyValue('--lz-k'))) || 1;
+    while (k - K_STEP > K_MIN - 0.001) {
+      k -= K_STEP;
+      root.style.setProperty('--lz-k', k.toFixed(2));
+      if (!tall()) return;
+    }
+    root.dataset.fit = 'scroll';
+  }
+  /** After «Verifica» the sheet rises over the bottom of the page: if it covers an answer marked right or wrong, the
+   *  page gets tighter, a level at a time, until they are in sight above it (the text is not made smaller for this).
+   *  What is still covered then, makeRoom brings into sight by moving the page itself: nobody has to scroll. */
+  function settle() {
+    const sheet = root.querySelector('#lz-sheet');
+    const marked = [...root.querySelectorAll('.lz-body .right, .lz-body .wrong')];
+    if (!sheet || sheet.hidden || !marked.length || root.dataset.fit === 'scroll') return;
+    const covered = () => marked[marked.length - 1].getBoundingClientRect().bottom > root.getBoundingClientRect().top + sheet.offsetTop - 12;
+    for (let at = FIT.indexOf(root.dataset.fit ?? '') + 1; at < FIT.length && covered(); at++) root.dataset.fit = FIT[at];
+  }
+  // the phone turns, the window or the text size changes, the typeface arrives after the first exercise
+  window.addEventListener('resize', () => fit());
+  document.fonts?.ready?.then(() => fit());
 
   // ---------- a hard word: its definition in a small bubble right under the word (over it when there is no room) ----------
   let defWord = null;
@@ -246,6 +297,7 @@ export function makeLesson(api) {
       // and so is Home or End on the end the thumb already sits on (keyboard and screen readers, no input event)
       r.addEventListener('keyup', (ev) => /^(Home|End|Arrow|Page)/.test(ev.key) && moved());
     }
+    fit();
   }
 
   const fmt = (v, unit) => `${String(v).replace('.', ',')}${unit ? ` ${unit}` : ''}`;
@@ -277,6 +329,8 @@ export function makeLesson(api) {
   function ready() {
     // the first answer of a list is number 0: «nothing picked» is null, not 0
     root.querySelector('[data-act="check"]').disabled = ex.pick == null;
+    // a step gone up in the list, the word in the sentence: still in one screen
+    fit(true);
   }
 
   // ---------- Verifica ----------
@@ -352,6 +406,7 @@ export function makeLesson(api) {
         <button class="pill pill-dark" data-act="next">Continua</button>
       </div>`;
     sheet.hidden = false;
+    settle();
     sheet.querySelector('h3').focus({ preventScroll: true });
     // the sheet rises over the answers: room for them above it, and the right one in sight (10/11/2026, the album:
     // «Non è così» covered the right answer, and with «Spiegami» open every answer but the wrong one)
@@ -434,6 +489,7 @@ export function makeLesson(api) {
       { foot: false },
     );
     root.querySelector('.lz-body').insertAdjacentHTML('afterend', '<div class="lz-foot"><button class="pill pill-dark wide" data-act="again">Ci riprovo</button></div>');
+    fit();
   }
 
   // ---------- leaving: «La lezione riparte dall'inizio. L'ufficio resta com'è» ----------
@@ -449,6 +505,8 @@ export function makeLesson(api) {
   function finish(done) {
     root.hidden = true;
     root.innerHTML = '';
+    delete root.dataset.fit;
+    root.style.removeProperty('--lz-k');
     document.body.classList.remove('in-lesson');
     reach(true);
     const r = resolve;
