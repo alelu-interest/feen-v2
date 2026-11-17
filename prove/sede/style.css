@@ -3020,6 +3020,28 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   animation: rise 0.3s var(--ease) both;
 }
 
+/* «Guarda la tua azienda» (17/11/2026, avvio.js looking): the sede is under the finger, and of the first start only
+   the button that starts the lesson is left, where the bar will be */
+.avvio.av-look {
+  inset: auto 0 0 0;
+  overflow: visible;
+  padding: 0 14px calc(var(--safe-b) + 12px);
+  background: none;
+  pointer-events: none;
+}
+.avvio.av-look > .pill {
+  display: flex;
+  max-width: 532px;
+  margin: 0 auto;
+  pointer-events: auto;
+  animation: rise 0.3s var(--ease) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .avvio.av-look > .pill {
+    animation: none;
+  }
+}
+
 /* the partner, in the sede */
 .avvio.av-scene {
   display: flex;

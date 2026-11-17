@@ -877,7 +877,10 @@ function back() {
     (ask && !ask.hidden ? ask.querySelector('[data-act="stay"]') : r.querySelector('[data-act="x"]'))?.click();
     return true;
   }
-  if (!$('avvio').hidden) return false; // the first start has no back: every step is saved, the app may close
+  // the first start has no back (every step is saved, the app may close), except while «Guarda la tua azienda» has
+  // the sede under the finger: a room goes back to the building, the building to the page it came from
+  const look = avvio?.looking();
+  if (!$('avvio').hidden && !look) return false;
   if (state.busy) return true; // a flight, a landing: it ends by itself
   if (!$('card-wrap').hidden) closeCard(); // a fresh card has no X: back does what «Continua» does
   else if (!$('demo-wrap').hidden) closeSheet($('demo-wrap'));
@@ -886,7 +889,8 @@ function back() {
     const n = state.viewFloor;
     go('overview', { n });
     if (document.activeElement === document.body) focusFloor(n);
-  } else if (state.tab !== 'percorso') setTab('percorso');
+  } else if (look) avvio.unlook();
+  else if (state.tab !== 'percorso') setTab('percorso');
   else return false;
   return true;
 }
