@@ -96,6 +96,33 @@ export function miniMap(who, { label = true, names = true } = {}) {
   </div>`;
 }
 
+/** The map of the reveal (17/11/2026, the user: «questa pagina va drasticamente migliorata»): the eight shadows of
+ *  the opening, each pair in its quadrant, instead of four empty boxes. They come back whole, six step back and the two
+ *  of your type stay, lit, with «Tu» over their heads; the two ends of the axes that are yours turn blue (they say what
+ *  the small label under the motto said). No names here (10/11/2026) and no point: how far from the middle you are
+ *  stays in the Tu (miniMap). At the choice these two shadows walk into the two figures and take their colours. */
+function stage(who) {
+  const [risk, style] = who.quadrant.split('-');
+  // the hidden picture gives each shadow its size, as in the opening
+  const shadow = (n) => `<i class="av-sil" style="--m:url('${FIGURES[n]}')"><img src="${FIGURES[n]}" alt="" /></i>`;
+  // --c is the column: the shadows step back from left to right
+  const pairs = ORDER.map((q, i) => {
+    const me = q === who.quadrant;
+    return `<div class="st-pair${me ? ' me' : ''}" style="--c:${i % 2}">${PROFILES[q].names.map(shadow).join('')}${me ? '<b class="st-you">Tu</b>' : ''}</div>`;
+  }).join('');
+  const axis = (side, text, on) => `<span class="st-axis ${side}${on ? ' on' : ''}">${text}</span>`;
+  // data-me: your row, the upper or the lower one, is the one with the room for «Tu» (style.css, --st-shift)
+  return `<div class="av-stage" data-me="${risk === 'alto' ? 'n' : 's'}" role="img" aria-label="La mappa dei quattro tipi: il tuo è ${who.profile.what}">
+    ${axis('n', 'Rischio alto', risk === 'alto')}${axis('s', 'Rischio basso', risk === 'basso')}
+    ${axis('w', 'Innovativo', style === 'innovativo')}${axis('e', 'Tradizionale', style === 'tradizionale')}
+    <div class="st-grid">${pairs}</div>
+  </div>`;
+}
+// when the six step back (style.css, st-back): the sound and the buzz of the reward land there
+const PICK_AT = 1400;
+// the two shadows of your type, from the map to the figures of the choice
+const FLY = 560;
+
 /** The signature as drawn, in a box of 0..1: the Tu shows it under the contract. */
 export function signSvg(sign, cls = '') {
   if (!sign?.length) return '';
@@ -115,6 +142,9 @@ export function makeAvvio(api) {
   let opened = false; // the opening played (or was skipped) in this session
   let openT = 0;
   let smoothF = 0;
+  let pickT = 0; // the reward of the reveal, when your pair stays lit
+  let flight = null; // where the two shadows of your type stood on the map, for the choice that follows
+  const calm = () => document.documentElement.hasAttribute('data-calm');
 
   /** Calls back when the screen moves smoothly (four frames in a row under 40 ms), or after 6 s of frames: on a slow
    *  phone still busy building the sede the opening waits to be seen instead of running out its clock (10/11/2026 sera;
@@ -150,6 +180,7 @@ export function makeAvvio(api) {
 
   function screen(cls, html) {
     clearTimeout(openT);
+    clearTimeout(pickT);
     cancelAnimationFrame(smoothF);
     root.className = `avvio ${cls}`;
     root.innerHTML = html;
@@ -255,29 +286,37 @@ export function makeAvvio(api) {
     questionRoom(root.querySelector('.av-q'));
   }
 
-  /** Your type and, rising under it, the map (10/11/2026, Davide: «molto più lean», the map «sotto come pop-up»). */
+  /** Your type and, rising under it, the map (10/11/2026, Davide: «molto più lean», the map «sotto come pop-up»).
+   *  Since 17/11/2026 the map is the eight shadows of the opening (stage): the opening asked, here two of them answer. */
   function pregio() {
     const who = whoOf({ ...s, pick: '-' });
     const p = who.profile;
-    // the reveal is a moment, not a page: it comes in a piece at a time, with the sound and the buzz of a reward
-    api.sfx.reward?.();
-    api.buzz(25);
     screen(
       'av-page av-reveal av-tada',
       // the opening asked «Che investitore sei?»: the answer says what it is the type of (11/11/2026)
       `<p class="av-eyebrow">Il tuo tipo di investitore</p>
       <h1>${p.motto}</h1>
-      <p class="av-axes"><span>${keep(p.what)}</span></p>
       <p class="av-good">${p.pregio}</p>
-      <div class="av-pop">${miniMap(who, { names: false })}</div>
-      <div class="av-fill"></div>
+      ${stage(who)}
       <button class="pill pill-dark wide" data-act="next">Avanti</button>`,
+    );
+    // the reveal is a moment, not a page: it comes in a piece at a time, and the sound and the buzz of a reward land
+    // when six shadows step back and yours stay (with reduced motion the map is just there, and so are they)
+    pickT = setTimeout(
+      () => {
+        api.sfx.reward?.();
+        api.buzz(25);
+      },
+      calm() ? 0 : PICK_AT,
     );
   }
 
   /** The two versions of your type, standing free: a touch brings one forward, the button says who you play with. */
   function scelta() {
     const p = whoOf({ ...s, pick: '-' }).profile;
+    // coming from the map, the two shadows walk from where they stood into the figures (17/11/2026)
+    const from = flight;
+    flight = null;
     const cards = p.names
       .map(
         (n) =>
@@ -285,14 +324,14 @@ export function makeAvvio(api) {
       )
       .join('');
     screen(
-      `av-page av-pick${s.pick ? ' picked' : ''}`,
+      `av-page av-pick${s.pick ? ' picked' : ''}${from ? ' av-flown' : ''}`,
       `<h1 class="sr-only">Scegli il tuo personaggio</h1>
       <div class="av-people">${cards}</div>
       <button class="pill pill-dark wide" data-act="pick">${s.pick ? `Gioco con ${s.pick}` : ''}</button>`,
     );
     // the two shadows of the opening take their colours: each shadow lies exactly on its figure (the layout box,
     // without the breathing, which the shadow does too); if the picture never decodes, the figures are simply there
-    for (const f of root.querySelectorAll('.av-figure')) {
+    root.querySelectorAll('.av-figure').forEach((f, k) => {
       const img = f.querySelector('img');
       const sh = f.querySelector('.av-unveil');
       img
@@ -302,8 +341,22 @@ export function makeAvvio(api) {
           if (!img.offsetHeight) return;
           Object.assign(sh.style, { left: `${img.offsetLeft}px`, top: `${img.offsetTop}px`, width: `${img.offsetWidth}px`, height: `${img.offsetHeight}px` });
           sh.classList.add('placed');
+          // from the map: the shadow starts where it stood there, as small as it was, and grows into its figure from
+          // its feet (the shadow turns around the middle of its feet, style.css). Under it the figure waits (av-flown).
+          const a = from?.[k];
+          if (!a?.width || !sh.animate) return;
+          const box = f.getBoundingClientRect();
+          const x = box.left + img.offsetLeft + img.offsetWidth / 2;
+          const y = box.top + img.offsetTop + img.offsetHeight;
+          sh.animate(
+            [
+              { transform: `translate(${a.left + a.width / 2 - x}px, ${a.bottom - y}px) scale(${a.width / img.offsetWidth}, ${a.height / img.offsetHeight})` },
+              { transform: 'none' },
+            ],
+            { duration: FLY, easing: 'cubic-bezier(0.3, 0, 0.1, 1)' },
+          );
         });
-    }
+    });
   }
 
   function azienda() {
@@ -539,7 +592,11 @@ export function makeAvvio(api) {
       return;
     }
     if (act === 'lesson-again') return show();
-    if (act === 'next') return go('scelta');
+    if (act === 'next') {
+      // where the two shadows of your type stand on the map: the choice starts them from there (scelta)
+      flight = calm() ? null : [...root.querySelectorAll('.st-pair.me .av-sil')].map((el) => el.getBoundingClientRect());
+      return go('scelta');
+    }
     if (act === 'pick') return s.pick && go('azienda', { line: 0 });
     if (act === 'line') {
       if (s.line < PARTNER.length - 1) return go('azienda', { line: s.line + 1 });

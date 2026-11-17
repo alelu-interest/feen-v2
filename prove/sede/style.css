@@ -2431,31 +2431,283 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   line-height: 1.45;
   color: var(--ink-2);
 }
-.avvio.av-tada > div.av-pop {
-  margin-top: 6px;
-  animation: av-pop 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.15) both 1s;
-}
-.av-pop .mm-you {
-  animation-delay: 1.5s;
-}
 @keyframes av-pop {
   from {
     opacity: 0;
     transform: translateY(60px) scale(0.94);
   }
 }
-.av-axes {
-  margin: -4px 0 0;
+
+/* the map of the reveal (17/11/2026, the user: «questa pagina va drasticamente migliorata»; avvio.js, stage): the
+   eight shadows of the opening, each pair in its quadrant, on the page itself. No boxes: two hairlines, and around
+   them the four ends of the axes. The shadows come back whole, then six step back and the two of your type stay,
+   on a light, with «Tu» over their heads as over the stage to play in the Percorso; the two ends of the axes that are
+   yours turn blue. The map takes the height the text leaves free, and the shadows are as tall as that allows. */
+.av-stage {
+  position: relative;
+  flex: 1 0 300px;
+  max-height: 480px;
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: 24px 22px;
+  container-type: size;
+  --st-head: calc(16px + 14px * var(--fs)); /* over your pair, the room of «Tu» */
+  --st-gap: 32px;
+  /* only your row is taller, by the room of «Tu»: the axis between the rows stays in the middle of the gap, so it
+     never runs through «Tu» (which would put you on the line between high and low risk) */
+  --st-shift: calc(var(--st-head) / 2);
 }
-.av-axes span {
-  display: inline-block;
-  padding: 4px 10px;
+.av-stage[data-me='s'] {
+  --st-shift: calc(var(--st-head) / -2);
+}
+.st-grid {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  display: grid;
+  grid-template: auto auto / 1fr 1fr;
+  align-content: center;
+  gap: var(--st-gap) 12px;
+}
+/* the two axes, behind the shadows: one between the columns, one in the middle of the gap between the rows */
+.st-grid::before,
+.st-grid::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  border-radius: 1px;
+  background: var(--line);
+}
+.st-grid::before {
+  left: calc(50% - 1px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+.st-grid::after {
+  top: calc(50% + var(--st-shift) - 1px);
+  left: 0;
+  right: 0;
+  height: 2px;
+}
+.st-axis {
+  position: absolute;
+  font-size: calc(12px * var(--fs));
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--mm-axis);
+  white-space: nowrap;
+}
+.st-axis.n {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.st-axis.s {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.st-axis.w,
+.st-axis.e {
+  top: calc(50% + var(--st-shift));
+  writing-mode: vertical-rl;
+}
+.st-axis.w {
+  left: 0;
+  transform: translateY(-50%) rotate(180deg);
+}
+.st-axis.e {
+  right: 0;
+  transform: translateY(-50%);
+}
+.st-axis.on {
+  color: var(--brand-ink);
+}
+.st-pair {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-width: 0;
+  min-height: 0;
+  transform-origin: 50% 100%;
+}
+.st-pair .av-sil img {
+  height: min(19vh, 170px);
+}
+@supports (height: 1cqh) {
+  .st-pair .av-sil img {
+    height: calc((100cqh - var(--st-gap) - var(--st-head)) / 2);
+  }
+}
+/* the floor under every pair, as in the opening */
+.st-pair::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: -7px;
+  width: 80%;
+  height: 16px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 16%, transparent), transparent);
+}
+/* the six that are not you: a step back, almost gone */
+.st-pair:not(.me) {
+  transform: scale(0.94);
+}
+.st-pair:not(.me) .av-sil {
+  opacity: 0.17;
+}
+.st-pair:not(.me)::after {
+  opacity: 0.35;
+}
+/* yours: the light of the quadrant behind them, and at their feet the light of the character you pick */
+.st-pair.me {
+  padding-top: var(--st-head);
+}
+.st-pair.me::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(var(--st-head) - 10px) -4px -16px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--action) 22%, transparent), transparent);
+}
+.st-pair.me::after {
+  bottom: -11px;
+  width: 104%;
+  height: 26px;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--action) 55%, transparent), transparent);
+}
+.st-you {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 3px 10px;
   border-radius: 999px;
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--line);
+  background: var(--mm-chip);
+  color: var(--mm-chip-ink);
   font-size: calc(13px * var(--fs));
-  font-weight: 700;
-  color: var(--ink-2);
+  font-weight: 800;
+  line-height: 1.2;
+}
+.st-you::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(50% - 4px);
+  bottom: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+/* the moment: the map rises with the eight shadows whole, as the opening left them; then the six step back, from left
+   to right, a light passes over yours, their ground lights up, and «Tu» lands (PICK_AT in avvio.js is the 1.4 s: the eight stay whole
+   for a moment after the map has risen, so the six are seen leaving) */
+.avvio.av-tada > div.av-stage {
+  animation: av-pop 0.6s cubic-bezier(0.2, 0.9, 0.25, 1.15) 0.5s both;
+}
+.av-tada .st-pair:not(.me) {
+  animation: st-back 0.6s var(--ease) calc(1.4s + var(--c) * 0.09s) both;
+}
+.av-tada .st-pair:not(.me) .av-sil,
+.av-tada .st-pair:not(.me)::after {
+  animation: st-dim 0.6s var(--ease) calc(1.4s + var(--c) * 0.09s) both;
+}
+.av-tada .st-pair.me .av-sil {
+  animation: av-open-sweep 0.9s ease-in-out 1.4s both;
+}
+.av-tada .st-pair.me::before {
+  animation: st-lit 0.7s var(--ease) 1.4s both;
+}
+.av-tada .st-pair.me::after {
+  animation: st-ground 0.7s var(--ease) 1.4s both;
+}
+.av-tada .st-axis.on {
+  animation: st-on 0.5s var(--ease) 1.4s both;
+}
+.av-tada .st-you {
+  animation:
+    st-you 0.5s cubic-bezier(0.2, 0.9, 0.25, 1.5) 1.9s both,
+    st-bob 2.6s ease-in-out 2.55s infinite;
+}
+@keyframes st-back {
+  from {
+    transform: none;
+  }
+}
+@keyframes st-dim {
+  from {
+    opacity: 1;
+  }
+}
+@keyframes st-lit {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+/* from the grey floor of the opening to the light */
+@keyframes st-ground {
+  from {
+    bottom: -7px;
+    width: 80%;
+    height: 16px;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--ink) 16%, transparent), transparent);
+  }
+}
+@keyframes st-on {
+  from {
+    color: var(--mm-axis);
+  }
+}
+@keyframes st-you {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -14px) scale(0.5);
+  }
+}
+@keyframes st-bob {
+  50% {
+    transform: translate(-50%, -3px);
+  }
+}
+/* from the map to the choice (avvio.js, scelta): the two shadows walk into the figures, which wait under them and
+   show when they have arrived; then the shadows go as they always did. Names and floor come after the walk. */
+.avvio.av-flown > .av-people {
+  animation: none;
+}
+.av-flown .av-figure img {
+  animation:
+    av-breathe 3.2s ease-in-out infinite,
+    st-late 0.1s linear 0.5s both;
+}
+.av-flown .av-person:nth-child(2) .av-figure img {
+  animation-delay: -1.6s, 0.5s;
+}
+.av-flown .av-figure .av-unveil {
+  animation-delay: 0s, 0.66s;
+}
+.av-flown .av-person:nth-child(2) .av-figure .av-unveil {
+  animation-delay: -1.6s, 0.8s;
+}
+.av-flown .av-person b,
+.av-flown .av-figure::before {
+  animation: st-late 0.35s var(--ease) 0.4s both;
+}
+@keyframes st-late {
+  from {
+    opacity: 0;
+  }
 }
 .av-trait {
   display: grid;
@@ -3292,7 +3544,10 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font: italic 600 26px var(--text);
 }
 @media (prefers-reduced-motion: reduce) {
-  .avvio.av-tada > div.av-pop,
+  .avvio.av-tada > div.av-stage,
+  .av-tada .av-stage *,
+  .av-tada .av-stage *::before,
+  .av-tada .av-stage *::after,
   .avvio.av-tada > :not(.av-fill),
   .av-figure img,
   .avvio.av-page > *,
@@ -4652,7 +4907,9 @@ body[data-fine] .bottom {
 }
 /* with reduced motion the reveal is just there, without waiting for its pieces */
 :root[data-calm] .avvio.av-tada > *,
-:root[data-calm] .av-pop .mm-you {
+:root[data-calm] .av-stage *,
+:root[data-calm] .av-stage *::before,
+:root[data-calm] .av-stage *::after {
   animation-delay: 0s !important;
 }
 :root[data-calm] .av-figure img {
