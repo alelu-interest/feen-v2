@@ -215,6 +215,22 @@ export function makeAvvio(api) {
     question();
   }
 
+  // One statement back (19/11/2026, from a tester: «non si può tornare indietro, quindi anche per un misclick te lo
+  // accolli»; the user: «fai te»). A touch on a circle goes on by itself, so a touch gone wrong could not be put
+  // right, and the type is only done again with «Ricomincia da capo». One quiet word under the circles, from the
+  // second statement on: the statement before comes back with its answer still lit. No «Avanti»: going on is what a
+  // touch on a circle does. It hangs under the circles without taking room, so they stay where they are. Until
+  // 19/11/2026 there was no way back (the user's choice of 07/11/2026).
+  const BACK = '<button class="av-back" data-act="back"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6"/></svg>Indietro</button>';
+  const canBack = () => !root.hidden && !lock && ((s?.step === 'domande' && s.i > 0) || s?.step === 'spareggio');
+  function stepBack() {
+    if (!canBack()) return false;
+    // from the extra question, back to the last statement: answered again, it decides again whether one is needed
+    if (s.step === 'spareggio') go('domande', { i: QUESTIONS.length - 1, tie: {} });
+    else go('domande', { i: s.i - 1 });
+    return true;
+  }
+
   function question() {
     if (!opened && s.i === 0 && s.answers.every((a) => a === null)) return apertura();
     const q = QUESTIONS[s.i];
@@ -231,6 +247,7 @@ export function makeAvvio(api) {
         <div class="av-scale" role="group" aria-label="Quanto sei d’accordo">
           <div class="av-dots">${dots}</div>
           <div class="av-ends" aria-hidden="true"><span>${SCALE.left}</span><span>${SCALE.right}</span></div>
+          ${s.i > 0 ? BACK : ''}
         </div>
       </div>`,
     );
@@ -281,7 +298,7 @@ export function makeAvvio(api) {
       `<div class="av-progress" aria-hidden="true"><div class="av-pips">${pips}</div><span>Ancora una</span></div>
       <h2 class="av-q" aria-label="Ancora una. ${t.text}">${t.text}</h2>
       <div class="av-mid">
-        <div class="av-choice">${t.options.map((o) => `<button data-axis="${axis}" data-side="${o.side}" aria-pressed="false">${o.text}</button>`).join('')}</div>
+        <div class="av-choice-box"><div class="av-choice">${t.options.map((o) => `<button data-axis="${axis}" data-side="${o.side}" aria-pressed="false">${o.text}</button>`).join('')}</div>${BACK}</div>
       </div>`,
     );
     questionRoom(root.querySelector('.av-q'));
@@ -582,6 +599,7 @@ export function makeAvvio(api) {
       return;
     }
     api.sfx.tap();
+    if (act === 'back') return stepBack();
     if (b.dataset.side) {
       // the answer taken shows a moment, as a circle of the test does, and meanwhile a second touch does nothing
       // (11/11/2026: the screen changed at once, and when two of these come in a row their answers stand in the same
@@ -669,6 +687,8 @@ export function makeAvvio(api) {
       show();
     },
     who: () => whoOf(s),
+    /** The back key in the test (main.js back): one statement back; false when there is none to go back to. */
+    back: stepBack,
     /** True while «Guarda la tua azienda» has the sede under the finger: there the back key works (main.js back). */
     looking: () => !root.hidden && root.classList.contains('av-look'),
     /** Back from the sede to «Ti aspetta quando vuoi». */

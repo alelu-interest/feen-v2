@@ -2394,6 +2394,40 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-ends span:last-child {
   color: var(--disagree);
 }
+/* back to the statement before (avvio.js, stepBack; 19/11/2026): one quiet word, hung under the circles (and under the
+   two answers of the extra question) without taking room, so they stay where they are on every statement */
+.av-scale,
+.av-choice-box {
+  position: relative;
+}
+.av-back {
+  position: absolute;
+  top: calc(100% + 18px);
+  left: 50%;
+  translate: -50% 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  min-height: 44px;
+  padding: 0 16px 0 8px;
+  border-radius: 999px;
+  font-size: calc(15px * var(--fs));
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--ink-2);
+}
+.av-back svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.av-back:active {
+  background: var(--line);
+}
 /* the extra question (avvio.js, tie): its two answers where the circles were, under the thumb (11/11/2026) */
 .av-choice {
   display: grid;
@@ -4174,6 +4208,167 @@ body.in-lesson .toast {
   display: grid;
   gap: 8px;
 }
+/* before the questions (19/11/2026): under what the partner says, the first lines of the lesson's explanation, one
+   to a line, in the plain voice */
+.lz-brief {
+  list-style: none;
+  margin: 0;
+  padding: 2px 4px 0;
+  display: grid;
+  gap: 12px;
+}
+.lz-brief li {
+  position: relative;
+  padding-left: 18px;
+  font-size: calc(16px * var(--fs));
+  line-height: 1.45;
+  color: var(--ink);
+}
+.lz-brief li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--action);
+}
+/* put in columns (19/11/2026): the items wait in a tray, one of them lit; a touch on a column sends the lit one there,
+   or the finger carries it. The tray gets shorter as the items go and the columns take the height it leaves: a large
+   place to aim at, and the page stays in one screen. */
+.lz-answers:has(> .lz-cols) {
+  flex: 1;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.lz-tray {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.lz-chip {
+  min-height: 44px;
+  padding: 9px 14px;
+  border-radius: 14px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  box-shadow: 0 3px 0 var(--line);
+  font-size: calc(var(--lz-chip, 16px) * var(--fs) * var(--lz-k, 1));
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  touch-action: none; /* the finger carries the chip, the page does not go with it */
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.1s var(--ease), border-color 0.12s var(--ease), background 0.12s var(--ease);
+}
+.lz-chip:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--line);
+}
+.lz-chip.sel {
+  border-color: var(--action);
+  background: var(--brand-soft);
+  box-shadow: 0 3px 0 var(--action-edge);
+  color: var(--brand-ink);
+}
+.lz-tray[hidden] {
+  display: none;
+}
+.lz-chip.lifted {
+  opacity: 0.25;
+}
+.lz-chip.lz-ghost {
+  position: fixed;
+  z-index: 5;
+  margin: 0;
+  pointer-events: none;
+  border-color: var(--action);
+  background: var(--brand-soft);
+  color: var(--brand-ink);
+  box-shadow: 0 10px 22px rgba(20, 33, 61, 0.22);
+  transition: none;
+}
+.lz-cols {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+  gap: 10px;
+  align-items: stretch;
+  /* down to «Verifica», whatever the tray above does: a touch low in a column never falls under it */
+}
+/* three columns are narrow: they take the page's margin too, and their chips a smaller text */
+.lz-cols-3 {
+  gap: 6px;
+  margin: 0 -8px;
+}
+.lz-cols-3 .lz-col {
+  padding: 6px 5px;
+}
+.lz-cols-3 .lz-chip {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.lz-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 132px;
+  padding: 8px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  /* the place the items go into: a soft ground, as for the steps to put in order */
+  background: color-mix(in srgb, var(--line) 45%, transparent);
+  transition: border-color 0.12s var(--ease), background 0.12s var(--ease);
+}
+.lz-col-head {
+  min-height: 44px;
+  padding: 2px 4px;
+  font-family: var(--title);
+  font-size: calc(15px * var(--fs));
+  font-weight: 800;
+  text-align: center;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.lz-col-items {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  flex: 1;
+}
+.lz-col .lz-chip {
+  width: 100%;
+  padding: 8px 8px;
+  font-size: calc(var(--lz-chip-in, 15px) * var(--fs) * var(--lz-k, 1));
+  /* a long word breaks where Italian breaks it («abbona-mento»), not where the column ends */
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  overflow-wrap: break-word;
+}
+/* while an item is lit every column offers itself; the one under the finger that carries one says so */
+.lz-col.ask {
+  border-color: color-mix(in srgb, var(--action) 38%, transparent);
+}
+.lz-col.ask:active {
+  background: var(--brand-soft);
+}
+.lz-col.over {
+  border-color: var(--action);
+  background: var(--brand-soft);
+}
+.lz-chip.right {
+  border-color: var(--ok-line);
+  background: var(--ok-soft);
+  box-shadow: 0 3px 0 var(--ok-line);
+  color: var(--ok);
+}
+.lz-chip.wrong {
+  border-color: var(--no-line);
+  background: var(--no-soft);
+  box-shadow: 0 3px 0 var(--no-line);
+  color: var(--no);
+}
 /* the slider */
 .lz-slider {
   display: grid;
@@ -4315,6 +4510,26 @@ body.in-lesson .toast {
 #lezione[data-fit] .lz-match .lz-cell {
   min-height: 56px;
 }
+#lezione[data-fit] .lz-brief {
+  gap: 8px;
+}
+#lezione[data-fit] .lz-brief li {
+  line-height: 1.36;
+}
+#lezione[data-fit] .lz-tray,
+#lezione[data-fit] .lz-cols {
+  gap: 6px;
+}
+#lezione[data-fit] .lz-col {
+  min-height: 112px;
+  padding: 6px;
+  gap: 6px;
+}
+#lezione[data-fit] .lz-chip {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  line-height: 1.2;
+}
 #lezione[data-fit] .lz-sentence {
   padding: 12px 14px;
   line-height: 1.4;
@@ -4363,6 +4578,16 @@ body.in-lesson .toast {
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-two .lz-opt {
   min-height: 72px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-brief li {
+  font-size: calc(var(--lz-lead) * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-answers {
+  --lz-chip: 15px;
+  --lz-chip-in: 14.8px;
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-col {
+  min-height: 96px;
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-sentence {
   font-size: calc(20px * var(--fs-l) * var(--lz-k, 1));
@@ -4423,6 +4648,28 @@ body.in-lesson .toast {
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-match .lz-cell {
   min-height: 48px;
   font-size: calc(14px * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-answers {
+  --lz-chip: 14.8px;
+  --lz-chip-in: 14.8px; /* × 0.88, the smallest the text gets: 13 px */
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-col {
+  min-height: 84px;
+}
+/* the whole column takes the touch, not its name alone: tight, the name can be lower than a finger */
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-col-head {
+  min-height: 30px;
+  font-size: calc(14px * var(--fs));
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-col {
+  gap: 4px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-col-items {
+  gap: 4px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-col .lz-chip {
+  padding-top: 6px;
+  padding-bottom: 6px;
 }
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-sentence {
   font-size: calc(18px * var(--fs-l) * var(--lz-k, 1));

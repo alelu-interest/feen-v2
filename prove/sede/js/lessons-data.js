@@ -344,37 +344,53 @@ export const LESSONS = {
     "code": "L1",
     "floor": 1,
     "title": "Entrate, uscite e saldo: dove finiscono i tuoi soldi",
+    "intro": {
+      "say": "Il saldo del mese è entrate meno uscite: se è positivo si accumula patrimonio, se è negativo si consuma ciò che si ha o ci si fa prestare soldi.",
+      "lines": [
+        "Le entrate sono i soldi che ricevi: paghetta, lavoretti (ripetizioni, babysitting, aiuto in un’attività di famiglia), regali, rimborsi.",
+        "Le uscite si dividono in fisse (stesso importo ogni mese: abbonamento ai mezzi, ricarica del telefono, un abbonamento streaming) e variabili (cambiano: pizza con gli amici, vestiti, snack, giochi).",
+        "Il saldo mensile è la differenza."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "gruppi",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Entrate, uscite e saldo",
-        "mentor": "Metti in ordine di tipo: abbonamento ai mezzi, pizza con amici, regalo di compleanno ricevuto, ricarica del telefono con importo costante, paghetta.",
-        "options": [
+        "mentor": "Metti in ordine di tipo.",
+        "groups": [
+          "Fisse",
+          "Variabili",
+          "Entrate"
+        ],
+        "items": [
           {
-            "text": "Fisse: mezzi e pizza · Variabile: ricarica · Entrate: regalo e paghetta",
-            "right": false,
-            "why": "Una spesa è fissa se l’importo è uguale ogni mese."
+            "text": "Abbonamento ai mezzi",
+            "group": 0
           },
           {
-            "text": "Fisse: mezzi · Variabili: pizza e ricarica · Entrate: regalo e paghetta",
-            "right": false,
-            "why": "Una spesa è fissa se l’importo è uguale ogni mese."
+            "text": "Pizza con amici",
+            "group": 1
           },
           {
-            "text": "Fisse: mezzi, ricarica e paghetta · Variabili: pizza e regalo",
-            "right": false,
-            "why": "Una spesa è fissa se l’importo è uguale ogni mese."
+            "text": "Regalo di compleanno ricevuto",
+            "group": 2
           },
           {
-            "text": "Fisse: mezzi e ricarica · Variabile: pizza · Entrate: regalo e paghetta",
-            "right": true
+            "text": "Ricarica del telefono con importo costante",
+            "group": 0
+          },
+          {
+            "text": "Paghetta",
+            "group": 2
           }
         ],
+        "why": "Una spesa è fissa se l’importo è uguale ogni mese.",
         "theory": "Il saldo del mese è entrate meno uscite: se è positivo si accumula patrimonio, se è negativo si consuma ciò che si ha o ci si fa prestare soldi.",
-        "explain": "Le uscite si dividono in fisse (stesso importo ogni mese: abbonamento ai mezzi, ricarica del telefono, un abbonamento streaming) e variabili (cambiano: pizza con gli amici, vestiti, snack, giochi)."
+        "explain": "Le uscite si dividono in fisse (stesso importo ogni mese: abbonamento ai mezzi, ricarica del telefono, un abbonamento streaming) e variabili (cambiano: pizza con gli amici, vestiti, snack, giochi).",
+        "help": "Tocca la colonna dove va la voce accesa. Puoi anche trascinarla."
       },
       {
         "n": 2,
@@ -638,35 +654,44 @@ export const LESSONS = {
     "code": "L2",
     "floor": 1,
     "title": "Bisogni, desideri e costo-opportunità",
+    "intro": {
+      "say": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci.",
+      "lines": [
+        "Un bisogno è ciò senza cui non funzioni (cibo, trasporti per andare a scuola, materiale per studiare, salute).",
+        "Un desiderio è ciò che migliora la vita ma si può rimandare (l’ultimo telefono, le scarpe di marca, una serata fuori, una skin nel gioco)."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "gruppi",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Bisogni, desideri e costo-opportunità",
-        "mentor": "Metti in colonna bisogno o desiderio, sapendo che la scuola è in un altro paese: abbonamento ai mezzi, nuova console, pranzo, cena in pizzeria con amici.",
-        "options": [
+        "mentor": "Metti in colonna bisogno o desiderio, sapendo che la scuola è in un altro paese.",
+        "groups": [
+          "Bisogni",
+          "Desideri"
+        ],
+        "items": [
           {
-            "text": "Bisogni: mezzi e pranzo · Desideri: console e pizzeria",
-            "right": true
+            "text": "Abbonamento ai mezzi",
+            "group": 0
           },
           {
-            "text": "Bisogni: mezzi e console · Desideri: pranzo e pizzeria",
-            "right": false,
-            "why": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci."
+            "text": "Nuova console",
+            "group": 1
           },
           {
-            "text": "Bisogni: tutti e quattro",
-            "right": false,
-            "why": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci."
+            "text": "Pranzo",
+            "group": 0
           },
           {
-            "text": "Desideri: tutti e quattro",
-            "right": false,
-            "why": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci."
+            "text": "Cena in pizzeria con amici",
+            "group": 1
           }
         ],
+        "why": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci.",
         "theory": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci.",
         "explain": "Per questo la domanda utile non è «bisogno o desiderio?», ma «quanta parte di questa spesa è bisogno e quanta desiderio?»."
       },
@@ -932,6 +957,13 @@ export const LESSONS = {
     "code": "L3",
     "floor": 1,
     "title": "Abbonamenti e spese ricorrenti: il costo che non senti",
+    "intro": {
+      "say": "Una spesa piccola che si ripete ogni mese costa dodici volte tanto in un anno, e proprio perché si paga da sola smetti di vederla.",
+      "lines": [
+        "Una spesa ricorrente si addebita da sola a intervalli regolari: streaming, musica, abbonamenti ai giochi, cloud, app a pagamento.",
+        "Il meccanismo è pensato per essere comodo: dai l’autorizzazione una volta e il pagamento continua finché non lo disdici."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -1226,6 +1258,14 @@ export const LESSONS = {
     "code": "L4",
     "floor": 1,
     "title": "Il budget 50/30/20 e come adattarlo",
+    "intro": {
+      "say": "Un budget non è un divieto: è decidere prima dove va ogni euro, così che non lo decida il caso a fine mese.",
+      "lines": [
+        "Fare un budget significa dare una destinazione a ogni euro in entrata prima di spenderlo.",
+        "La regola 50/30/20 è un punto di partenza: 50% per i bisogni (trasporti, pranzi, telefono, materiale scolastico), 30% per i desideri, 20% per risparmio e debiti.",
+        "Su 200 € al mese tra paghetta e lavoretti: 100 € bisogni, 60 € desideri, 40 € risparmio."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -1520,6 +1560,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 1,
     "title": "Tracciare le spese senza mollare dopo una settimana",
+    "intro": {
+      "say": "Il budget è un’ipotesi, le spese tracciate sono la prova: il metodo migliore è quello che continui a usare.",
+      "lines": [
+        "Tracciare le spese vuol dire registrare ogni movimento e assegnarlo a una categoria (trasporti, cibo, uscite, abbonamenti, giochi, varie).",
+        "Si può fare in tre modi: a mano (quaderno o foglio di calcolo), con l’app della prepagata (che spesso categorizza da sola, con errori da correggere), con un’app dedicata."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -1814,6 +1861,13 @@ export const LESSONS = {
     "code": "L6",
     "floor": 1,
     "title": "Spese fisse sotto controllo: telefono e spesa",
+    "intro": {
+      "say": "Per confrontare due offerte non basta il prezzo in evidenza: servono il costo totale su un anno e il prezzo per unità.",
+      "lines": [
+        "Il telefono è la prima spesa fissa che molti ragazzi scelgono davvero: una ricaricabile ha un prezzo mensile, a volte un costo di attivazione, e spesso una promozione che dura pochi mesi.",
+        "Due offerte con lo stesso prezzo in evidenza possono costare diversamente se una sale dopo 6 mesi o ha costi nascosti."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -2108,35 +2162,45 @@ export const LESSONS = {
     "code": "L1",
     "floor": 2,
     "title": "Il conto, l’IBAN e il bonifico",
+    "intro": {
+      "say": "Un conto è un registro di entrate e uscite; l’IBAN è l’indirizzo per ricevere soldi, non la chiave per prenderli.",
+      "lines": [
+        "Un conto tiene traccia dei soldi: ogni volta che ne entrano o ne escono viene registrato un movimento.",
+        "Un accredito aumenta il saldo (la paghetta, un bonifico dei nonni).",
+        "Un addebito lo riduce (un pagamento con carta, un abbonamento)."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "gruppi",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Il conto, l’IBAN e il bonifico",
-        "mentor": "Accredito o addebito: paghetta, caffè con la carta, bonifico della nonna, abbonamento musica.",
-        "options": [
+        "mentor": "Accredito o addebito?",
+        "groups": [
+          "Accrediti",
+          "Addebiti"
+        ],
+        "items": [
           {
-            "text": "Accrediti: caffè e abbonamento · Addebiti: paghetta e nonna",
-            "right": false,
-            "why": "Accrediti = paghetta e nonna; addebiti = caffè e abbonamento."
+            "text": "Paghetta",
+            "group": 0
           },
           {
-            "text": "Accrediti: paghetta e caffè · Addebiti: nonna e abbonamento",
-            "right": false,
-            "why": "Accrediti = paghetta e nonna; addebiti = caffè e abbonamento."
+            "text": "Caffè con la carta",
+            "group": 1
           },
           {
-            "text": "Accrediti: tutti e quattro",
-            "right": false,
-            "why": "Accrediti = paghetta e nonna; addebiti = caffè e abbonamento."
+            "text": "Bonifico della nonna",
+            "group": 0
           },
           {
-            "text": "Accrediti: paghetta e bonifico della nonna · Addebiti: caffè e abbonamento",
-            "right": true
+            "text": "Abbonamento musica",
+            "group": 1
           }
         ],
+        "why": "Accrediti = paghetta e nonna; addebiti = caffè e abbonamento.",
         "theory": "Un conto è un registro di entrate e uscite; l’IBAN è l’indirizzo per ricevere soldi, non la chiave per prenderli.",
         "explain": "Un accredito aumenta il saldo (la paghetta, un bonifico dei nonni). Un addebito lo riduce (un pagamento con carta, un abbonamento)."
       },
@@ -2402,6 +2466,15 @@ export const LESSONS = {
     "code": "L2",
     "floor": 2,
     "title": "I tuoi soldi sono al sicuro? La garanzia sui depositi",
+    "intro": {
+      "say": "Se una banca fallisce, i depositi sono rimborsati fino a 100.000 € per persona e per banca: non tutto è un deposito e non tutto è coperto.",
+      "lines": [
+        "Una banca usa i soldi dei clienti per fare prestiti.",
+        "Se i prestiti non vengono restituiti, la banca può fallire.",
+        "Per questo esiste un fondo di garanzia dei depositi: se la banca entra in crisi, il fondo rimborsa i depositanti entro un limite.",
+        "Il limite è di 100.000 € per depositante e per banca."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -2696,35 +2769,41 @@ export const LESSONS = {
     "code": "L3",
     "floor": 2,
     "title": "Carte: debito, prepagata e credito",
+    "intro": {
+      "say": "La carta è un modo per autorizzare un pagamento: cambia da dove escono i soldi e quanto puoi perdere.",
+      "lines": [
+        "La carta di debito è collegata a un conto e paga prelevando direttamente da lì: se un truffatore ruba i dati, il rischio arriva fino al saldo del conto e ai limiti di spesa della carta.",
+        "La carta prepagata non è collegata a un conto: spende solo quello che ci hai caricato (il plafond), quindi la perdita massima è il saldo che c’è sopra."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "gruppi",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Carte",
-        "mentor": "Metti nella colonna giusta: paga prelevando dal conto, spende solo il saldo caricato, paga dopo.",
-        "options": [
+        "mentor": "Metti nella colonna giusta.",
+        "groups": [
+          "Debito",
+          "Prepagata",
+          "Credito"
+        ],
+        "items": [
           {
-            "text": "Debito: paga dopo · Prepagata: preleva dal conto · Credito: saldo caricato",
-            "right": false,
-            "why": "Debito, prepagata, credito."
+            "text": "Paga prelevando dal conto",
+            "group": 0
           },
           {
-            "text": "Debito: paga prelevando dal conto · Prepagata: spende solo il saldo caricato · Credito: paga dopo",
-            "right": true
+            "text": "Spende solo il saldo caricato",
+            "group": 1
           },
           {
-            "text": "Debito: saldo caricato · Prepagata: paga dopo · Credito: preleva dal conto",
-            "right": false,
-            "why": "Debito, prepagata, credito."
-          },
-          {
-            "text": "Sono tutte uguali",
-            "right": false,
-            "why": "Debito, prepagata, credito."
+            "text": "Paga dopo",
+            "group": 2
           }
         ],
+        "why": "Debito, prepagata, credito.",
         "theory": "La carta è un modo per autorizzare un pagamento: cambia da dove escono i soldi e quanto puoi perdere.",
         "explain": "La carta prepagata non è collegata a un conto: spende solo quello che ci hai caricato (il plafond), quindi la perdita massima è il saldo che c’è sopra."
       },
@@ -2990,6 +3069,14 @@ export const LESSONS = {
     "code": "L4",
     "floor": 2,
     "title": "Pagare dopo: rate e «paga in 3 volte»",
+    "intro": {
+      "say": "Pagare a rate non cancella il prezzo: sposta il costo nel futuro e a volte lo aumenta.",
+      "lines": [
+        "Con un pagamento a rate comperi subito e paghi in più scadenze.",
+        "È un debito: chi vende, o una società finanziaria, ti anticipa i soldi e tu li restituisci.",
+        "Ci sono formule diverse: rate a tasso zero (non paghi interessi, ma possono esserci costi di gestione), paga in 3 volte (spesso senza costi se paghi in tempo) e finanziamenti con interessi."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -3284,6 +3371,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 2,
     "title": "Phishing, smishing e vishing: il messaggio che ti mette fretta",
+    "intro": {
+      "say": "Chi ti truffa non ha bisogno di scoprire la tua password: gli basta convincerti a dargliela, di solito mettendoti fretta.",
+      "lines": [
+        "Il phishing è un messaggio (email, chat, social) che finge di arrivare da qualcuno di fidato per farti cliccare un link o dare dei dati.",
+        "Lo smishing arriva per SMS, il vishing per telefonata."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -3578,37 +3672,30 @@ export const LESSONS = {
     "code": "L6",
     "floor": 2,
     "title": "Quando il truffato sei tu, o ti usano come strumento",
+    "intro": {
+      "say": "Dopo una frode conta la velocità: prima si blocca, poi si avvisa la banca, poi si denuncia; e chi presta il proprio conto per «guadagni facili» rischia lui.",
+      "lines": [
+        "Se ti accorgi di un pagamento che non hai fatto: blocca la carta dall’app o dal numero verde; avvisa la banca e disconosci l’operazione, conservando la prova della comunicazione; conserva le prove (messaggi, schermate) e presenta denuncia alla Polizia Postale o ad altre forze dell’ordine; cambia le password e controlla gli altri conti."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "ordina",
         "label": "Capire (ordina)",
         "moment": "capire",
         "idea": "Quando il truffato sei tu, o ti usano come strumento",
-        "mentor": "Ordina i passi: avvisa la banca, blocca la carta, denuncia, cambia le password.",
-        "options": [
-          {
-            "text": "Blocca la carta, avvisa la banca, denuncia, cambia le password",
-            "right": true
-          },
-          {
-            "text": "Denuncia, blocca la carta, avvisa la banca, cambia le password",
-            "right": false,
-            "why": "Prima si ferma il danno, poi si avvisa la banca, poi si denuncia; password per ultime."
-          },
-          {
-            "text": "Cambia le password, denuncia, avvisa la banca, blocca la carta",
-            "right": false,
-            "why": "Prima si ferma il danno, poi si avvisa la banca, poi si denuncia; password per ultime."
-          },
-          {
-            "text": "Avvisa la banca, cambia le password, blocca la carta, denuncia",
-            "right": false,
-            "why": "Prima si ferma il danno, poi si avvisa la banca, poi si denuncia; password per ultime."
-          }
+        "mentor": "Ordina i passi.",
+        "order": [
+          "Blocca la carta",
+          "Avvisa la banca",
+          "Denuncia",
+          "Cambia le password"
         ],
+        "why": "Prima si ferma il danno, poi si avvisa la banca, poi si denuncia; password per ultime.",
         "theory": "Dopo una frode conta la velocità: prima si blocca, poi si avvisa la banca, poi si denuncia; e chi presta il proprio conto per «guadagni facili» rischia lui.",
-        "explain": "Se ti accorgi di un pagamento che non hai fatto: blocca la carta dall’app o dal numero verde; avvisa la banca e disconosci l’operazione, conservando la prova della comunicazione; conserva le prove (messaggi, schermate) e presenta denuncia alla Polizia Postale o ad altre forze dell’ordine; cambia le password e controlla gli altri conti."
+        "explain": "Se ti accorgi di un pagamento che non hai fatto: blocca la carta dall’app o dal numero verde; avvisa la banca e disconosci l’operazione, conservando la prova della comunicazione; conserva le prove (messaggi, schermate) e presenta denuncia alla Polizia Postale o ad altre forze dell’ordine; cambia le password e controlla gli altri conti.",
+        "help": "Tocca le voci nell’ordine giusto."
       },
       {
         "n": 2,
@@ -3872,37 +3959,31 @@ export const LESSONS = {
     "code": "L1",
     "floor": 3,
     "title": "Probabilità e valore atteso: la matematica del gioco",
+    "intro": {
+      "say": "Un gioco in cui paghi per avere una probabilità di vincere ha un valore atteso: quanto ti restituisce in media ogni volta che paghi.",
+      "lines": [
+        "La probabilità dice quante volte, su tante prove, ci si aspetta un certo risultato.",
+        "Si scrive come frazione o percentuale: con un dado a sei facce la probabilità di ottenere un 6 è 1 su 6, cioè circa 16,7%.",
+        "Con una moneta, testa ha probabilità 50%.",
+        "Gli eventi come il lancio di un dado o di una moneta sono indipendenti: il lancio successivo non dipende da quelli passati."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "ordina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Probabilità e valore atteso",
-        "mentor": "Metti in ordine, dal più al meno probabile: a) 6 con un dado; b) testa con una moneta; c) due teste di fila con una moneta.",
-        "options": [
-          {
-            "text": "b) testa (50%), c) due teste di fila (25%), a) un 6 (16,7%)",
-            "right": true
-          },
-          {
-            "text": "a), b), c)",
-            "right": false,
-            "why": "Due teste di fila = ½ × ½ = 25%, più probabile di un 6 con un dado (1/6 ≈ 16,7%)."
-          },
-          {
-            "text": "c), b), a)",
-            "right": false,
-            "why": "Due teste di fila = ½ × ½ = 25%, più probabile di un 6 con un dado (1/6 ≈ 16,7%)."
-          },
-          {
-            "text": "b), a), c)",
-            "right": false,
-            "why": "Due teste di fila = ½ × ½ = 25%, più probabile di un 6 con un dado (1/6 ≈ 16,7%)."
-          }
+        "mentor": "Metti in ordine, dal più al meno probabile.",
+        "order": [
+          "Testa con una moneta",
+          "Due teste di fila con una moneta",
+          "6 con un dado"
         ],
+        "why": "Due teste di fila = ½ × ½ = 25%, più probabile di un 6 con un dado (1/6 ≈ 16,7%).",
         "theory": "Un gioco in cui paghi per avere una probabilità di vincere ha un valore atteso: quanto ti restituisce in media ogni volta che paghi. Se ti restituisce meno di quanto paghi, nel lungo periodo perdi, anche se ogni singola partita può andare bene.",
-        "explain": "Con una moneta, testa ha probabilità 50%. Gli eventi come il lancio di un dado o di una moneta sono indipendenti: il lancio successivo non dipende da quelli passati."
+        "explain": "Se esce testa cinque volte di fila, al sesto lancio la probabilità di testa è ancora 50%. Il valore atteso si calcola moltiplicando ogni possibile risultato per la sua probabilità e sommando."
       },
       {
         "n": 2,
@@ -3922,7 +4003,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Se esce testa cinque volte di fila, al sesto lancio la probabilità di testa è ancora 50%. Il valore atteso si calcola moltiplicando ogni possibile risultato per la sua probabilità e sommando."
+        "explain": "Con una moneta, testa ha probabilità 50%. Gli eventi come il lancio di un dado o di una moneta sono indipendenti: il lancio successivo non dipende da quelli passati."
       },
       {
         "n": 3,
@@ -4166,37 +4247,45 @@ export const LESSONS = {
     "code": "L2",
     "floor": 3,
     "title": "Trappole mentali: perché continuiamo a giocare",
+    "intro": {
+      "say": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi. Le trappole mentali spingono a giocare anche quando i numeri dicono il contrario, e i giochi sono costruiti per farle scattare.",
+      "lines": [
+        "La fallacia del giocatore è credere che un evento casuale «debba» compensare quelli passati: dopo cinque rossi, «ora tocca al nero»."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Trappole mentali",
-        "mentor": "Collega ogni frase alla trappola: a) «Ha dato rosso sei volte, ora esce nero»; b) «Due simboli su tre: ci sono quasi»; c) «Ho già speso 30 €, non posso fermarmi ora»; d) «Ho perso 20 €, ne gioco altri 20 per rifarmi».",
-        "options": [
+        "mentor": "Collega ogni frase alla trappola.",
+        "pairs": [
           {
-            "text": "a) fallacia del giocatore; b) quasi-vincita; c) costo affondato; d) rincorsa delle perdite",
-            "right": true
-          },
-          {
-            "text": "a) quasi-vincita; b) fallacia del giocatore; c) rincorsa delle perdite; d) costo affondato",
-            "right": false,
+            "left": "«Ha dato rosso sei volte, ora esce nero»",
+            "right": "Fallacia del giocatore",
             "why": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi."
           },
           {
-            "text": "a) costo affondato; b) rincorsa delle perdite; c) quasi-vincita; d) fallacia del giocatore",
-            "right": false,
+            "left": "«Due simboli su tre: ci sono quasi»",
+            "right": "Quasi-vincita",
             "why": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi."
           },
           {
-            "text": "Sono tutte la stessa trappola",
-            "right": false,
+            "left": "«Ho già speso 30 €, non posso fermarmi ora»",
+            "right": "Costo affondato",
+            "why": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi."
+          },
+          {
+            "left": "«Ho perso 20 €, ne gioco altri 20 per rifarmi»",
+            "right": "Rincorsa delle perdite",
             "why": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi."
           }
         ],
         "theory": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi. Le trappole mentali spingono a giocare anche quando i numeri dicono il contrario, e i giochi sono costruiti per farle scattare.",
-        "explain": "Il costo affondato è il denaro già speso e non recuperabile: «ho già messo 30 €, non posso smettere ora». La decisione corretta si basa solo su quello che succede da adesso in poi: quanto costa il prossimo tentativo e cosa ci si può aspettare."
+        "explain": "La rincorsa delle perdite è giocare di più per «rifarsi». È il costo affondato in forma di comportamento: chi ha perso 20 € ne rigioca 20 e, se il gioco restituisce meno di quanto costa, in media perde altro denaro.",
+        "help": "Tocca una voce a sinistra, poi la sua a destra."
       },
       {
         "n": 2,
@@ -4304,7 +4393,7 @@ export const LESSONS = {
             "why": "1 ÷ 0,02 = 50 pacchetti × 2 € = 100 €; in 50 pacchetti la trova solo circa il 63,6%."
           }
         ],
-        "explain": "È il costo affondato in forma di comportamento: chi ha perso 20 € ne rigioca 20 e, se il gioco restituisce meno di quanto costa, in media perde altro denaro.",
+        "explain": "Il costo affondato è il denaro già speso e non recuperabile: «ho già messo 30 €, non posso smettere ora». La decisione corretta si basa solo su quello che succede da adesso in poi: quanto costa il prossimo tentativo e cosa ci si può aspettare.",
         "variants": [
           {
             "type": "scelta",
@@ -4362,7 +4451,7 @@ export const LESSONS = {
             "why": "La seconda puntata restituisce in media 15 €: perdi altri 5 €, totale 20 + 5 = 25 €."
           }
         ],
-        "explain": "La rincorsa delle perdite è giocare di più per «rifarsi».",
+        "explain": "Per questo accettiamo un rischio maggiore pur di non «chiudere in perdita». Pensare che basti «conoscere le trappole» per non cadere.",
         "variants": [
           {
             "type": "scelta",
@@ -4460,35 +4549,28 @@ export const LESSONS = {
     "code": "L3",
     "floor": 3,
     "title": "Gratta e vinci, slot, scommesse e pacchetti a sorpresa: come funzionano",
+    "intro": {
+      "say": "Ogni gioco, legale o no, ha una percentuale di ritorno (payout) decisa a monte: la parte che non torna ai giocatori finisce a chi lo organizza, allo Stato e ai punti vendita.",
+      "lines": [
+        "In Italia il gioco con vincite in denaro è vietato ai minorenni.",
+        "Gli adulti possono giocare solo a giochi autorizzati dall’Agenzia delle Dogane e dei Monopoli (ADM).",
+        "Per un teenager il tema non è «come si gioca» ma «come si riconosce un meccanismo che costa più di quanto restituisce»: lo si vede in tabaccheria, nei bar, nei siti e, sotto altre forme, nei videogiochi."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "ordina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Gratta e vinci, slot, scommesse e pacchetti a sorpresa",
-        "mentor": "Metti in ordine dal ritorno medio più basso al più alto: scommessa con ritorno 94,6% (esempio); VLT con payout minimo 83%; AWP con payout minimo 65%.",
-        "options": [
-          {
-            "text": "scommessa (94,6%), VLT (83%), AWP (65%)",
-            "right": false,
-            "why": "Un ritorno più alto significa perdita media più bassa, non assenza di perdita."
-          },
-          {
-            "text": "VLT (83%), AWP (65%), scommessa (94,6%)",
-            "right": false,
-            "why": "Un ritorno più alto significa perdita media più bassa, non assenza di perdita."
-          },
-          {
-            "text": "AWP (65%), VLT (83%), scommessa (94,6%)",
-            "right": true
-          },
-          {
-            "text": "Hanno tutte lo stesso ritorno",
-            "right": false,
-            "why": "Un ritorno più alto significa perdita media più bassa, non assenza di perdita."
-          }
+        "mentor": "Metti in ordine dal ritorno medio più basso al più alto.",
+        "order": [
+          "AWP con payout minimo 65%",
+          "VLT con payout minimo 83%",
+          "Scommessa con ritorno 94,6% (esempio)"
         ],
+        "why": "Un ritorno più alto significa perdita media più bassa, non assenza di perdita.",
         "theory": "Ogni gioco, legale o no, ha una percentuale di ritorno (payout) decisa a monte: la parte che non torna ai giocatori finisce a chi lo organizza, allo Stato e ai punti vendita. Conoscere il payout permette di calcolare in anticipo la perdita media.",
         "explain": "Una puntata obbligatoria di 2.000 € con ritorno medio 94,6% costa in media 108 € di perdita, più del bonus di 50 €."
       },
@@ -4754,6 +4836,12 @@ export const LESSONS = {
     "code": "L4",
     "floor": 3,
     "title": "Quando il gioco diventa un problema",
+    "intro": {
+      "say": "Il problema non sta nell’importo in sé ma nella perdita di controllo: quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne.",
+      "lines": [
+        "Giocare con soldi (o spendere in giochi con pacchetti a sorpresa) può diventare un problema anche senza perdite enormi."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -5048,32 +5136,35 @@ export const LESSONS = {
     "code": "L5",
     "floor": 3,
     "title": "Trading e leva: investire o scommettere?",
+    "intro": {
+      "say": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato.",
+      "lines": [
+        "La leva finanziaria permette di controllare una posizione più grande del capitale versato.",
+        "Con leva 10:1 un capitale di 100 € controlla 1.000 €: se il prezzo sale del 4%, il guadagno è 40 € (+40% sul capitale); se scende del 10%, la perdita è 100 €, cioè tutto il capitale."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Trading e leva",
-        "mentor": "Collega: a) compra quote di aziende e le tiene per anni; b) apre e chiude CFD nello stesso giorno con leva; c) paga 2 € per tirare un dado e vincere 9 €.",
-        "options": [
+        "mentor": "Collega.",
+        "pairs": [
           {
-            "text": "a) trader con leva; b) investitore; c) scommessa/gioco",
-            "right": false,
+            "left": "Compra quote di aziende e le tiene per anni",
+            "right": "Investitore",
             "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           },
           {
-            "text": "a) scommessa; b) investitore; c) trader con leva",
-            "right": false,
+            "left": "Apre e chiude CFD nello stesso giorno con leva",
+            "right": "Trader con leva",
             "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           },
           {
-            "text": "a) investitore; b) trader con leva; c) scommessa/gioco",
-            "right": true
-          },
-          {
-            "text": "Sono tutti investitori",
-            "right": false,
+            "left": "Paga 2 € per tirare un dado e vincere 9 €",
+            "right": "Scommessa/gioco",
             "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           }
         ],
@@ -5342,6 +5433,14 @@ export const LESSONS = {
     "code": "L6",
     "floor": 3,
     "title": "Proteggersi: limiti, regole e perdita massima",
+    "intro": {
+      "say": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido. Il limite non si ritocca per rifarsi.",
+      "lines": [
+        "La perdita massima accettabile è la cifra che puoi perdere senza che cambi nulla nella tua vita.",
+        "Per un teenager si lega al budget visto nel Piano 1: la parte di «desideri» della paghetta.",
+        "Con una paghetta di 40 € al mese e una quota desideri del 30%, i desideri sono 12 €; per giochi e acquisti in-game si può decidere di usarne al massimo la metà, cioè 6 €."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -5636,37 +5735,47 @@ export const LESSONS = {
     "code": "L1",
     "floor": 4,
     "title": "Come ti convince la pubblicità",
+    "intro": {
+      "say": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta. Conoscerli non è diffidare di tutto, è rimettere il tempo di decidere nelle tue mani.",
+      "lines": [
+        "Le tecniche più comuni sono poche e si ripetono.",
+        "La scarsità dice che c’è poco prodotto («ultimi 3 pezzi»).",
+        "L’urgenza mette un limite di tempo («solo per 15 minuti», un conto alla rovescia).",
+        "La prova sociale dice che molti altri lo fanno («2.000 persone lo stanno guardando»)."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Come ti convince la pubblicità",
-        "mentor": "Collega ogni frase alla tecnica: a) «Ultimi 3 pezzi»; b) «Offerta valida ancora 10 minuti»; c) «5.000 persone l’hanno già preso»; d) «Da 120 € a 79 €».",
-        "options": [
+        "mentor": "Collega ogni frase alla tecnica.",
+        "pairs": [
           {
-            "text": "a) scarsità; b) urgenza; c) prova sociale; d) ancoraggio",
-            "right": true
-          },
-          {
-            "text": "a) urgenza; b) scarsità; c) ancoraggio; d) prova sociale",
-            "right": false,
+            "left": "«Ultimi 3 pezzi»",
+            "right": "Scarsità",
             "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           },
           {
-            "text": "a) prova sociale; b) ancoraggio; c) scarsità; d) urgenza",
-            "right": false,
+            "left": "«Offerta valida ancora 10 minuti»",
+            "right": "Urgenza",
             "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           },
           {
-            "text": "a) ancoraggio; b) prova sociale; c) urgenza; d) scarsità",
-            "right": false,
+            "left": "«5.000 persone l’hanno già preso»",
+            "right": "Prova sociale",
+            "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
+          },
+          {
+            "left": "«Da 120 € a 79 €»",
+            "right": "Ancoraggio",
             "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           }
         ],
         "theory": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta. Conoscerli non è diffidare di tutto, è rimettere il tempo di decidere nelle tue mani.",
-        "explain": "La scarsità dice che c’è poco prodotto («ultimi 3 pezzi»). L’urgenza mette un limite di tempo («solo per 15 minuti», un conto alla rovescia)."
+        "explain": "Il problema nasce quando scarsità, urgenza o sconto sono inventati o non verificabili. Un modo semplice per difendersi è fare una pausa: aspettare 24 ore, confrontare il prezzo, chiedersi se si voleva davvero quella cosa prima di vedere l’annuncio."
       },
       {
         "n": 2,
@@ -5716,7 +5825,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Nessuna di queste tecniche è di per sé illegale o disonesta: un’offerta limitata può essere vera. Il problema nasce quando scarsità, urgenza o sconto sono inventati o non verificabili.",
+        "explain": "Nessuna di queste tecniche è di per sé illegale o disonesta: un’offerta limitata può essere vera.",
         "variants": [
           {
             "type": "scelta",
@@ -5774,7 +5883,7 @@ export const LESSONS = {
             "why": "(85 − 79) ÷ 85 = 6 ÷ 85 ≈ 7,1%."
           }
         ],
-        "explain": "Questi meccanismi funzionano proprio perché non li notiamo; l’altro errore è pensare che ogni offerta sia una truffa e non confrontare mai.",
+        "explain": "La scarsità dice che c’è poco prodotto («ultimi 3 pezzi»). L’urgenza mette un limite di tempo («solo per 15 minuti», un conto alla rovescia).",
         "variants": [
           {
             "type": "scelta",
@@ -5890,7 +5999,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Un modo semplice per difendersi è fare una pausa: aspettare 24 ore, confrontare il prezzo, chiedersi se si voleva davvero quella cosa prima di vedere l’annuncio."
+        "explain": "Le tecniche più comuni sono poche e si ripetono."
       },
       {
         "n": 7,
@@ -5920,7 +6029,7 @@ export const LESSONS = {
             "why": "79 ÷ 8 ≈ 9,9 ore di lavoro."
           }
         ],
-        "explain": "Le tecniche più comuni sono poche e si ripetono."
+        "explain": "Si aggiungono la pubblicità mirata, che usa i tuoi dati (cosa guardi, dove sei, cosa cerchi) per mostrarti l’annuncio nel momento giusto, e la pubblicità occulta, cioè un contenuto pagato presentato come opinione spontanea."
       }
     ],
     "source": "C04-L01"
@@ -5930,6 +6039,15 @@ export const LESSONS = {
     "code": "L2",
     "floor": 4,
     "title": "Creator e finfluencer: chi ti sta vendendo cosa?",
+    "intro": {
+      "say": "Chi parla di soldi online spesso guadagna da ciò che racconta: link, codici, iscrizioni, sponsor. Questo non lo rende per forza disonesto, ma devi sapere da dove arrivano i suoi guadagni prima di fidarti del suo consiglio.",
+      "lines": [
+        "Un finfluencer è un creator che parla di finanza e investimenti.",
+        "Il suo guadagno può venire da sponsorizzazioni, da link affiliati (riceve una somma se ti iscrivi o apri un conto), da corsi o gruppi a pagamento.",
+        "Questo è un conflitto d’interesse: il suo vantaggio può non coincidere con il tuo.",
+        "Tre meccanismi aiutano a vendere."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -6224,32 +6342,36 @@ export const LESSONS = {
     "code": "L3",
     "floor": 4,
     "title": "Truffe: pump and dump, schemi Ponzi e rendimenti garantiti",
+    "intro": {
+      "say": "Rendimento e rischio vanno insieme: se qualcuno promette molto e garantito, qualcosa non torna. Le truffe finanziarie hanno poche forme ricorrenti, e conoscerle è la difesa più efficace.",
+      "lines": [
+        "Nel pump and dump (letteralmente «gonfia e scarica») un gruppo spinge via chat o social l’acquisto di un titolo di una società piccola e poco scambiata.",
+        "Chi organizza ha comprato prima, a poco; quando il prezzo sale per effetto degli acquisti di chi si fida, vende.",
+        "Il prezzo ricade e chi è entrato tardi perde."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Truffe",
-        "mentor": "Collega: a) paga i vecchi investitori con i soldi dei nuovi; b) un gruppo spinge un titolo poco scambiato per rivenderlo a prezzo alto; c) «5% a settimana garantito».",
-        "options": [
+        "mentor": "Collega.",
+        "pairs": [
           {
-            "text": "a) pump and dump; b) schema Ponzi; c) rendimento garantito alto",
-            "right": false,
+            "left": "Paga i vecchi investitori con i soldi dei nuovi",
+            "right": "Schema Ponzi",
             "why": "A) schema Ponzi; b) pump and dump; c) rendimento garantito alto (segnale di truffa)."
           },
           {
-            "text": "a) schema Ponzi; b) pump and dump; c) rendimento garantito alto",
-            "right": true
-          },
-          {
-            "text": "a) rendimento garantito alto; b) schema Ponzi; c) pump and dump",
-            "right": false,
+            "left": "Un gruppo spinge un titolo poco scambiato per rivenderlo a prezzo alto",
+            "right": "Pump and dump",
             "why": "A) schema Ponzi; b) pump and dump; c) rendimento garantito alto (segnale di truffa)."
           },
           {
-            "text": "a) pump and dump; b) rendimento garantito; c) schema Ponzi",
-            "right": false,
+            "left": "«5% a settimana garantito»",
+            "right": "Rendimento garantito alto",
             "why": "A) schema Ponzi; b) pump and dump; c) rendimento garantito alto (segnale di truffa)."
           }
         ],
@@ -6518,37 +6640,42 @@ export const LESSONS = {
     "code": "L4",
     "floor": 4,
     "title": "Promesse commerciali e prodotti complessi",
+    "intro": {
+      "say": "Una promessa commerciale è una frase scelta per vendere: dice poco di costi e rischi. Per decidere servono i numeri che la frase non riporta.",
+      "lines": [
+        "Le frasi più usate hanno un significato diverso da quello che sembra.",
+        "«Fino al 6%» indica un massimo, non quanto otterrai.",
+        "«Capitale garantito a scadenza» dipende dalla solidità di chi lo garantisce e dall’aspettare la scadenza.",
+        "«Zero commissioni» non vuol dire zero costi: i costi possono essere nascosti nel prezzo o in altre voci."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "Promesse commerciali e prodotti complessi",
-        "mentor": "Collega: a) «rendimento fino al 6%»; b) «capitale garantito a scadenza»; c) «zero commissioni».",
-        "options": [
+        "mentor": "Collega.",
+        "pairs": [
           {
-            "text": "a) rendimento certo; b) garanzia assoluta; c) nessun costo",
-            "right": false,
+            "left": "«rendimento fino al 6%»",
+            "right": "Massimo possibile, non garantito",
             "why": "A) massimo possibile, non garantito; b) garanzia che dipende da chi la dà e dalla scadenza; c) i costi possono essere altrove, per esempio nel prezzo."
           },
           {
-            "text": "a) massimo possibile, non garantito; b) garanzia che dipende da chi la dà e dalla scadenza; c) i costi possono essere altrove",
-            "right": true
-          },
-          {
-            "text": "a) garanzia a scadenza; b) massimo possibile; c) costi uguali a zero",
-            "right": false,
+            "left": "«capitale garantito a scadenza»",
+            "right": "Garanzia che dipende da chi la dà e dalla scadenza",
             "why": "A) massimo possibile, non garantito; b) garanzia che dipende da chi la dà e dalla scadenza; c) i costi possono essere altrove, per esempio nel prezzo."
           },
           {
-            "text": "a) nessun rischio; b) rischio altissimo; c) costi ridotti a zero",
-            "right": false,
+            "left": "«zero commissioni»",
+            "right": "I costi possono essere altrove",
             "why": "A) massimo possibile, non garantito; b) garanzia che dipende da chi la dà e dalla scadenza; c) i costi possono essere altrove, per esempio nel prezzo."
           }
         ],
         "theory": "Una promessa commerciale è una frase scelta per vendere: dice poco di costi e rischi. Per decidere servono i numeri che la frase non riporta.",
-        "explain": "«Zero commissioni» non vuol dire zero costi: i costi possono essere nascosti nel prezzo o in altre voci."
+        "explain": "«Capitale garantito a scadenza» dipende dalla solidità di chi lo garantisce e dall’aspettare la scadenza. «Zero commissioni» non vuol dire zero costi: i costi possono essere nascosti nel prezzo o in altre voci."
       },
       {
         "n": 2,
@@ -6656,7 +6783,7 @@ export const LESSONS = {
             "why": "1% di 500 = 5; 6% di 500 = 30."
           }
         ],
-        "explain": "«Fino al 6%» indica un massimo, non quanto otterrai. «Capitale garantito a scadenza» dipende dalla solidità di chi lo garantisce e dall’aspettare la scadenza.",
+        "explain": "«Fino al 6%» indica un massimo, non quanto otterrai.",
         "variants": [
           {
             "type": "scelta",
@@ -6812,6 +6939,14 @@ export const LESSONS = {
     "code": "L5",
     "floor": 4,
     "title": "Bonus, gratis, prova e cashback: il prezzo nascosto",
+    "intro": {
+      "say": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo. Il «gratis» è quasi sempre un inizio: la spesa arriva dopo, quando l’attenzione è calata.",
+      "lines": [
+        "La prova gratuita con rinnovo automatico dà accesso per qualche giorno e poi addebita il prezzo pieno, ogni mese, finché non si disdice.",
+        "Il costo non parte il giorno dell’iscrizione ma una settimana, due o un mese dopo, quando probabilmente ci si è dimenticati.",
+        "Il bonus di benvenuto è di solito condizionato: devi spendere, depositare o restare iscritto per un certo tempo."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -7106,37 +7241,44 @@ export const LESSONS = {
     "code": "L6",
     "floor": 4,
     "title": "I tuoi diritti di consumatore e i tuoi dati",
+    "intro": {
+      "say": "Chi compra ha dei diritti per legge, anche se non li legge nessuno. Conoscerli trasforma «ho sbagliato io» in «posso chiedere indietro i soldi».",
+      "lines": [
+        "Il diritto di recesso permette, per gli acquisti fatti online, per telefono o fuori da un negozio, di restituire il prodotto o annullare il servizio entro 14 giorni, senza dover dare un motivo."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
-        "type": "scelta",
+        "type": "abbina",
         "label": "Capire (classifica)",
         "moment": "capire",
         "idea": "I tuoi diritti di consumatore e i tuoi dati",
-        "mentor": "Collega: a) restituire un acquisto online senza motivo entro 14 giorni; b) un difetto che compare dopo 8 mesi; c) chiedere a un’app di cancellare i dati; d) un’offerta pubblicitaria ingannevole.",
-        "options": [
+        "mentor": "Collega.",
+        "pairs": [
           {
-            "text": "a) garanzia legale; b) recesso; c) segnalazione; d) cancellazione dei dati",
-            "right": false,
+            "left": "Restituire un acquisto online senza motivo entro 14 giorni",
+            "right": "Recesso",
             "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
           },
           {
-            "text": "a) cancellazione; b) recesso; c) garanzia legale; d) segnalazione",
-            "right": false,
+            "left": "Un difetto che compare dopo 8 mesi",
+            "right": "Garanzia legale",
             "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
           },
           {
-            "text": "Sono tutti lo stesso diritto",
-            "right": false,
+            "left": "Chiedere a un’app di cancellare i dati",
+            "right": "Diritto alla cancellazione",
             "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
           },
           {
-            "text": "a) recesso; b) garanzia legale; c) diritto alla cancellazione; d) segnalazione all’autorità",
-            "right": true
+            "left": "Un’offerta pubblicitaria ingannevole",
+            "right": "Segnalazione all’autorità",
+            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
           }
         ],
         "theory": "Chi compra ha dei diritti per legge, anche se non li legge nessuno. Conoscerli trasforma «ho sbagliato io» in «posso chiedere indietro i soldi».",
-        "explain": "Il diritto di recesso permette, per gli acquisti fatti online, per telefono o fuori da un negozio, di restituire il prodotto o annullare il servizio entro 14 giorni, senza dover dare un motivo."
+        "explain": "La garanzia legale di conformità dura almeno 2 anni dalla consegna e copre i difetti che c’erano già alla consegna."
       },
       {
         "n": 2,
@@ -7156,7 +7298,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Hai diritto di sapere quali dati ha, correggerli, chiedere di cancellarli e di opporti all’uso per pubblicità."
+        "explain": "Il diritto di recesso permette, per gli acquisti fatti online, per telefono o fuori da un negozio, di restituire il prodotto o annullare il servizio entro 14 giorni, senza dover dare un motivo."
       },
       {
         "n": 3,
@@ -7244,7 +7386,7 @@ export const LESSONS = {
             "why": "24 − 8 = 16 mesi."
           }
         ],
-        "explain": "La garanzia legale di conformità dura almeno 2 anni dalla consegna e copre i difetti che c’erano già alla consegna.",
+        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso.",
         "variants": [
           {
             "type": "scelta",
@@ -7302,7 +7444,7 @@ export const LESSONS = {
             "why": "9 × 3 = 27 €."
           }
         ],
-        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso.",
+        "explain": "Sui dati personali, chi tratta i tuoi dati ha l’obbligo di dirti cosa raccoglie e perché. Hai diritto di sapere quali dati ha, correggerli, chiedere di cancellarli e di opporti all’uso per pubblicità.",
         "variants": [
           {
             "type": "scelta",
@@ -7390,7 +7532,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Sui dati personali, chi tratta i tuoi dati ha l’obbligo di dirti cosa raccoglie e perché."
+        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso."
       }
     ],
     "source": "C04-L06"
@@ -7400,6 +7542,14 @@ export const LESSONS = {
     "code": "L1",
     "floor": 5,
     "title": "Obiettivi di risparmio e piano mensile",
+    "intro": {
+      "say": "Un obiettivo di risparmio diventa reale quando ha tre numeri: quanto costa, entro quando, e quanto metti da parte ogni mese. Senza uno dei tre è solo un desiderio.",
+      "lines": [
+        "Il piano si costruisce al contrario: si parte dal prezzo, si sceglie la scadenza e si divide.",
+        "Importo mensile = costo ÷ numero di mesi.",
+        "Poi si controlla se l’importo è sostenibile rispetto a quello che entra ogni mese."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -7704,6 +7854,13 @@ export const LESSONS = {
     "code": "L2",
     "floor": 5,
     "title": "Il fondo di emergenza",
+    "intro": {
+      "say": "Il fondo di emergenza è una somma tenuta da parte solo per gli imprevisti. Non serve a comprare cose desiderate: serve a non dover chiedere soldi in prestito (o rinunciare a qualcosa di importante) quando succede qualcosa.",
+      "lines": [
+        "La misura tipica è un multiplo delle spese essenziali mensili: spesso si parla di 3–6 mesi, ma è una regola pratica divulgativa e non una norma.",
+        "Per un adulto le spese essenziali sono affitto, bollette, cibo; per un teenager sono molto meno (trasporti, ricarica, merende, materiale scolastico), quindi il fondo è più piccolo e si può costruire in pochi mesi."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -8008,6 +8165,14 @@ export const LESSONS = {
     "code": "L3",
     "floor": 5,
     "title": "Dove metti i risparmi: conto deposito e interesse composto",
+    "intro": {
+      "say": "Il denaro fermo può produrre interessi, ma il numero che leggi (tasso lordo) non è quello che ti entra in tasca: tasse e imposte lo riducono.",
+      "lines": [
+        "Interesse semplice: si calcola sempre sul capitale iniziale.",
+        "Interesse composto: ogni anno si calcola sul capitale più gli interessi già maturati, quindi la formula è capitale × (1 + tasso)^anni.",
+        "Il tasso annuo lordo è quello pubblicizzato; per arrivare al netto si tolgono le imposte."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -8312,6 +8477,16 @@ export const LESSONS = {
     "code": "L4",
     "floor": 5,
     "title": "L’assicurazione: trasferire il rischio",
+    "intro": {
+      "say": "Con un’assicurazione paghi una somma certa e piccola (il premio) per far pagare a qualcun altro un danno grande ma poco probabile. Si assicurano i rischi che non potresti permetterti di pagare da solo, non quelli piccoli.",
+      "lines": [
+        "Quattro parole da conoscere.",
+        "Il premio è il prezzo della polizza.",
+        "La franchigia è una parte fissa del danno che resta sempre a tuo carico (danno − franchigia = rimborso).",
+        "Lo scoperto è una parte del danno espressa in percentuale che resta a tuo carico, spesso con un minimo in euro.",
+        "Il massimale è il tetto massimo che l’assicurazione può pagare, anche se il danno è più alto."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -8616,6 +8791,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 5,
     "title": "Le polizze che servono davvero a un giovane",
+    "intro": {
+      "say": "Non serve una polizza per ogni rischio: serve partire da quelli che farebbero davvero male (danni causati ad altri, infortuni gravi, obblighi di legge) e ignorare quelli che si pagano con il fondo di emergenza.",
+      "lines": [
+        "Altre sono facoltative: responsabilità civile verso terzi, infortuni, spese sanitarie, casa o affitto, dispositivi elettronici.",
+        "Prima di comprarne una conviene chiedere se il rischio è già coperto da qualcosa che c’è già (per esempio una polizza della famiglia, la scuola, lo sport o una carta): pagare due volte per lo stesso rischio non raddoppia il rimborso."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -8920,6 +9102,12 @@ export const LESSONS = {
     "code": "L6",
     "floor": 5,
     "title": "Polizze-trappola e come leggere una polizza",
+    "intro": {
+      "say": "Una polizza è un contratto: conta quello che c’è scritto, non quello che dice chi la vende. Prima di firmare si leggono quattro cose: quanto costa in totale, cosa esclude, per quanto tempo vincola e come si esce.",
+      "lines": [
+        "Le polizze-trappola non sono necessariamente illegali: sono poco chiare o poco convenienti."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -9224,6 +9412,14 @@ export const LESSONS = {
     "code": "L1",
     "floor": 6,
     "title": "Lordo, netto e costo per chi paga",
+    "intro": {
+      "say": "Il compenso scritto nel contratto (lordo) non è quello che arriva sul conto (netto), e non è nemmeno quanto costa a chi paga. Sono tre numeri diversi per la stessa persona.",
+      "lines": [
+        "Il lordo è la retribuzione prima delle trattenute.",
+        "Dal lordo si tolgono i contributi a carico del lavoratore (che finanziano la futura pensione e altre tutele) e le imposte sul reddito: quello che resta è il netto.",
+        "Chi paga, in più, versa a sua volta contributi a proprio carico: lordo più contributi del datore è il costo per chi paga."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -9528,6 +9724,13 @@ export const LESSONS = {
     "code": "L2",
     "floor": 6,
     "title": "Contributi e IRPEF: dove vanno i soldi trattenuti",
+    "intro": {
+      "say": "Le trattenute sono di due tipi: i contributi, che finanziano pensione e altre tutele di chi lavora, e le imposte, che finanziano i servizi pubblici.",
+      "lines": [
+        "I contributi vanno agli enti previdenziali (in Italia soprattutto l’INPS) e servono per pensione, malattia, maternità e altre prestazioni.",
+        "L’IRPEF è l’imposta sul reddito delle persone: si calcola per scaglioni."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -9832,6 +10035,12 @@ export const LESSONS = {
     "code": "L3",
     "floor": 6,
     "title": "Leggere una busta paga",
+    "intro": {
+      "say": "La busta paga è il documento che mostra come si arriva dal lordo al netto. Si legge dall’alto verso il basso e si può controllare con due moltiplicazioni e una sottrazione.",
+      "lines": [
+        "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -10136,6 +10345,12 @@ export const LESSONS = {
     "code": "L4",
     "floor": 6,
     "title": "Tipi di lavoro: dipendente, autonomo, occasionale",
+    "intro": {
+      "say": "La stessa cifra può voler dire cose molto diverse a seconda del tipo di lavoro: cambiano chi versa i contributi, chi paga le imposte, quali tutele ci sono (ferie, malattia, infortunio) e quanto resta davvero.",
+      "lines": [
+        "Il lavoratore dipendente lavora per un datore, con orari e direttive: il datore versa i contributi, trattiene le imposte e ci sono ferie, malattia e altre tutele."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -10440,6 +10655,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 6,
     "title": "Dichiarazione dei redditi, detrazioni e famiglia",
+    "intro": {
+      "say": "Dopo l’anno di lavoro si fa i conti con il fisco: chi guadagna dichiara i propri redditi, e alcune spese o situazioni familiari riducono l’imposta.",
+      "lines": [
+        "La dichiarazione dei redditi (per esempio il modello 730 per i lavoratori dipendenti) riepiloga i redditi dell’anno, le imposte già pagate e quelle dovute: si può risultare a credito (rimborso) o a debito.",
+        "Una detrazione si sottrae dall’imposta già calcolata; una deduzione si sottrae dal reddito prima di calcolare l’imposta."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -10744,6 +10966,10 @@ export const LESSONS = {
     "code": "L6",
     "floor": 6,
     "title": "I diritti di chi lavora, lavoro nero e minori",
+    "intro": {
+      "say": "Chi lavora ha diritti anche se non li legge nessuno: un contratto, una retribuzione dovuta, regole sull’orario, la sicurezza e le tutele in caso di infortunio e malattia.",
+      "lines": []
+    },
     "exercises": [
       {
         "n": 1,
@@ -11048,6 +11274,14 @@ export const LESSONS = {
     "code": "L1",
     "floor": 7,
     "title": "Quanto costa studiare",
+    "intro": {
+      "say": "Il costo di un percorso di studi non è solo la tassa: ci sono i materiali, gli spostamenti e, se si studia lontano da casa, l’affitto e la vita quotidiana. Spesso le spese di vita pesano più delle tasse.",
+      "lines": [
+        "Si distinguono i costi diretti (tasse e contributi, libri e materiali, trasporti) e i costi di vita (affitto, cibo, bollette, quando si vive fuori sede).",
+        "Per stimare il totale si calcola un costo annuo e lo si moltiplica per gli anni del percorso.",
+        "Poi si controlla da dove arrivano i soldi: famiglia, lavoro, borse di studio, prestiti."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -11352,6 +11586,10 @@ export const LESSONS = {
     "code": "L2",
     "floor": 7,
     "title": "L’ISEE: come si calcola e a cosa serve",
+    "intro": {
+      "say": "L’ISEE è un numero che misura la situazione economica di una famiglia, non solo il reddito: tiene conto anche del patrimonio e di quante persone compongono il nucleo.",
+      "lines": []
+    },
     "exercises": [
       {
         "n": 1,
@@ -11656,6 +11894,13 @@ export const LESSONS = {
     "code": "L3",
     "floor": 7,
     "title": "Tasse universitarie e fasce ISEE",
+    "intro": {
+      "say": "Molti atenei fanno pagare tasse diverse a seconda dell’ISEE: chi ha un ISEE basso paga meno o niente, chi ha un ISEE alto paga di più.",
+      "lines": [
+        "Esistono anche esoneri per motivi economici o di merito.",
+        "In questo capitolo usiamo una tabella di un ateneo inventato per far esercitare il calcolo."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -11960,6 +12205,12 @@ export const LESSONS = {
     "code": "L4",
     "floor": 7,
     "title": "Borse di studio e diritto allo studio",
+    "intro": {
+      "say": "Le borse di studio non sono regali: sono aiuti a chi rispetta requisiti economici (di solito legati all’ISEE) e di merito, e vanno chiesti entro scadenze precise. Conoscerli per tempo può cambiare molto il costo di un percorso.",
+      "lines": [
+        "In Italia gli aiuti per studiare sono di più tipi: borse di studio (somme di denaro), servizi (mensa, alloggio), esoneri o riduzioni delle tasse, contributi per chi studia in condizioni particolari."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -12264,6 +12515,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 7,
     "title": "Prestiti e debito per studiare",
+    "intro": {
+      "say": "Un prestito dà oggi soldi che si restituiscono domani con gli interessi: il costo vero è la somma delle rate meno quanto si è ricevuto.",
+      "lines": [
+        "Il tasso è il prezzo del prestito in percentuale annua; la rata è quanto si paga a scadenze regolari; la durata è il tempo di restituzione.",
+        "A parità di tasso, durata più lunga significa rata più bassa ma interessi totali più alti."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -12568,6 +12826,12 @@ export const LESSONS = {
     "code": "L6",
     "floor": 7,
     "title": "Scegliere un percorso con i numeri (e le trappole)",
+    "intro": {
+      "say": "Un percorso di formazione si sceglie guardando costo totale, riconoscimento, contenuti e tempo di recupero dell’investimento, non la promessa. Chi garantisce un lavoro o mette fretta spesso vende più di quanto promette.",
+      "lines": [
+        "Il tempo di recupero è il costo diviso per l’aumento mensile atteso del reddito netto: se serve molto tempo per recuperare, o l’aumento è solo una speranza, l’investimento è debole."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -12872,6 +13136,13 @@ export const LESSONS = {
     "code": "L1",
     "floor": 8,
     "title": "Inflazione e potere d’acquisto",
+    "intro": {
+      "say": "Con l’inflazione i prezzi salgono nel tempo: la stessa somma compra meno cose. Per capire se i soldi crescono davvero non basta guardare gli interessi, bisogna confrontarli con l’aumento dei prezzi.",
+      "lines": [
+        "L’inflazione è l’aumento generale dei prezzi in un periodo; si misura con indici (in Italia soprattutto quelli dell’ISTAT; i valori reali vanno reperiti con fonte e data).",
+        "Se l’inflazione è il 3% all’anno, un prezzo di 100 € diventa 100 × 1,03 dopo un anno, e dopo n anni 100 × 1,03ⁿ."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -13176,6 +13447,13 @@ export const LESSONS = {
     "code": "L2",
     "floor": 8,
     "title": "Come cresce un debito",
+    "intro": {
+      "say": "Un debito cresce con gli interessi, e gli interessi si calcolano anche sugli interessi non pagati. Più il tasso è alto e più tempo passa, più il debito pesa: pagare solo gli interessi tiene il debito fermo, non lo riduce.",
+      "lines": [
+        "Il TAN (tasso annuo nominale) è il tasso dichiarato su base annua; se gli interessi vengono aggiunti al debito ogni mese, il costo reale su un anno è un po’ più alto del TAN.",
+        "Con un TAN del 18% il tasso mensile è 1,5%; senza pagamenti, in 12 mesi il debito diventa capitale × (1,015)¹²."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -13480,6 +13758,12 @@ export const LESSONS = {
     "code": "L3",
     "floor": 8,
     "title": "Comprare a rate",
+    "intro": {
+      "say": "Pagare a rate fa sembrare un acquisto più leggero, ma il costo totale è la somma di tutte le rate: la differenza rispetto al prezzo è il costo del credito.",
+      "lines": [
+        "Con rate costanti mensili, la rata si calcola con la formula rata = capitale × i ÷ (1 − (1 + i)^−n), dove i è il tasso mensile (TAN ÷ 12) e n il numero di rate."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -13784,6 +14068,13 @@ export const LESSONS = {
     "code": "L4",
     "floor": 8,
     "title": "Affitto o acquisto: i costi della casa",
+    "intro": {
+      "say": "Comprare casa non è sempre più conveniente che affittare, e affittare non è «buttare i soldi». Si confrontano i costi veri di ogni anno, comprese le spese che non si vedono nella rata.",
+      "lines": [
+        "Chi affitta paga il canone: non costruisce un patrimonio ma ha flessibilità (si può cambiare città o casa) e pochi costi extra.",
+        "Chi compra paga la rata del mutuo, ma solo una parte della rata è costo vero: gli interessi; la parte restante è capitale che riduce il debito e diventa patrimonio."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -14088,6 +14379,14 @@ export const LESSONS = {
     "code": "L5",
     "floor": 8,
     "title": "Il mutuo: rata, tasso e ammortamento",
+    "intro": {
+      "say": "Un mutuo è un prestito a lungo termine per comprare casa, restituito con rate costanti.",
+      "lines": [
+        "Nell’ammortamento alla francese la rata è costante e ogni mese si divide in interessi (tasso mensile × debito residuo) e capitale (il resto).",
+        "Man mano che il debito scende, gli interessi calano e la quota capitale cresce.",
+        "Il tasso può essere fisso (la rata non cambia per tutta la durata) o variabile (segue un indice di mercato e la rata può salire o scendere)."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -14392,6 +14691,16 @@ export const LESSONS = {
     "code": "L6",
     "floor": 8,
     "title": "Un mutuo sostenibile",
+    "intro": {
+      "say": "Un mutuo è sostenibile se la rata resta pagabile anche quando le cose vanno peggio: tassi che salgono, reddito che cala, spese impreviste.",
+      "lines": [
+        "Più alto è il rapporto, più un imprevisto fa male.",
+        "Un anticipo più alto riduce il debito e quindi la rata.",
+        "Con un tasso variabile la rata può salire: si simula uno scenario con tasso più alto e si verifica se il budget regge ancora.",
+        "Prima di firmare si controlla anche che resti il fondo di emergenza e si calcolano i costi iniziali.",
+        "Gli importi qui sono esempi."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -14696,6 +15005,13 @@ export const LESSONS = {
     "code": "L1",
     "floor": 9,
     "title": "Prestare denaro: cos’è un’obbligazione",
+    "intro": {
+      "say": "Un’obbligazione è un prestito con regole scritte: tu presti soldi a uno Stato o a un’azienda, loro ti pagano un interesse a date fisse e ti restituiscono il capitale alla scadenza.",
+      "lines": [
+        "Quando presti 100 € a un amico, di solito non scrivi niente: non sai quando te li dà e se aggiunge qualcosa.",
+        "Un’obbligazione fissa tutto prima: il valore nominale (la cifra che ti sarà restituita, qui 1.000 €), la cedola (l’interesse, espresso in % del nominale e pagato ogni anno o ogni sei mesi) e la scadenza (la data in cui il nominale viene rimborsato)."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -15000,6 +15316,15 @@ export const LESSONS = {
     "code": "L2",
     "floor": 9,
     "title": "Cedola, scadenza e rendimento",
+    "intro": {
+      "say": "La cedola dice quanto paga l’obbligazione sul nominale, ma quello che guadagni dipende da quanto l’hai pagata: lo stesso titolo può rendere di più o di meno a seconda del prezzo di acquisto.",
+      "lines": [
+        "Le obbligazioni si possono comprare e vendere prima della scadenza, e il loro prezzo può essere diverso dal nominale.",
+        "Se costa meno di 1.000 € si dice che è sotto la pari, se costa di più che è sopra la pari.",
+        "La cedola resta quella (30 € l’anno), ma cambia il rendimento.",
+        "Il rendimento corrente è la cedola annua divisa per il prezzo pagato: 30 ÷ 960 = 3,12%."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -15304,6 +15629,14 @@ export const LESSONS = {
     "code": "L3",
     "floor": 9,
     "title": "Perché il prezzo si muove",
+    "intro": {
+      "say": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende; quando i tassi scendono, sale. Se tieni il titolo fino alla scadenza il rimborso non cambia, ma se devi venderlo prima puoi perdere.",
+      "lines": [
+        "Giulia compra oggi un’obbligazione con cedola 3%.",
+        "Dopo un anno escono nuove obbligazioni che pagano il 5%: nessuno vuole più pagare 1.000 € un titolo da 3% quando ne trova uno da 5%, quindi il prezzo del vecchio titolo deve scendere finché il suo rendimento diventa competitivo.",
+        "Il prezzo è il valore di oggi di cedole e rimborso futuri, scontati al tasso di mercato."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -15608,6 +15941,13 @@ export const LESSONS = {
     "code": "L4",
     "floor": 9,
     "title": "Il rischio di chi presta",
+    "intro": {
+      "say": "Chi presta rischia di non essere ripagato. Una cedola più alta è il prezzo di questo rischio: più è alta, più è probabile che dietro ci sia un emittente meno affidabile.",
+      "lines": [
+        "Il rischio di emittente (o rischio di credito) è la possibilità che chi ha emesso l’obbligazione non paghi le cedole o non rimborsi il nominale.",
+        "Se l’emittente fallisce, in genere si recupera solo una parte del capitale: qui supponiamo il 40%."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -15912,6 +16252,12 @@ export const LESSONS = {
     "code": "L5",
     "floor": 9,
     "title": "Tasse, costi e inflazione",
+    "intro": {
+      "say": "La cedola scritta sul titolo è lorda. Il guadagno vero è quello che resta dopo tasse e costi, e va confrontato con l’aumento dei prezzi.",
+      "lines": [
+        "Sulle cedole si pagano tasse: l’importo che ricevi è la cedola netta."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -16216,6 +16562,13 @@ export const LESSONS = {
     "code": "L6",
     "floor": 9,
     "title": "Una scala di scadenze",
+    "intro": {
+      "say": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse: ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo.",
+      "lines": [
+        "Una scala di scadenze (in inglese ladder) divide la cifra in più obbligazioni che scadono a date diverse: ad esempio una a 1 anno, una a 2 e una a 3.",
+        "Ogni volta che una scade, ricevi nominale e cedole e puoi decidere cosa farne: spenderli, se ti servono, o reinvestirli ai tassi di quel momento."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -16520,6 +16873,13 @@ export const LESSONS = {
     "code": "L1",
     "floor": 10,
     "title": "Cos’è un’azione",
+    "intro": {
+      "say": "Un’azione è una piccola quota di una società: chi la compra diventa socio e partecipa ai risultati, buoni o cattivi. Non ha una scadenza né un rimborso promesso.",
+      "lines": [
+        "Un negozio di quartiere può diventare una società divisa in azioni.",
+        "Chi ne compra una è un azionista, cioè un socio: possiede una parte della società e, se i conti vanno bene, può incassare una parte degli utili (il dividendo, L4) o vedere salire il prezzo dell’azione."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -16824,6 +17184,16 @@ export const LESSONS = {
     "code": "L2",
     "floor": 10,
     "title": "Ricavi, costi e utile",
+    "intro": {
+      "say": "I ricavi dicono quanto incassa una società, l’utile quanto le resta dopo i costi. Una società può vendere di più e guadagnare di meno.",
+      "lines": [
+        "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi.",
+        "I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse.",
+        "L’utile è la differenza: ricavi meno costi.",
+        "Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato.",
+        "Se i costi superano i ricavi c’è una perdita."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -17128,6 +17498,14 @@ export const LESSONS = {
     "code": "L3",
     "floor": 10,
     "title": "Utile per azione e prezzo/utili",
+    "intro": {
+      "say": "Per sapere se un’azione costa tanto o poco non basta il prezzo: serve confrontarlo con l’utile che ogni azione produce. È il rapporto prezzo/utili, in inglese P/E.",
+      "lines": [
+        "L’utile per azione (in inglese EPS) è l’utile della società diviso per il numero di azioni: dice quanto utile «è di» ogni azione.",
+        "Il rapporto prezzo/utili (P/E) è il prezzo dell’azione diviso per l’utile per azione: dice quanti euro paghi per ogni euro di utile annuo.",
+        "Un P/E di 20 significa che paghi 20 € per ogni euro che la società guadagna in un anno."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -17432,6 +17810,14 @@ export const LESSONS = {
     "code": "L4",
     "floor": 10,
     "title": "Il dividendo",
+    "intro": {
+      "say": "Il dividendo è la parte dell’utile che la società distribuisce ai soci. Non è garantito: la società può ridurlo o toglierlo, e un dividendo troppo alto rispetto all’utile non regge.",
+      "lines": [
+        "Una società può reinvestire l’utile oppure distribuirne una parte come dividendo, di solito per azione.",
+        "Il rendimento da dividendo è il dividendo per azione diviso per il prezzo.",
+        "La quota di utile distribuita si chiama payout: dividendo per azione diviso utile per azione."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -17736,6 +18122,14 @@ export const LESSONS = {
     "code": "L5",
     "floor": 10,
     "title": "Il rischio delle azioni",
+    "intro": {
+      "say": "Le azioni possono perdere valore anche a lungo, e per recuperare un calo serve un rialzo più grande del calo. Diversificare riduce il rischio di una singola società, non quello dell’intero mercato.",
+      "lines": [
+        "Il prezzo di un’azione cambia ogni giorno e, a differenza dell’obbligazione, non c’è una data in cui ti viene restituito un importo prefissato.",
+        "Se perdi il 30% sei a 70 ogni 100 e, per tornare a 100, serve un guadagno di 30 ÷ 70 = 42,86%: i cali pesano più dei rialzi.",
+        "Esistono due tipi di rischio."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -18040,6 +18434,13 @@ export const LESSONS = {
     "code": "L6",
     "floor": 10,
     "title": "Tempo, costi e comportamento",
+    "intro": {
+      "say": "Nel lungo periodo contano tre cose: il tempo, i costi che paghi ogni anno e come ti comporti quando il prezzo scende. Nessun rendimento è garantito.",
+      "lines": [
+        "Con l’interesse composto un risultato ipotetico ogni anno si aggiunge al capitale e produce a sua volta risultato: più tempo passa, più pesa.",
+        "Lo stesso vale per i costi: una commissione annua dell'1% sembra piccola, ma ogni anno riduce il capitale e quindi anche il risultato degli anni dopo."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -18344,6 +18745,14 @@ export const LESSONS = {
     "code": "L1",
     "floor": 11,
     "title": "Cos’è un fondo: il paniere",
+    "intro": {
+      "say": "Un fondo è un paniere in comune: tante persone mettono soldi insieme e il fondo li investe in molti titoli. Tu possiedi una quota del paniere, non le singole società.",
+      "lines": [
+        "Immagina dieci amici che mettono 50 € ciascuno in una cassa comune per comprare insieme più cose invece di una sola: ognuno possiede una parte della cassa.",
+        "Un fondo funziona così: il patrimonio totale è diviso in quote, e il valore di una quota è il patrimonio diviso per il numero di quote.",
+        "Se i titoli nel paniere salgono, sale il valore della quota; se scendono, scende."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -18648,6 +19057,13 @@ export const LESSONS = {
     "code": "L2",
     "floor": 11,
     "title": "ETF e indici",
+    "intro": {
+      "say": "Un indice è una lista di società con i loro pesi; un ETF è un fondo che copia quella lista e si compra in borsa come un’azione. Non cerca di fare meglio dell’indice: lo segue.",
+      "lines": [
+        "Un indice misura l’andamento di un gruppo di titoli: elenca le società e il peso di ciascuna, e si calcola con una regola fissa (per esempio le 4 più grandi di un settore).",
+        "Un ETF (exchange traded fund) è un fondo quotato in borsa che cerca di seguire un indice: si dice che lo replica."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -18952,6 +19368,13 @@ export const LESSONS = {
     "code": "L3",
     "floor": 11,
     "title": "I costi di un fondo",
+    "intro": {
+      "say": "Un fondo ti costa ogni anno una percentuale del capitale, anche se il mercato scende. A parità di paniere, il costo è una delle poche cose che puoi controllare.",
+      "lines": [
+        "Il costo annuo di un fondo o di un ETF si indica con un numero, spesso chiamato TER (total expense ratio): la percentuale del capitale che si paga ogni anno per gestione e spese.",
+        "Si aggiungono eventuali costi una tantum, come una commissione di ingresso quando compri, e i costi di negoziazione del tuo intermediario."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -19256,6 +19679,14 @@ export const LESSONS = {
     "code": "L4",
     "floor": 11,
     "title": "Diversificazione vera e sovrapposizioni",
+    "intro": {
+      "say": "Avere tanti fondi non vuol dire essere diversificati: conta che cosa contengono. Due ETF che contengono le stesse società ti espongono due volte allo stesso rischio.",
+      "lines": [
+        "La diversificazione funziona se i titoli non si muovono tutti insieme.",
+        "Un fondo può contenere centinaia di società ma avere la maggior parte del peso in poche: la concentrazione dei pesi conta più del numero di titoli.",
+        "Due fondi possono avere in comune molte società: la sovrapposizione è la parte del patrimonio che è nelle stesse società."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -19560,6 +19991,13 @@ export const LESSONS = {
     "code": "L5",
     "floor": 11,
     "title": "Rischi e limiti degli ETF",
+    "intro": {
+      "say": "Un ETF ampio riduce il rischio di una singola società, ma non protegge da un calo del mercato, dalle oscillazioni del cambio o dai piccoli scostamenti dall’indice. Non è un prodotto sicuro.",
+      "lines": [
+        "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30%.",
+        "La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -19864,6 +20302,13 @@ export const LESSONS = {
     "code": "L6",
     "floor": 11,
     "title": "Leggere la scheda informativa",
+    "intro": {
+      "say": "Prima di comprare un fondo o un ETF c’è un documento che dice cos’è, quanto costa, quanto è rischioso e per quanto tempo conviene tenerlo. Leggerlo è il modo più economico per evitare errori.",
+      "lines": [
+        "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli.",
+        "Gli scenari non sono previsioni: sono esempi di cosa potrebbe succedere."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -20168,6 +20613,13 @@ export const LESSONS = {
     "code": "L1",
     "floor": 12,
     "title": "Le valute e il cambio",
+    "intro": {
+      "say": "Ogni Paese ha una sua valuta e il cambio dice quante unità di una valuta servono per averne una di un’altra. Per sapere quanto costa davvero una cosa in euro, devi convertirla.",
+      "lines": [
+        "Il cambio è il prezzo di una valuta in un’altra.",
+        "Se 1 € = 1,10 $ (cambio fittizio) significa che con un euro ottieni 1,10 dollari; per convertire dollari in euro si divide per 1,10, per convertire euro in dollari si moltiplica."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -20472,6 +20924,14 @@ export const LESSONS = {
     "code": "L2",
     "floor": 12,
     "title": "Quanto costa cambiare",
+    "intro": {
+      "say": "Cambiare valuta costa: chi cambia non usa il cambio di riferimento ma uno peggiore, e a volte aggiunge una commissione. Il costo vero si calcola in euro.",
+      "lines": [
+        "Il cambio che vedi in televisione o su un sito è un cambio di riferimento.",
+        "Chi ti cambia i soldi (un’agenzia, un negozio, una carta di pagamento) applica un cambio un po’ peggiore: la differenza si chiama spread ed è il suo guadagno.",
+        "A volte c’è anche una commissione, fissa o in percentuale."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -20776,6 +21236,14 @@ export const LESSONS = {
     "code": "L3",
     "floor": 12,
     "title": "Le materie prime",
+    "intro": {
+      "say": "Le materie prime sono beni di base come petrolio, oro o caffè. Il loro prezzo sale e scende con la domanda e l’offerta e non producono interessi: guadagni solo se il prezzo sale, e puoi perdere se scende.",
+      "lines": [
+        "Una materia prima è un bene che si scambia in grandi quantità e serve a produrre altro o come riserva di valore.",
+        "Il prezzo dipende da domanda (quanta ne vuole il mondo) e offerta (quanta se ne produce): se un raccolto va male o una fonte si esaurisce, il prezzo può salire; se la domanda cala, scende.",
+        "Molte si pagano in dollari, quindi il prezzo in euro dipende anche dal cambio."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -21080,6 +21548,13 @@ export const LESSONS = {
     "code": "L4",
     "floor": 12,
     "title": "Le cripto-attività: cosa sono",
+    "intro": {
+      "say": "Una cripto-attività è un oggetto digitale registrato su un registro condiviso. Non è una moneta di Stato e non ha nessuno che ne garantisca il valore: il suo prezzo lo decidono solo compratori e venditori.",
+      "lines": [
+        "Le cripto-attività (spesso chiamate cripto) sono rappresentazioni digitali registrate su un sistema condiviso, chiamato in generale blockchain, senza un’autorità centrale come una banca.",
+        "Non sono euro: non sono emesse da una banca centrale e, di regola, nessuno è obbligato a ricomprarle a un prezzo fisso."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -21384,6 +21859,14 @@ export const LESSONS = {
     "code": "L5",
     "floor": 12,
     "title": "Il rischio delle cripto e delle promesse",
+    "intro": {
+      "say": "I prezzi delle cripto-attività possono crollare, e i cali pesano più dei rialzi. Una promessa di guadagni alti, garantiti e rapidi è il segnale più chiaro di una truffa.",
+      "lines": [
+        "Il rischio di prezzo è molto alto: un calo dell'80% lascia il 20% del valore, e per tornare al punto di partenza serve +400%.",
+        "Un calo del 50% seguito da un rialzo del 50% non ti riporta pari: lasci per strada il 25%.",
+        "Oltre al prezzo ci sono rischi pratici: chiavi perse o rubate, piattaforme che chiudono senza restituire i soldi, truffe."
+      ]
+    },
     "exercises": [
       {
         "n": 1,
@@ -21688,6 +22171,12 @@ export const LESSONS = {
     "code": "L6",
     "floor": 12,
     "title": "Quanto vale in euro? Il metodo",
+    "intro": {
+      "say": "Prima di mettere soldi in qualsiasi cosa, valuti cinque punti in euro: cos’è, quanto costa, quanto vale oggi, quanto potresti perdere e se puoi permettertelo.",
+      "lines": [
+        "Questo metodo vale per un’obbligazione, un’azione, un ETF, una valuta, una materia prima o una cripto-attività."
+      ]
+    },
     "exercises": [
       {
         "n": 1,

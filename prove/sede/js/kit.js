@@ -294,6 +294,12 @@ export const sfx = {
     tone(880, 0.05, 0.12, { type: 'triangle', gain: 0.1 });
   },
   reward: () => [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.02 + i * 0.09, 0.32, { gain: 0.14 })),
+  // a wrong answer has a sound of its own (19/11/2026: until then it was the tap of any button, so the ear could not
+  // tell): two soft low notes going down, short, nothing like a buzzer (CLAUDE.md §1: nothing that makes you feel guilty)
+  wrong: () => {
+    tone(262, 0, 0.16, { type: 'sine', gain: 0.15, slide: 0.84 });
+    tone(196, 0.13, 0.26, { type: 'sine', gain: 0.13, slide: 0.88 });
+  },
   fanfare: () => [392, 523, 659, 784, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.4, { gain: 0.13 })),
   build: () => [0, 0.18, 0.36, 0.54].forEach((s) => tone(180 + s * 200, s, 0.12, { type: 'square', gain: 0.05 })),
 };

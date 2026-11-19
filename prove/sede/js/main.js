@@ -877,10 +877,11 @@ function back() {
     (ask && !ask.hidden ? ask.querySelector('[data-act="stay"]') : r.querySelector('[data-act="x"]'))?.click();
     return true;
   }
-  // the first start has no back (every step is saved, the app may close), except while «Guarda la tua azienda» has
-  // the sede under the finger: a room goes back to the building, the building to the page it came from
+  // the first start has no back (every step is saved, the app may close), except in the test, where it goes one
+  // statement back as «Indietro» does (19/11/2026), and while «Guarda la tua azienda» has the sede under the finger: a
+  // room goes back to the building, the building to the page it came from
   const look = avvio?.looking();
-  if (!$('avvio').hidden && !look) return false;
+  if (!$('avvio').hidden && !look) return !!avvio?.back();
   if (state.busy) return true; // a flight, a landing: it ends by itself
   if (!$('card-wrap').hidden) closeCard(); // a fresh card has no X: back does what «Continua» does
   else if (!$('demo-wrap').hidden) closeSheet($('demo-wrap'));
@@ -2019,7 +2020,7 @@ async function start() {
   caso = makeCase({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
   // the same line on the trap, after the key moments of the Prova sul campo
   campo = makeField({ sfx, buzz, who: () => avvio.who(), trapLine: (n) => TRAPS[n]?.[avvio.who()?.quadrant] ?? null });
-  simula = makeSim({ sfx });
+  simula = makeSim({ sfx, who: () => avvio.who() });
   if (avvio.done()) setTab(state.tab);
   else {
     // the Tu draws nothing: behind the screens of the test the phone rests

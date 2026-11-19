@@ -751,6 +751,10 @@ console.log(`${relative(root, out)}: ${list.join(', ') || 'nessuna lezione'}`);
 if (source) {
   const floors = Object.keys(source.sims).map(Number).sort((x, y) => x - y);
   console.log(`Dalla casa sorgente (${source.file}): ${fromExcel} lezioni; Casi giocabili per i piani ${floors.join(', ') || '—'}`);
+  if (source.notes.columns.length) console.log(`A colonne («metti in colonna»), ${source.notes.columns.length} domande: ${source.notes.columns.join(', ')}`);
+  if (source.notes.pairs.length) console.log(`Da abbinare («collega»), ${source.notes.pairs.length} domande: ${source.notes.pairs.join(', ')}`);
+  if (source.notes.orders.length) console.log(`Da ordinare («metti in ordine»), ${source.notes.orders.length} domande: ${source.notes.orders.join(', ')}`);
+  for (const t of source.notes.touches) notes.push(`un ritocco a una pagina dei Casi non trova più il suo testo, e la pagina è rimasta com'è (${t}): scripts/sorgente.mjs, TOUCHES`);
   if (source.notes.unchecked.length) notes.push(`${source.notes.unchecked.length} lezioni della casa sorgente hanno dati ancora da verificare`);
   if (source.notes.plain.length) notes.push(`${source.notes.plain.length} domande della casa sorgente non hanno una spiegazione loro (vuota, o ripete la risposta): dopo l'errore l'app dice il concetto della lezione`);
   if (source.notes.opinion.length) notes.push(`${source.notes.opinion.length} domande «Decidere» della casa sorgente dicono che nessuna risposta è giusta («dipende», «il feedback mostra…»), ma l'app dice giusto o sbagliato: ${source.notes.opinion.join(', ')}`);

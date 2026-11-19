@@ -9,6 +9,12 @@
 // The exercises come from the approved cards (lessons-data.js, made by mobile/scripts/lezioni.mjs).
 // An exercise stands in one screen, without scrolling (17/11/2026, the user: «non voglio scorrere le domande, deve
 // essere fisso come Duolingo»): fit() makes it as tight as the phone needs.
+// Before the questions, one screen says what they are about (19/11/2026, from a tester: «farei prima lezioni e poi
+// quiz»; the user: «fai te»): the partner says the idea of the lesson, and under it the first lines of the lesson's
+// own explanation. Not in a review, where nothing is new.
+// «Metti in colonna» (19/11/2026, from a tester: «facciamolo a due colonne dove trascinare gli item piuttosto che la
+// scelta della lista»): the items wait in a tray and go into their column. One is always lit: a touch on a column
+// sends it there and lights the next, so an item costs one touch; or it is dragged there.
 import { PEOPLE } from './people.js';
 import { askLeave, stay } from './esci.js';
 
@@ -29,7 +35,7 @@ const mix = (a) => {
   while (b.every((x, i) => x === a[i]));
   return b;
 };
-const TYPE_ASK = { vf: 'Vero o falso?', abbina: 'Tocca una voce a sinistra, poi la sua a destra.', ordina: 'Tocca le voci nell’ordine giusto.', completa: 'Scegli la parola che manca.' };
+const TYPE_ASK = { vf: 'Vero o falso?', abbina: 'Tocca una voce a sinistra, poi la sua a destra.', ordina: 'Tocca le voci nell’ordine giusto.', completa: 'Scegli la parola che manca.', gruppi: 'Una voce è scelta: tocca la colonna dove va. Per sceglierne un’altra, toccala.' };
 const COUNT = ['', 'quella', 'le due', 'le tre', 'le quattro', 'le cinque', 'le sei', 'le sette'];
 const STREAK = 5;
 // how tight an exercise can get to stand in one screen (style.css, #lezione[data-fit]): as it is, then 1 the air,
@@ -225,6 +231,22 @@ export function makeLesson(api) {
       <h2 class="lz-q" tabindex="-1">${before}${words(ask, e, seen)}</h2></div></div>`;
   }
 
+  // ---------- before the questions: the idea of the lesson ----------
+  /** One screen, to read and go on from with «Inizia»: it is not an exercise, so the bar does not move and nothing is
+   *  right or wrong. It stands in one screen like the exercises (fit). */
+  function intro() {
+    const t = lesson.intro;
+    frame(
+      `<span class="lz-idea">Idea nuova</span>
+      <div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b>
+        <h2 class="lz-q" tabindex="-1">${esc(t.say)}</h2></div></div>
+      ${t.lines.length ? `<ul class="lz-brief">${t.lines.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}`,
+      { foot: false },
+    );
+    root.querySelector('.lz-body').insertAdjacentHTML('afterend', '<div class="lz-foot"><button class="pill pill-dark wide" data-act="start">Inizia</button></div>');
+    fit();
+  }
+
   // ---------- one exercise ----------
   function show() {
     const e = lesson.exercises[queue[0]];
@@ -254,6 +276,16 @@ export function makeLesson(api) {
       ex.seq = [];
       answers = `<ol class="lz-seq" aria-label="Il tuo ordine"></ol><div class="lz-pool" role="group" aria-label="Voci da ordinare"></div>`;
     }
+    if (e.type === 'gruppi') {
+      ex.items = mix(e.items.map((_, i) => i)); // the order in the tray, which stays as it is
+      ex.where = {}; // item → column
+      ex.placed = []; // the items in a column, in the order they got there
+      ex.sel = ex.items[0]; // one is always lit, so the columns always have something to take
+      answers = `<div class="lz-tray" role="group" aria-label="Voci da mettere in colonna"></div>
+        <div class="lz-cols${e.groups.length > 2 ? ' lz-cols-3' : ''}" style="--n:${e.groups.length}">${e.groups
+          .map((g, k) => `<div class="lz-col" data-col="${k}" role="group" aria-label="${esc(g)}"><button class="lz-col-head" data-col="${k}" aria-label="${esc(g)}: metti qui la voce scelta">${esc(g)}</button><div class="lz-col-items"></div></div>`)
+          .join('')}</div>`;
+    }
     if (e.type === 'slider') {
       const s = e.slider;
       // the thumb starts at the bottom end, never on the answer (the middle often is the answer); at the top end
@@ -271,12 +303,14 @@ export function makeLesson(api) {
     // line and by the screen itself (two columns, a gap in the sentence, the place of the first step). How to touch
     // stays for the screen reader, which does not see the screen.
     const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="sr-only">${TYPE_ASK[e.type]}</p>` : '';
-    frame(`${e.idea != null && !retry ? '<span class="lz-idea">Idea nuova</span>' : ''}
+    // the idea is new on the screen before the questions, when the lesson has one: not said twice
+    frame(`${e.idea != null && !retry && !(lesson.intro && !lesson.review) ? '<span class="lz-idea">Idea nuova</span>' : ''}
       ${mentorLine(e)}
       ${e.source ? `<p class="lz-source">Fonte: ${esc(e.source)}</p>` : ''}
       ${help}${hint}
       <div class="lz-answers">${answers}</div>`);
     if (e.type === 'ordina') drawOrder();
+    if (e.type === 'gruppi') drawGroups();
     if (e.type === 'slider') {
       const r = root.querySelector('#lz-range');
       // the part of the track behind the thumb fills with the blue (style.css, .lz-slider input: --p)
@@ -326,6 +360,74 @@ export function makeLesson(api) {
     (left[Math.min(Math.max(i, 0), left.length - 1)] ?? root.querySelector('[data-act="check"]'))?.focus({ preventScroll: true });
   }
 
+  // ---------- put in columns ----------
+  /** The tray holds the items still waiting, and gets shorter as they go: the columns take the height it leaves, so
+   *  the page stays in one screen (with the places of the items gone kept empty, as tried first, it did not on any
+   *  phone once a column was full). A column lists its items in the order they came. While an item is lit, every
+   *  column offers itself. */
+  function drawGroups() {
+    const e = lesson.exercises[queue[0]];
+    const chip = (i, inside) => {
+      const t = esc(e.items[i].text);
+      if (inside) return `<button class="lz-chip in" data-item="${i}" aria-label="${t}, in ${esc(e.groups[ex.where[i]])}. Toglila.">${t}</button>`;
+      return `<button class="lz-chip${ex.sel === i ? ' sel' : ''}" data-item="${i}" aria-pressed="${ex.sel === i}">${t}</button>`;
+    };
+    const tray = root.querySelector('.lz-tray');
+    tray.innerHTML = ex.items
+      .filter((i) => ex.where[i] == null)
+      .map((i) => chip(i, false))
+      .join('');
+    tray.hidden = ex.placed.length === e.items.length;
+    root.querySelectorAll('.lz-col').forEach((col, k) => {
+      col.classList.toggle('ask', ex.sel != null);
+      col.classList.remove('over');
+      col.querySelector('.lz-col-items').innerHTML = ex.placed
+        .filter((i) => ex.where[i] === k)
+        .map((i) => chip(i, true))
+        .join('');
+    });
+    ex.pick = ex.placed.length === e.items.length || null;
+  }
+  /** Item i into column k, or back into the tray (k null). */
+  function groupPut(i, k) {
+    const e = lesson.exercises[queue[0]];
+    ex.placed = ex.placed.filter((x) => x !== i);
+    if (k == null) {
+      // back in the tray it is the lit one: it was taken out to be sent somewhere else
+      delete ex.where[i];
+      ex.sel = i;
+    } else {
+      ex.where[i] = k;
+      ex.placed.push(i);
+      ex.sel = ex.items.find((x) => ex.where[x] == null) ?? null; // the next one waiting lights up
+      // the line that explains how it works has been understood: its room goes to the columns
+      root.querySelector('.lz-help')?.remove();
+    }
+    drawGroups();
+    ready();
+    said(k == null ? `Tolta: ${e.items[i].text}.` : `${e.items[i].text} in ${e.groups[k]}.`);
+  }
+  /** A touch on an item or on a column. An item of the tray becomes the lit one. While one is lit, a column takes it
+   *  wherever the finger lands in it, on the items it holds too: who aims at a column does not aim between its items
+   *  (tried the other way first: a touch meant for the column kept pulling an item back out). With the tray empty, a
+   *  touch on an item takes it back, lit, to be sent somewhere else; before that, it is dragged.
+   *  `keys`: the touch came from the keyboard or a screen reader, which act on the very thing they are on: an item
+   *  in a column always goes back, the name of a column takes the lit one; and the focus must not be lost. */
+  function groupTap(el, keys = false) {
+    const col = el.closest('.lz-col');
+    const item = el.dataset.item !== undefined ? Number(el.dataset.item) : null;
+    if (item != null && !col) {
+      ex.sel = item;
+      drawGroups();
+    } else if (item != null && (keys || ex.sel == null)) groupPut(item, null);
+    else if (col && ex.sel != null) groupPut(ex.sel, Number(col.dataset.col));
+    else return;
+    if (!keys) return;
+    // on the lit item when it was picked or taken back; on the columns' side when it was sent; on «Verifica» at the end
+    const lit = item != null ? root.querySelector(`.lz-tray [data-item="${ex.sel}"]`) : ex.sel != null ? col.querySelector('.lz-col-head') : root.querySelector('[data-act="check"]');
+    lit?.focus({ preventScroll: true });
+  }
+
   function ready() {
     // the first answer of a list is number 0: «nothing picked» is null, not 0
     root.querySelector('[data-act="check"]').disabled = ex.pick == null;
@@ -343,11 +445,18 @@ export function makeLesson(api) {
     if (e.type === 'abbina') {
       const bad = e.pairs.filter((p, i) => ex.right[ex.match[i]] !== p.right);
       // `pairs`: the ones gone wrong, to show one on a line; `answer` stays whole for whoever needs it in a sentence
-      return { ok: !bad.length, why: bad.map((p) => p.why).join(' '), answer: e.pairs.map((p) => `${p.left} → ${p.right}`).join(' · '), pairs: bad.map((p) => [p.left, p.right]) };
+      // each pair gone wrong says why, once: the pairs of a lesson from the Excel share one explanation
+      return { ok: !bad.length, why: [...new Set(bad.map((p) => p.why))].join(' '), answer: e.pairs.map((p) => `${p.left} → ${p.right}`).join(' · '), pairs: bad.map((p) => [p.left, p.right]) };
     }
     if (e.type === 'ordina') {
       const ok = ex.seq.every((t, i) => t === e.order[i]);
       return { ok, why: ok ? '' : e.why, answer: e.order.join(' → '), steps: e.order };
+    }
+    if (e.type === 'gruppi') {
+      const bad = e.items.filter((it, i) => ex.where[i] !== it.group);
+      const whole = e.groups.map((g, k) => `${g}: ${e.items.filter((it) => it.group === k).map((it) => it.text).join(', ')}`).join(' · ');
+      // as for the pairs: under «Non è così» only the items gone into the wrong column, one on a line
+      return { ok: !bad.length, why: bad.length ? e.why : '', answer: whole, pairs: bad.map((it) => [it.text, e.groups[it.group]]) };
     }
     if (e.type === 'slider') {
       const [lo, hi] = e.range;
@@ -375,7 +484,7 @@ export function makeLesson(api) {
     } else if (!v.ok) still.push(i);
     paint(e, v.ok);
     if (v.ok && streak !== STREAK) api.sfx.reward();
-    if (!v.ok) api.sfx.tap();
+    if (!v.ok) (api.sfx.wrong ?? api.sfx.tap)();
     api.buzz(v.ok ? 18 : [30, 60, 30]);
     // the theory card: only after the first mistake on a new idea, once for each idea (CLAUDE.md §6)
     const idea = e.idea || `#${e.n}`;
@@ -467,6 +576,13 @@ export function makeLesson(api) {
     }
     if (e.type === 'ordina') root.querySelectorAll('.lz-seq .lz-cell').forEach((b, i) => b.classList.add(ex.seq[i] === e.order[i] ? 'right' : 'wrong'));
     if (e.type === 'slider') root.querySelector('.lz-slider').classList.add(ok ? 'right' : 'wrong');
+    if (e.type === 'gruppi') {
+      root.querySelectorAll('.lz-col').forEach((c) => c.classList.remove('ask', 'over'));
+      root.querySelectorAll('.lz-col .lz-chip').forEach((b) => {
+        const i = Number(b.dataset.item);
+        b.classList.add(ex.where[i] === e.items[i].group ? 'right' : 'wrong');
+      });
+    }
   }
 
   function next() {
@@ -521,6 +637,14 @@ export function makeLesson(api) {
     const b = ev.target.closest('button');
     // any other touch closes the definition of a word, and goes on doing what it does
     if (defWord && !b?.dataset.word) undefine();
+    // the items and the columns of «metti in colonna»: the finger and the mouse are followed by the pointer (a touch
+    // or a drag, see below); a click that comes from the keyboard or a screen reader (detail 0) does the same touch
+    const piece = lesson?.exercises[queue[0]]?.type === 'gruppi' ? ev.target.closest('.lz-chip, .lz-col') : null;
+    if (piece) {
+      if (ev.detail !== 0 || checked || b?.disabled) return;
+      api.sfx.tap();
+      return groupTap(ev.target.closest('.lz-chip') ?? piece, true);
+    }
     if (!b || b.disabled) return;
     const e = lesson.exercises[queue[0]];
     const act = b.dataset.act;
@@ -534,7 +658,7 @@ export function makeLesson(api) {
     if (act === 'leave') return finish(false);
     if (act === 'check') return check();
     if (act === 'next') return next();
-    if (act === 'again') return show();
+    if (act === 'again' || act === 'start') return show();
     if (act === 'explain') {
       const p = root.querySelector('#lz-explain');
       p.hidden = !p.hidden;
@@ -577,6 +701,77 @@ export function makeLesson(api) {
       return keepFocus(0);
     }
   });
+
+  // ---------- «metti in colonna» under the finger: a touch picks and sends, a drag carries ----------
+  // Followed by the pointer and not by the click: an item and its column can be a finger apart, and two quick touches
+  // that close are taken for a double tap and dropped (app.js); and a drag is not a click at all.
+  let held = null; // { chip, col, id, x, y, ghost, over }
+  const cols = () => root.querySelectorAll('.lz-col');
+  root.addEventListener('pointerdown', (ev) => {
+    if (checked || !lesson || lesson.exercises[queue[0]]?.type !== 'gruppi' || ev.button > 0) return;
+    // one finger at a time; but a finger whose end never came (it left the screen) does not lock the exercise
+    if (held && performance.now() - held.at < 4000) return;
+    if (held?.ghost) {
+      held.ghost.remove();
+      drawGroups();
+    }
+    held = null;
+    const chip = ev.target.closest('.lz-chip');
+    const col = ev.target.closest('.lz-col');
+    if (!chip && !col) return;
+    held = { chip, col, id: ev.pointerId, x: ev.clientX, y: ev.clientY, ghost: null, over: null, at: performance.now() };
+    chip?.setPointerCapture?.(ev.pointerId);
+  });
+  root.addEventListener('pointermove', (ev) => {
+    if (!held?.chip || ev.pointerId !== held.id) return;
+    const dx = ev.clientX - held.x;
+    const dy = ev.clientY - held.y;
+    if (!held.ghost) {
+      if (Math.hypot(dx, dy) < 10) return; // a finger that trembles is still a touch
+      const r = held.chip.getBoundingClientRect();
+      const g = held.chip.cloneNode(true);
+      g.className = 'lz-chip lz-ghost';
+      g.removeAttribute('data-item');
+      g.setAttribute('aria-hidden', 'true');
+      Object.assign(g.style, { left: `${r.left}px`, top: `${r.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+      root.appendChild(g);
+      held.ghost = g;
+      held.chip.classList.add('lifted');
+    }
+    held.ghost.style.transform = `translate(${dx}px, ${dy}px) rotate(-2deg)`;
+    const under = document.elementFromPoint(ev.clientX, ev.clientY);
+    held.over = under?.closest?.('.lz-col') ?? (under?.closest?.('.lz-tray') ? 'tray' : null);
+    cols().forEach((c) => c.classList.toggle('over', c === held.over));
+  });
+  const letGo = (ev, done) => {
+    if (!held || ev.pointerId !== held.id) return;
+    const h = held;
+    held = null;
+    h.ghost?.remove();
+    if (!done || checked) return h.ghost && drawGroups();
+    const item = h.chip ? Number(h.chip.dataset.item) : null;
+    if (h.ghost) {
+      // carried: into the column it was let go on; an item of a column let go on the tray goes back; anywhere else
+      // it returns where it was
+      const from = h.chip.closest('.lz-col');
+      if (h.over && h.over !== 'tray' && h.over !== from) {
+        api.sfx.tap();
+        api.buzz?.(12);
+        return groupPut(item, Number(h.over.dataset.col));
+      }
+      if (h.over === 'tray' && from) return groupPut(item, null);
+      return drawGroups();
+    }
+    // a touch: the finger went up where it came down
+    const now = performance.now();
+    if (item != null && item === lastTouched.item && now - lastTouched.at < 250) return; // a double tap on an item is one
+    lastTouched = { item, at: now };
+    api.sfx.tap();
+    groupTap(h.chip ?? h.col);
+  };
+  let lastTouched = { item: null, at: 0 };
+  root.addEventListener('pointerup', (ev) => letGo(ev, true));
+  root.addEventListener('pointercancel', (ev) => letGo(ev, false));
 
   // the definition stays by its word: when the word moves (scrolling, a turned phone) or on Esc, it goes away
   root.addEventListener('scroll', () => defWord && undefine(), true);
@@ -644,10 +839,12 @@ export function makeLesson(api) {
       streak = 0;
       theorySeen = new Set();
       doneCount = 0;
+      checked = false;
       root.hidden = false;
       document.body.classList.add('in-lesson');
       reach(false);
-      show();
+      if (l.intro && !l.review) intro();
+      else show();
       return new Promise((r) => (resolve = r));
     },
   };

@@ -9,12 +9,25 @@
 //  - its 7 questions are the 7 exercises, in their order. A «vero/falso» with four answers («Vero: …», «Falso, se …»)
 //    becomes the Vero/Falso of the app, with the reason of the right answer as the line after a mistake; every other
 //    question is a «scelta multipla» with its four answers.
+//  - a question that asks to put things in columns («Metti in colonna bisogno o desiderio…: mezzi, console, pranzo»),
+//    with its answers written as the columns filled in («Bisogni: mezzi e pranzo · Desideri: console»), becomes the
+//    columns of the app, where each thing is touched or dragged into its own (19/11/2026, from a tester: «Domanda:
+//    Metti in colonna | Risposta: multiple choice»). Only when every thing named in the right answer is found, once, in
+//    the question: if not, it stays a «scelta multipla» as the team wrote it.
+//  - the same for a question that asks to match («Collega: a) …; b) …», with the answers written «a) recesso; b)
+//    garanzia legale») and for one that asks to put in order («Ordina i passi: …», «Metti in ordine, dal più al
+//    meno probabile: a) …»): they become «abbina le coppie» and «ordina i passaggi», which the app already had. A
+//    question that cannot be read with certainty stays as the team wrote it.
 //  - the Excel has one explanation per question: it is the line after a mistake, for every wrong answer. When it only
 //    names the answer («streaming.») or is a note for who writes the game («il feedback mostra…»), the line is the
 //    key concept of the lesson.
 //  - «Spiegami» is the sentence of the lesson's own text that is closest to the question, a different one for each
 //    exercise: nothing is written here, everything the player reads is the team's.
 //  - the key concept is the theory card of exercise 1, the one with «Idea nuova».
+//  - before the questions, one screen says what they are about (19/11/2026, from a tester: «farei prima lezioni e poi
+//    quiz»; the user: «fai te»): the key concept, said by the partner, and the first lines of the lesson's own
+//    explanation, where the words of the questions are defined. The Excel is written as a text and then its questions:
+//    with the questions alone, the first one asked for something nobody had said.
 //  - the 3 variants say of which exercise they are a variant («variante di L1 es.3»): they are that exercise's other
 //    version in a review (CLAUDE.md §7, «nei ripassi i conti cambiano numeri»).
 // A card written by hand and approved (1. LAVORO/lezioni/piano-N/Lx-scheda.md) takes the place of the lesson with the
@@ -116,6 +129,114 @@ function explainFor(about, list, used, avoid) {
   return out;
 }
 
+// ---------- «metti in colonna» ----------
+/** «Bisogni: mezzi e pranzo · Desideri: console e pizzeria» → [{ label, items }], or null when it is not written so. */
+function columnsOf(option) {
+  const parts = tidy(option).split(' · ');
+  if (parts.length < 2) return null;
+  const out = [];
+  for (const p of parts) {
+    const m = p.match(/^([\p{L} ]{2,24}):\s*(.+)$/u);
+    if (!m) return null;
+    const items = m[2].split(/,\s*|\s+e\s+/).map((x) => x.trim()).filter(Boolean);
+    if (!items.length) return null;
+    out.push({ label: m[1].trim(), items });
+  }
+  return out;
+}
+const cap = (t) => t[0].toUpperCase() + t.slice(1);
+/** A question to put in columns, as the app plays it, or null when it has to stay as the team wrote it. The things
+ *  are the list after the colon of the question, with their whole names; the right answer says them short («mezzi»
+ *  for «abbonamento ai mezzi»), so each short name must be found in one thing only, and every thing once. The name of
+ *  a column is the longest the answers give it («Variabili», not the «Variabile» of the answer where it holds one
+ *  thing: the name would say how many go there). */
+function columns(q) {
+  if (!/classifica/i.test(q.kind)) return null;
+  const right = columnsOf(q.options[q.right]);
+  const text = tidy(q.text).replace(/[.]$/, '');
+  const at = text.indexOf(':');
+  if (!right || at < 0) return null;
+  const things = text.slice(at + 1).split(/,\s*/).map((x) => x.trim()).filter(Boolean);
+  if (things.length < 2 || things.length > 6) return null;
+  const group = new Array(things.length).fill(null);
+  for (const [k, col] of right.entries()) {
+    for (const short of col.items) {
+      const found = things.map((t, i) => (t.toLowerCase().includes(short.toLowerCase()) ? i : -1)).filter((i) => i >= 0);
+      if (found.length !== 1 || group[found[0]] != null) return null;
+      group[found[0]] = k;
+    }
+  }
+  if (group.some((g) => g == null)) return null;
+  // the name as an answer writes it where the column holds more than one thing, when the right answer holds one there
+  const others = q.options.map(columnsOf).filter((o) => o && o.length === right.length);
+  const stem = (t) => t.toLowerCase().slice(0, 5);
+  const groups = right.map((col, k) => (col.items.length > 1 ? col.label : others.find((o) => o[k].items.length > 1 && stem(o[k].label) === stem(col.label))?.[k].label ?? col.label));
+  // «Accredito o addebito: paghetta, caffè…» asks which of the two: without its list it ends with a question mark
+  const lead = text.slice(0, at).trim();
+  const ask = / o /.test(lead) && lead.split(' ').length <= 4 ? `${cap(lead)}?` : sentence(lead);
+  return { ask, groups, items: things.map((t, i) => ({ text: cap(t), group: group[i] })) };
+}
+
+// ---------- «collega» and «metti in ordine» ----------
+/** «Collega: a) …; b) …; c) …» or «b) testa (50%), c) due teste di fila (25%), a) un 6» → the text before the first
+ *  letter, the texts by letter and the letters in the order they come; null when there are no two letters, or one
+ *  comes twice. A letter counts only at the start or after «: », «; », «, », never inside a word («(testa) e»). */
+function lettered(t) {
+  const text = tidy(t);
+  const marks = [...text.matchAll(/(^|[;,:]\s+)([a-f])\)\s+/g)];
+  if (marks.length < 2) return null;
+  const items = {};
+  for (const [k, m] of marks.entries()) {
+    const to = k + 1 < marks.length ? marks[k + 1].index : text.length;
+    const said = text.slice(m.index + m[0].length, to).replace(/[.;,]\s*$/, '').trim();
+    if (!said || items[m[2]] != null) return null;
+    items[m[2]] = said;
+  }
+  return { stem: text.slice(0, marks[0].index).replace(/[:.]\s*$/, '').trim(), items, order: marks.map((m) => m[2]) };
+}
+const sameLetters = (a, b) => a.order.length === b.order.length && a.order.every((l) => b.items[l] != null);
+/** A question to match, as «abbina le coppie», or null. */
+function pairsOf(q) {
+  if (!/^Collega\b/i.test(tidy(q.text))) return null;
+  const asked = lettered(q.text);
+  const right = lettered(q.options[q.right]);
+  if (!asked || !right || right.stem || !sameLetters(asked, right) || asked.order.length > 5) return null;
+  const pairs = asked.order.map((l) => ({ left: cap(asked.items[l]), right: cap(right.items[l]) }));
+  if (new Set(pairs.map((p) => p.right.toLowerCase())).size !== pairs.length) return null;
+  return { ask: sentence(asked.stem), pairs };
+}
+/** A question to put in order, as «ordina i passaggi», or null. The things are lettered in the question and the right
+ *  answer gives the letters in order; or they are a plain list, and each thing of the right answer is found, by its
+ *  first word, in one thing only of the question. */
+function orderOf(q) {
+  const text = tidy(q.text).replace(/[.]$/, '');
+  if (!/^(Ordina|Metti in ordine)\b/i.test(text)) return null;
+  const asked = lettered(text);
+  if (asked) {
+    const right = lettered(q.options[q.right]);
+    if (!right || right.stem || !sameLetters(asked, right)) return null;
+    return { ask: sentence(asked.stem), order: right.order.map((l) => cap(asked.items[l])) };
+  }
+  const at = text.indexOf(':');
+  if (at < 0) return null;
+  const list = text.slice(at + 1);
+  const things = list.split(list.includes(';') ? /;\s+/ : /,\s+/).map((x) => x.trim()).filter(Boolean);
+  const right = tidy(q.options[q.right]).replace(/[.]$/, '').split(/,\s+/).map((x) => x.trim()).filter(Boolean);
+  if (things.length < 3 || things.length > 6 || right.length !== things.length) return null;
+  const used = new Set();
+  const order = [];
+  for (const r of right) {
+    const low = r.toLowerCase();
+    const first = low.split(/\s+/)[0];
+    const exact = things.findIndex((t) => t.toLowerCase() === low);
+    const found = exact >= 0 ? [exact] : things.map((t, i) => (t.toLowerCase().split(/[^\p{L}\d]+/u).includes(first) ? i : -1)).filter((i) => i >= 0);
+    if (found.length !== 1 || used.has(found[0])) return null;
+    used.add(found[0]);
+    order.push(cap(things[found[0]]));
+  }
+  return { ask: sentence(text.slice(0, at)), order };
+}
+
 const VF = /^(Vero|Falso)\b[:,]?\s*/;
 const MOMENT = [
   [/^Capire/, 'capire'],
@@ -123,6 +244,49 @@ const MOMENT = [
   [/^Decidere/, 'decidere'],
   [/^Ripasso/, 'ripasso'],
 ];
+
+// ---------- before the questions ----------
+// what the kid cannot follow: «(L2)», «(Cap. 11 L3)», «Come visto in L1» point at pages of the team's document
+const POINTERS = /\s*\((?:vedi |cfr\.? )?(?:L\d|Cap\.|Piano \d)[^)]*\)|\s+in L\d\b/gi;
+const BRIEF_MAX = 380; // the lines under the idea: about eight on a phone
+const SAY_MAX = 230;
+/** What the screen before the questions says: `say`, the key concept (its first sentence when it is long), and
+ *  `lines`, the first sentences of the lesson's explanation, in their order and without a gap, as long as they fit.
+ *  They stop at the first sentence that is not for the player (a note of who writes: «da verificare»), because the
+ *  one after it would not follow; a list («Primo: … Secondo: …») comes whole or not at all; a last line that only
+ *  announces what does not come («Il calcolo ha due passi.») goes. No lines at all is fine: the idea stands alone. */
+function introOf(src, concept) {
+  const clean = (t) => tidy(String(t ?? '').replace(POINTERS, ''));
+  const parts = sentences(clean(concept));
+  let say = clean(concept);
+  if (say.length > SAY_MAX && parts.length > 1) say = parts[0];
+  const all = sentences(clean(src.content.SPI));
+  const listed = (x) => /^(Primo|Secondo|Terzo|Quarto|Quinto|Sesto|\d[.)])\b/.test(x);
+  const lines = [];
+  let size = 0;
+  let cut = false; // stopped before something that the last line may be announcing
+  for (let i = 0; i < all.length; i++) {
+    const take = [all[i]];
+    if (listed(all[i])) while (i + take.length < all.length && listed(all[i + take.length])) take.push(all[i + take.length]);
+    if (take.some((x) => INSIDE.test(x))) {
+      if (!lines.length && take.length === 1) continue; // a note at the very start: the text begins after it
+      cut = true;
+      break;
+    }
+    const more = take.reduce((n, x) => n + x.length, 0);
+    if (lines.length && size + more > BRIEF_MAX) {
+      cut = take.length > 1;
+      break;
+    }
+    lines.push(...take);
+    size += more;
+    i += take.length - 1;
+  }
+  const announces = (x) => /:$/.test(x) || /^(Attenzione|Ecco|Vediamo|Esempio)\b.{0,40}$/.test(x) || (cut && x.length <= 45);
+  while (lines.length && announces(lines.at(-1))) lines.pop();
+  // the idea is not said twice
+  return { say, lines: lines.filter((x) => !(share(x, say) >= 0.8 && share(say, x) >= 0.6)) };
+}
 
 /** One question of the Excel as an exercise of the app. `ctx`: the lesson's concept, its sentences, the ones used. */
 function exercise(q, n, ctx, notes, where) {
@@ -132,7 +296,24 @@ function exercise(q, n, ctx, notes, where) {
   const moment = MOMENT.find(([re]) => re.test(q.kind))?.[1] ?? 'capire';
   let e;
   const quoted = text.match(/^«(.+)»$/);
-  if (/vero\/falso/i.test(q.kind) && quoted && q.options.every((o) => VF.test(o))) {
+  const cols = columns(q);
+  const match = cols ? null : pairsOf(q);
+  const steps = cols || match ? null : orderOf(q);
+  if (match || steps) {
+    const why = said ?? ctx.concept;
+    e = match
+      ? { n, type: 'abbina', label: q.kind, moment, idea: null, mentor: match.ask, pairs: match.pairs.map((p) => ({ ...p, why })) }
+      : { n, type: 'ordina', label: q.kind, moment, idea: null, mentor: steps.ask, order: steps.order, why };
+    e.line = why;
+    notes[match ? 'pairs' : 'orders'].push(where);
+    if (!said) notes.plain.push(where);
+  } else if (cols) {
+    const why = said ?? ctx.concept;
+    e = { n, type: 'gruppi', label: q.kind, moment, idea: null, mentor: cols.ask, groups: cols.groups, items: cols.items, why };
+    e.line = why;
+    notes.columns.push(where);
+    if (!said) notes.plain.push(where);
+  } else if (/vero\/falso/i.test(q.kind) && quoted && q.options.every((o) => VF.test(o))) {
     // «Vero: …», «Falso, se …» → Vero or Falso; why it is so is the line after the mistake
     const isTrue = right.startsWith('Vero');
     const reason = sentence(right.replace(VF, ''));
@@ -196,11 +377,37 @@ function lessonFrom(src, notes) {
     // «Spiegami» of the variant: the base's, when it is about the same thing; else the closest sentence
     const explain = share(about, base.explain) >= 0.25 ? base.explain : explainFor(about, list, new Set(), [x.line]) ?? base.explain;
     delete x.line;
-    (base.variants ??= []).push({ type: x.type, mentor: x.mentor, options: x.options, explain });
+    (base.variants ??= []).push({ type: x.type, mentor: x.mentor, options: x.options, groups: x.groups, items: x.items, pairs: x.pairs, order: x.order, why: x.why, explain });
   });
   for (const e of exercises) delete e.line;
   if (!src.data_checked) notes.unchecked.push(src.id);
-  return { id, code: `L${src.n}`, floor: src.floor, title: tidy(src.title), exercises, source: src.id };
+  return { id, code: `L${src.n}`, floor: src.floor, title: tidy(src.title), intro: introOf(src, concept), exercises, source: src.id };
+}
+
+// ---------- the few words changed in the pages of the Casi ----------
+// The pages come in as the team wrote them. What is changed here is listed word by word, with why, and each must be
+// found exactly as many times as written: when a new page comes and a change no longer fits, the build says so and
+// leaves that page as it is. Each one is also in 1. LAVORO/lezioni/sorgente/LEGGIMI.md, to be put right at the source.
+const TOUCHES = {
+  'piano-1-caso-2.html': [
+    // 19/11/2026, from a tester: «categorie troppo facile»: the name of a payment said the category it goes into
+    // («Abbonamento aggiuntivo» → Abbonamenti, «Materiali per l'ufficio» → Materiali). Now it says what was bought,
+    // as a line of a statement does, in the words the two Casi already use for it
+    ['nome: "Abbonamento aggiuntivo"', 'nome: "Modelli per documenti e presentazioni"', 1],
+    ['nome: "Materiali per l’ufficio"', 'nome: "Carta, penne e toner"', 1],
+  ],
+};
+function touched(name, html, notes) {
+  let out = html;
+  for (const [from, to, times] of TOUCHES[name] ?? []) {
+    const found = out.split(from).length - 1;
+    if (found !== times) {
+      notes.touches.push(`${name}: «${from}» c'è ${found} volte, non ${times}`);
+      return html;
+    }
+    out = out.split(from).join(to);
+  }
+  return out;
 }
 
 /** What a stage says of itself in the Percorso and on its card: the title and one line (CLAUDE.md §7). */
@@ -220,11 +427,22 @@ export async function fromSource(dir) {
     if (err.code === 'ENOENT') return null;
     throw err;
   }
-  const notes = { opinion: [], plain: [], unchecked: [] };
+  const notes = { opinion: [], plain: [], unchecked: [], columns: [], pairs: [], orders: [], touches: [] };
   const lessons = {};
   const stages = {};
-  for (const src of raw.lessons) {
+  // a new kind of exercise is explained in one line the first time it is met, in the whole course (CLAUDE.md §6)
+  const HELP = {
+    gruppi: 'Tocca la colonna dove va la voce accesa. Puoi anche trascinarla.',
+    abbina: 'Tocca una voce a sinistra, poi la sua a destra.',
+    ordina: 'Tocca le voci nell’ordine giusto.',
+  };
+  const met = new Set();
+  for (const src of [...raw.lessons].sort((a, b) => a.floor - b.floor || a.n - b.n)) {
     const l = lessonFrom(src, notes);
+    for (const e of l.exercises) {
+      if (HELP[e.type] && !met.has(e.type)) e.help = HELP[e.type];
+      met.add(e.type);
+    }
     lessons[l.id] = l;
     (stages[src.floor] ??= [])[src.n <= 3 ? src.n - 1 : src.n] = { title: l.title, idea: one(src.content.CON || src.concept) };
   }
@@ -242,7 +460,7 @@ export async function fromSource(dir) {
   for (const name of pages.sort()) {
     const m = name.match(/^piano-(\d+)(?:-caso-(\d))?\.html$/);
     if (!m) continue;
-    const html = await readFile(join(dir, 'casi', name), 'utf8');
+    const html = touched(name, await readFile(join(dir, 'casi', name), 'utf8'), notes);
     if (m[2]) (each[Number(m[1])] ??= {})[Number(m[2])] = html;
     else sims[Number(m[1])] = html;
   }
