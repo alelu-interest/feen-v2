@@ -15,8 +15,12 @@
 // «Metti in colonna» (19/11/2026, from a tester: «facciamolo a due colonne dove trascinare gli item piuttosto che la
 // scelta della lista»): the items wait in a tray and go into their column. One is always lit: a touch on a column
 // sends it there and lights the next, so an item costs one touch; or it is dragged there.
+// The partner's face is small, on a line with the name above what is said, and what is said takes the whole width of
+// the page, without a bubble (21/11/2026, from a tester: «sposta la sua faccia in alto o più piccolina e metti la
+// domanda sotto full width», «per dare più importanza al contenuto»). The sums are set as sums (conti.js).
 import { PEOPLE } from './people.js';
 import { askLeave, stay } from './esci.js';
+import { sums, formula, figures } from './conti.js';
 
 const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const shuffle = (a) => {
@@ -39,11 +43,13 @@ const TYPE_ASK = { vf: 'Vero o falso?', abbina: 'Tocca una voce a sinistra, poi 
 const COUNT = ['', 'quella', 'le due', 'le tre', 'le quattro', 'le cinque', 'le sei', 'le sette'];
 const STREAK = 5;
 // how tight an exercise can get to stand in one screen (style.css, #lezione[data-fit]): as it is, then 1 the air,
-// 2 the face and the sizes a step down, 3 the face inside the bubble and another step; then the text smaller, K_STEP
+// 2 the sizes a step down, 3 another step; then the text smaller, K_STEP
 // at a time down to K_MIN (an answer stays over 13 px); after that the page scrolls, as it used to
 const FIT = ['', '1', '2', '3'];
 const K_MIN = 0.88;
 const K_STEP = 0.03;
+// the idea of a lesson longer than this is a sentence more than a title: set a size down, so it is not a wall of bold
+const LONG_TITLE = 84;
 
 export function makeLesson(api) {
   const root = document.getElementById('lezione');
@@ -188,6 +194,11 @@ export function makeLesson(api) {
     return who ? `<span class="lz-face"><img src="${PEOPLE[who.partner]}" alt="" /></span>` : '<span class="lz-face lz-face-none"></span>';
   }
   const mentorName = () => api.who()?.partner ?? 'Il mentore';
+  /** Who speaks: the face and the name on one line; `tags` at its end («Idea nuova», «Ci riprovi»). */
+  const who = (tags = '') => `<p class="lz-who">${face()}<b>${esc(mentorName())}</b>${tags}</p>`;
+  const IDEA = '<span class="lz-idea">Idea nuova</span>';
+  /** A text of the lesson that is not searched for hard words: safe for the page, with its sums set. */
+  const txt = (t) => sums(esc(t));
 
   /** The hard words of the exercise, underlined in a text: touching one says its definition. `seen`: the words already
    *  underlined on this screen, which are not underlined again (11/11/2026: «entrata» was underlined three times on
@@ -204,7 +215,7 @@ export function makeLesson(api) {
         return `${pre}${elided ? `<span class="lz-nowrap">${elided}${button}</span>` : button}`;
       });
     }
-    return html;
+    return sums(html);
   }
 
   /** What the mentor says, in two voices (11/11/2026): what comes before the question (the rule, the numbers, the
@@ -218,17 +229,30 @@ export function makeLesson(api) {
     for (const m of t.matchAll(/[.!?…]\s+(?=[\p{Lu}«“])/gu)) at = m.index + m[0].length;
     return at < 0 ? ['', t] : [t.slice(0, at).trim(), t.slice(at)];
   }
-  function mentorLine(e) {
-    // «Vero o falso?» in the bubble only when the help line under it does not say it already
+  function mentorLine(e, idea = false) {
+    // «Vero o falso?» over the statement only when the help line under it does not say it already
     const vf = e.type === 'vf' && !(e.help && !retry);
-    const [lead, ask] = voices(e.mentor);
     const seen = new Set();
+    const tags = `${idea ? IDEA : ''}${retry ? '<span class="lz-again">Ci riprovi</span>' : ''}`;
+    // the figures of the question as a table (sorgente.mjs, figures): the sentences that are not lists stay sentences,
+    // the lists that follow one another share a card. The screen reader hears the question as the team wrote it.
+    if (e.table) {
+      const blocks = [];
+      for (const p of e.table.parts) {
+        if (p.rows && Array.isArray(blocks.at(-1))) blocks.at(-1).push(p);
+        else blocks.push(p.rows ? [p] : p);
+      }
+      const shown = blocks.map((b) => (Array.isArray(b) ? figures(b) : `<p class="lz-lead">${words(b.text, e, seen)}</p>`)).join('');
+      return `<div class="lz-mentor">${who(tags)}
+        <div class="lz-shown" aria-hidden="true">${shown}</div>
+        <h2 class="lz-q" tabindex="-1"><span class="sr-only">${esc(e.mentor.slice(0, e.mentor.length - e.table.ask.length))}</span>${words(e.table.ask, e, seen)}</h2></div>`;
+    }
+    const [lead, ask] = voices(e.mentor);
     // all inside the title, so that a screen reader starting from it hears the situation before the question
     const before = [e.type === 'scenario' ? e.situation : '', lead].filter(Boolean).map((t) => `<span class="lz-lead">${words(t, e, seen)}</span>`).join('');
-    return `<div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b>
-      ${retry ? '<span class="lz-again">Ci riprovi</span>' : ''}
+    return `<div class="lz-mentor">${who(tags)}
       ${vf ? `<span class="lz-vf">${TYPE_ASK.vf}</span>` : ''}
-      <h2 class="lz-q" tabindex="-1">${before}${words(ask, e, seen)}</h2></div></div>`;
+      <h2 class="lz-q" tabindex="-1">${before}${words(ask, e, seen)}</h2></div>`;
   }
 
   // ---------- before the questions: the idea of the lesson ----------
@@ -236,11 +260,17 @@ export function makeLesson(api) {
    *  right or wrong. It stands in one screen like the exercises (fit). */
   function intro() {
     const t = lesson.intro;
+    // the idea in two voices, as a question is: its first clause is the title, what follows is said plainly; a
+    // formula the lesson says in words is also shown as a formula; under them the lines of the lesson's explanation,
+    // as a short text and no longer as a list of points (21/11/2026: a block of bold and three bullets read as made
+    // by a machine)
+    const line = (x) => (x.formula ? formula(x.formula) : `<p>${txt(x)}</p>`);
     frame(
-      `<span class="lz-idea">Idea nuova</span>
-      <div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b>
-        <h2 class="lz-q" tabindex="-1">${esc(t.say)}</h2></div></div>
-      ${t.lines.length ? `<ul class="lz-brief">${t.lines.map((x) => `<li>${esc(x)}</li>`).join('')}</ul>` : ''}`,
+      `<div class="lz-mentor lz-opening">${who(IDEA)}
+        <h2 class="lz-q${t.say.length > LONG_TITLE ? ' lz-q-long' : ''}" tabindex="-1">${txt(t.say)}</h2>
+        ${t.formula ? formula(t.formula) : ''}
+        ${t.sub ? `<p class="lz-sub">${txt(t.sub)}</p>` : ''}</div>
+      ${t.lines.length ? `<div class="lz-brief">${t.lines.map(line).join('')}</div>` : ''}`,
       { foot: false },
     );
     root.querySelector('.lz-body').insertAdjacentHTML('afterend', '<div class="lz-foot"><button class="pill pill-dark wide" data-act="start">Inizia</button></div>');
@@ -256,7 +286,7 @@ export function makeLesson(api) {
     if (['scelta', 'vf', 'completa', 'scenario'].includes(e.type)) {
       // Vero and Falso keep their place; every other list is shuffled (in «Ci riprovi» too)
       ex.options = e.type === 'vf' ? e.options : shuffle(e.options);
-      const opts = ex.options.map((o, i) => `<button class="lz-opt" data-opt="${i}" aria-pressed="false">${esc(o.text)}</button>`).join('');
+      const opts = ex.options.map((o, i) => `<button class="lz-opt" data-opt="${i}" aria-pressed="false">${txt(o.text)}</button>`).join('');
       if (e.type === 'completa') answers = `<p class="lz-sentence" aria-live="polite">${sentence(e, null)}</p><div class="lz-chips">${opts}</div>`;
       else answers = `<div class="lz-opts${e.type === 'vf' ? ' lz-two' : ''}">${opts}</div>`;
     }
@@ -267,8 +297,8 @@ export function makeLesson(api) {
       ex.sel = null;
       // for the screen reader: the two columns have a name, a picked item says so, a paired one says with what
       answers = `<div class="lz-match">
-        <div role="group" aria-label="Voci a sinistra">${ex.left.map((t, i) => `<button class="lz-cell" data-left="${i}" aria-pressed="false">${esc(t)}</button>`).join('')}</div>
-        <div role="group" aria-label="Voci a destra">${ex.right.map((t, i) => `<button class="lz-cell" data-right="${i}" aria-pressed="false">${esc(t)}</button>`).join('')}</div>
+        <div role="group" aria-label="Voci a sinistra">${ex.left.map((t, i) => `<button class="lz-cell" data-left="${i}" aria-pressed="false">${txt(t)}</button>`).join('')}</div>
+        <div role="group" aria-label="Voci a destra">${ex.right.map((t, i) => `<button class="lz-cell" data-right="${i}" aria-pressed="false">${txt(t)}</button>`).join('')}</div>
       </div>`;
     }
     if (e.type === 'ordina') {
@@ -304,8 +334,7 @@ export function makeLesson(api) {
     // stays for the screen reader, which does not see the screen.
     const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="sr-only">${TYPE_ASK[e.type]}</p>` : '';
     // the idea is new on the screen before the questions, when the lesson has one: not said twice
-    frame(`${e.idea != null && !retry && !(lesson.intro && !lesson.review) ? '<span class="lz-idea">Idea nuova</span>' : ''}
-      ${mentorLine(e)}
+    frame(`${mentorLine(e, e.idea != null && !retry && !(lesson.intro && !lesson.review))}
       ${e.source ? `<p class="lz-source">Fonte: ${esc(e.source)}</p>` : ''}
       ${help}${hint}
       <div class="lz-answers">${answers}</div>`);
@@ -349,7 +378,7 @@ export function makeLesson(api) {
           .map((t, i) => `<li><button class="lz-cell on" data-unseq="${i}" aria-label="Passo ${i + 1}: ${esc(t)}. Toglilo${i < ex.seq.length - 1 ? ' con i successivi' : ''}."><b>${i + 1}</b>${esc(t)}</button></li>`)
           .join('')
       : '<li class="lz-empty">Il primo passo che tocchi va qui</li>';
-    pool.innerHTML = ex.items.map((t, i) => (ex.seq.includes(t) ? '' : `<button class="lz-cell" data-seq="${i}">${esc(t)}</button>`)).join('');
+    pool.innerHTML = ex.items.map((t, i) => (ex.seq.includes(t) ? '' : `<button class="lz-cell" data-seq="${i}">${txt(t)}</button>`)).join('');
     ex.pick = ex.seq.length === ex.items.length || null;
   }
 
@@ -499,13 +528,16 @@ export function makeLesson(api) {
     // the right answer in words only where the screen does not show it: among options it is the green one, in sight
     // above the sheet (makeRoom); pairs, steps and a number need to be said. The screen reader hears it always.
     const shownAbove = ['scelta', 'vf', 'completa', 'scenario'].includes(e.type);
+    // a line that is one sum and nothing else («95 − (25 + 58) = 95 − 83 = +12 €.») is set larger, as the sum it is
+    const why = v.why ? words(v.why, e, seen) : '';
+    const whySum = /^<span class="sum">.*<\/span>\.?$/s.test(why) && why.split('class="sum"').length === 2;
     sheet.className = `lz-sheet ${v.ok ? 'ok' : 'no'}`;
     sheet.innerHTML = `<div class="lz-verdict">
         <span class="lz-mark" aria-hidden="true">${v.ok ? '<svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9.4"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>'}</span>
         <h3 tabindex="-1">${v.ok ? 'Giusto' : 'Non è così'}</h3>
       </div>
       ${v.ok ? '' : rightAnswer(v, shownAbove)}
-      ${v.why ? `<p class="lz-why">${words(v.why, e, seen)}</p>` : ''}
+      ${why ? `<p class="lz-why${whySum ? ' lz-why-sum' : ''}">${whySum ? why.replace(/\.$/, '') : why}</p>` : ''}
       <div class="lz-more" id="lz-explain" tabindex="-1" hidden>
         ${theory ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(e.theory ?? e.explain, e, seen)}</p></div>` : ''}
         ${theory && !e.theory ? '' : `<p class="lz-explain">${words(e.explain, e, seen)}</p>`}
@@ -528,10 +560,10 @@ export function makeLesson(api) {
    *  wrong one on a line: before (11/11/2026) they were one sentence in bold with arrows, three lines long, to be
    *  read like a paragraph. A number or an option stays a line. */
   function rightAnswer(v, shownAbove) {
-    if (v.steps) return `<div class="lz-right"><span>La risposta giusta:</span><ol class="lz-right-list">${v.steps.map((t) => `<li>${esc(t)}</li>`).join('')}</ol></div>`;
+    if (v.steps) return `<div class="lz-right"><span>La risposta giusta:</span><ol class="lz-right-list">${v.steps.map((t) => `<li>${txt(t)}</li>`).join('')}</ol></div>`;
     if (v.pairs?.length)
-      return `<div class="lz-right"><span>La risposta giusta:</span><ul class="lz-right-list">${v.pairs.map(([l, r]) => `<li><b>${esc(l)}</b> → ${esc(r)}</li>`).join('')}</ul></div>`;
-    return `<p class="lz-right${shownAbove ? ' sr-only' : ''}">La risposta giusta: <b>${esc(v.answer)}</b></p>`;
+      return `<div class="lz-right"><span>La risposta giusta:</span><ul class="lz-right-list">${v.pairs.map(([l, r]) => `<li><b>${txt(l)}</b> → ${txt(r)}</li>`).join('')}</ul></div>`;
+    return `<p class="lz-right${shownAbove ? ' sr-only' : ''}">La risposta giusta: <b>${txt(v.answer)}</b></p>`;
   }
 
   let sheetRoom = null;
@@ -600,7 +632,7 @@ export function makeLesson(api) {
     const line = n === 1 ? 'Riprendiamo quella che non tornava.' : `Riprendiamo ${COUNT[n] ?? `le ${n}`} che non tornavano.`;
     frame(
       `<div class="lz-pause">
-        <div class="lz-mentor">${face()}<div class="lz-bubble"><b>${esc(mentorName())}</b><p class="lz-say" tabindex="-1">${line}</p></div></div>
+        <div class="lz-mentor">${who()}<p class="lz-say" tabindex="-1">${line}</p></div>
       </div>`,
       { foot: false },
     );

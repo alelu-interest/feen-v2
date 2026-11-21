@@ -792,30 +792,30 @@ let cardIndex = 0;
 let cardFloor = 1;
 let cardResolve = null;
 // The card at the end of a stage is the one thing that stays (partita 09/11/2026, punto 9): it says how the stage
-// went and shows the trophy taken on the way, which before only passed in the banner and in a pop during the flight
-// of the camera. Under the chips the line on the result, above the buttons the trophies (the name only: with its line
-// too, two trophies and large text filled the screen and hid the object; the line stays in the Tu); neither on a card
-// you open.
-$('card-idea').insertAdjacentHTML(
-  'beforebegin',
-  '<p class="card-result" id="card-result" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.2 7.3 7.3 2.2-7.3 2.2L12 21.5l-2.2-7.3L2.5 12l7.3-2.2z" /></svg><span id="card-result-text"></span></p>',
-);
-$('card-idea').insertAdjacentHTML('afterend', '<ul class="card-prizes" id="card-prizes" hidden></ul>');
+// went and shows what you took, the object and the trophies. Laid out again on 21/11/2026 (from a tester: «questa card
+// anche di fine capitolo molto sloppata»): it was a pill, a title, a chip, a sparkle in a yellow circle beside the
+// result and a grey card for the trophy, five shapes for five things. Now the stage in the floor's colour, the title,
+// the result as a plain line under it, and one list for what you took, object and trophies alike: a sign, a name, a
+// word under it. The sparkle is gone: it reads as «made by an AI», and FEEN gives no stars. Neither the result nor
+// the trophies on a card you open yourself.
 /** `result`: the line on how the stage went; `prizes`: the ids of the trophies just earned (fresh cards only). */
 function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   cardIndex = i;
   cardFloor = n;
-  $('card-result-text').textContent = fresh ? result : '';
+  $('card-result').textContent = fresh ? result : '';
   $('card-result').hidden = !fresh || !result;
   const won = fresh ? prizes.map((id) => TROPHIES.find((t) => t.id === id)).filter(Boolean) : [];
-  $('card-prizes').innerHTML = won
-    .map((t) => {
-      const c = t.color ?? 'var(--achievement)';
-      const on = t.color ? inkOn(t.color) : '#ffffff';
-      return `<li class="card-prize" style="--c:${c};--on-c:${on}"><span class="trophy-emblem">${emblem(t.id)}</span><span><span class="card-prize-tag">Traguardo</span><b>${t.name}</b></span></li>`;
-    })
-    .join('');
-  $('card-prizes').hidden = !won.length;
+  $('card-got').querySelectorAll('.card-prize').forEach((li) => li.remove());
+  $('card-got').insertAdjacentHTML(
+    'beforeend',
+    won
+      .map((t) => {
+        const c = t.color ?? 'var(--achievement)';
+        const on = t.color ? inkOn(t.color) : '#ffffff';
+        return `<li class="card-row card-prize" style="--c:${c};--on-c:${on}"><span class="trophy-emblem">${emblem(t.id)}</span><span class="card-row-text"><b>${t.name}</b><small>Traguardo</small></span></li>`;
+      })
+      .join(''),
+  );
   const s = built.get(n).office.stages[i];
   // the three objects of a floor, each opened by you (not the card that comes up by itself when it lands)
   if (!fresh && s.object) {
@@ -828,7 +828,9 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   $('card-tag').textContent = s.tag;
   $('card-title').textContent = s.title;
   $('card-object').textContent = s.object ?? '';
-  $('card-object').closest('.chips').hidden = !s.object; // a lesson without an object: no chip
+  $('card-object-row').hidden = !s.object; // a lesson without an object: no line
+  $('card-object-note').hidden = !fresh; // «Nuovo nel tuo ufficio» when it has just landed; opened from the Ufficio, you are looking at it
+  $('card-got').hidden = !s.object && !won.length;
   $('card-idea').textContent = s.idea;
   // at the end of a stage the card says how it went and what you took (CLAUDE.md §6); the idea in a line belongs to
   // the object's card, opened from the Ufficio (§7): here it was a sixth thing to read (11/11/2026, Davide: less text)

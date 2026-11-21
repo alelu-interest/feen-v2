@@ -635,12 +635,12 @@ body:not([data-tab='ufficio']) .bottom::before {
   height: 18px;
   stroke-width: 2.2;
 }
-/* the stage's chip over the title, the object's under it (revisione della grafica, terza ondata): before, the two chips
-   sat one under the other below the title, in two different colours */
-.card-stage {
-  margin: 0 48px 10px 0;
-  padding: 5px 12px 5px 10px;
-  font-size: calc(13px * var(--fs));
+/* the stage over the title, in the floor's colour: words, no longer a pill (21/11/2026) */
+.card-eyebrow {
+  margin: 0 48px 6px 0;
+  font-size: calc(14px * var(--fs));
+  font-weight: 700;
+  color: var(--accent-deep);
 }
 .card h2 {
   text-wrap: balance;
@@ -653,6 +653,75 @@ body:not([data-tab='ufficio']) .bottom::before {
   font-size: calc(28px * var(--fs-l));
   line-height: 1.08;
   letter-spacing: -0.025em;
+}
+.card h2 {
+  margin: 0 48px 10px 0;
+  font-size: calc(25px * var(--fs-l));
+  line-height: 1.12;
+}
+/* what you took in the stage, and the object of a card you open: one list, a sign, a name, a word under it */
+.card-got {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+.card-got[hidden],
+.card-row[hidden] {
+  display: none;
+}
+.card-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.card-got .card-row:last-child {
+  border-bottom: 1px solid var(--line);
+}
+.card-ico,
+.card-row .trophy-emblem {
+  flex: none;
+  width: 44px;
+  height: 44px;
+}
+.card-ico {
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: var(--accent-light);
+}
+.card-ico svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--accent-deep);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.card-ico svg .f {
+  fill: var(--accent);
+  stroke: var(--accent);
+}
+.card-row .trophy-emblem svg {
+  width: 22px;
+  height: 22px;
+}
+.card-row-text {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.card-row-text b {
+  font-family: var(--title);
+  font-size: calc(17px * var(--fs));
+  font-weight: 700;
+  line-height: 1.25;
+}
+.card-row-text small {
+  font-size: calc(13.5px * var(--fs));
+  color: var(--muted);
 }
 .chips {
   display: flex;
@@ -2388,10 +2457,11 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   font-weight: 700;
   white-space: nowrap;
 }
-.av-ends span:first-child {
+/* each end has its own colour, whichever side it is on (avvio.js, AGREE_RIGHT) */
+.av-ends .yes {
   color: var(--agree-ink);
 }
-.av-ends span:last-child {
+.av-ends .no {
   color: var(--disagree);
 }
 /* back to the statement before (avvio.js, stepBack; 19/11/2026): one quiet word, hung under the circles (and under the
@@ -3908,50 +3978,56 @@ body.in-lesson .toast {
   padding: 10px 20px 20px;
   animation: av-in 0.3s var(--ease);
 }
+/* «Idea nuova», «Ci riprovi»: at the end of the speaker's line (21/11/2026: they were a label on a row of its own,
+   in capitals) */
 .lz-idea {
-  align-self: flex-start;
-  padding: 5px 10px;
-  border-radius: 8px;
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
   background: var(--reward-soft);
   color: var(--reward-ink);
-  font-size: calc(12px * var(--fs));
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: calc(12.5px * var(--fs));
+  font-weight: 700;
+  line-height: 1.3;
 }
+/* who speaks and what is said (21/11/2026, from a tester: «sposta la sua faccia in alto o più piccolina e metti la
+   domanda sotto full width», «per dare più importanza al contenuto»): the partner's face is small, on one line with
+   the name; what is said stands under it on the page, as wide as the answers, and no longer in a bubble beside a
+   face that took a fifth of the width. The white cards on the screen are the things to touch or to read as data. */
 .lz-mentor {
+  display: grid;
+  gap: 10px;
+}
+.lz-who {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  margin: 0;
+}
+.lz-who b {
+  font-size: calc(14px * var(--fs));
+  font-weight: 700;
+  color: var(--muted);
+}
+.lz-who .lz-again {
+  margin-left: auto;
 }
 .lz-face {
   flex: none;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  width: 56px;
-  height: 62px;
+  width: 32px;
+  height: 32px;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 50%;
   background: var(--paper);
   box-shadow: inset 0 0 0 1px var(--paper-edge);
 }
 .lz-face img {
   height: 100%;
   width: auto;
-}
-.lz-bubble {
-  flex: 1;
-  display: grid;
-  gap: 4px;
-  padding: 12px 14px 14px;
-  border-radius: 4px 20px 20px 20px;
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-}
-.lz-bubble b {
-  font-size: calc(13px * var(--fs));
-  color: var(--muted);
 }
 .lz-vf {
   font-size: calc(13px * var(--fs));
@@ -3961,14 +4037,22 @@ body.in-lesson .toast {
 .lz-q {
   margin: 0;
   font-family: var(--title);
-  font-size: calc(21px * var(--fs-l));
+  font-size: calc(22px * var(--fs-l));
   font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
+  line-height: 1.22;
+  letter-spacing: -0.012em;
   outline: none;
 }
+/* the figures of a question, set as a table (conti.js, figures), and the sentences around them */
+.lz-shown {
+  display: grid;
+  gap: 8px;
+}
+#lezione .lz-mentor .lz-shown .lz-lead {
+  margin: 0;
+}
 .lz-source {
-  margin: -4px 0 0 68px;
+  margin: -4px 0 0;
   font-size: calc(12px * var(--fs));
   color: var(--muted);
 }
@@ -4208,31 +4292,143 @@ body.in-lesson .toast {
   display: grid;
   gap: 8px;
 }
-/* before the questions (19/11/2026): under what the partner says, the first lines of the lesson's explanation, one
-   to a line, in the plain voice */
-.lz-brief {
-  list-style: none;
-  margin: 0;
-  padding: 2px 4px 0;
-  display: grid;
+/* before the questions (19/11/2026; laid out again on 21/11/2026, from a tester: «sta roba molto slopped»: it was a
+   block of bold in a bubble and three bullets). The idea is the title of the screen; what follows it is said plainly
+   under it; a formula stands on a card; the lines of the lesson's explanation are a short text under a rule. */
+.lz-opening {
   gap: 12px;
 }
-.lz-brief li {
-  position: relative;
-  padding-left: 18px;
+.lz-opening .lz-q {
+  font-size: calc(26px * var(--fs-l));
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lz-opening .lz-q.lz-q-long {
+  font-size: calc(21.5px * var(--fs-l));
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+.lz-sub {
+  margin: 0;
+  font-size: calc(17px * var(--fs));
+  font-weight: 500;
+  line-height: 1.42;
+  color: var(--ink);
+  text-wrap: pretty;
+}
+.lz-brief {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+.lz-brief p {
+  margin: 0;
   font-size: calc(16px * var(--fs));
   line-height: 1.45;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+/* ---------- the sums (js/conti.js; 21/11/2026, from a tester: «modi migliori per la syntax matematica») ---------- */
+/* a sum in a text: figures of one width, a little heavier than the words around, a step never broken */
+.sum {
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 600;
+}
+.sum-step {
+  white-space: nowrap;
+}
+.sum b {
+  font-weight: 800;
+}
+#lezione sup {
+  font-size: 0.66em;
+  line-height: 0;
+  vertical-align: super;
+}
+/* a formula on its own card: names and signs, a division as a fraction */
+.fx {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  margin: 0;
+  padding: 16px 14px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--title);
+  font-size: calc(18px * var(--fs-l));
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
   color: var(--ink);
 }
-.lz-brief li::before {
-  content: '';
-  position: absolute;
-  left: 2px;
-  top: 0.62em;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--action);
+.fx-sign {
+  font-size: 1.2em;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--action);
+}
+.fx-frac {
+  display: inline-grid;
+  gap: 5px;
+}
+.fx-frac span + span {
+  padding-top: 5px;
+  border-top: 2px solid var(--ink);
+}
+/* the amounts a question lists: a name and its amount on a line */
+.figs {
+  padding: 4px 14px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+.figs ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.figs li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 1px 16px;
+  padding: 9px 0;
+  font-size: calc(16px * var(--fs));
+  line-height: 1.3;
+  color: var(--ink);
+}
+.figs li + li,
+.figs ul + .figs-head,
+.figs ul + ul {
+  border-top: 1px solid var(--line);
+}
+.figs li b {
+  font-family: var(--title);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+.figs li small {
+  grid-column: 1 / -1;
+  font-size: calc(13.5px * var(--fs));
+  color: var(--muted);
+}
+.figs-head {
+  margin: 0;
+  padding: 9px 0 0;
+  font-size: calc(13px * var(--fs));
+  font-weight: 700;
+  color: var(--muted);
+}
+.figs-head + ul li:first-child {
+  padding-top: 4px;
 }
 /* put in columns (19/11/2026): the items wait in a tray, one of them lit; a touch on a column sends the lit one there,
    or the finger carries it. The tray gets shorter as the items go and the columns take the height it leaves: a large
@@ -4455,8 +4651,8 @@ body.in-lesson .toast {
 /* ---------- one screen, no scrolling (17/11/2026, the user: «non voglio scorrere le domande, deve essere fisso come
    Duolingo… tutto nella stessa pagina, non devo muovermi, devo solamente cliccare la risposta giusta») ----------
    The exercise always stands between the bar and «Verifica», and the page cannot be dragged. lezione.js (fit) tries
-   the page as it is; if it is too tall, tighter and tighter: 1 the air between things, 2 the mentor's face and the
-   sizes a step down, 3 the face inside the bubble (the question gets the whole width) and the sizes another step;
+   the page as it is; if it is too tall, tighter and tighter: 1 the air between things, 2 the sizes a step down, 3
+   another step (since 21/11/2026 the question has the whole width at every level, the face is small on its line);
    then the text a little smaller at a time (--lz-k, down to 0.88: an answer never under 13 px, a touch never under
    44). Only when not even that is enough (a small phone with very large text) the page scrolls as it used to
    (data-fit="scroll"). After «Verifica» the page moves by itself to keep the marked answers above the sheet
@@ -4477,8 +4673,11 @@ body.in-lesson .toast {
 #lezione[data-fit] .lz-foot {
   padding-top: 6px;
 }
-#lezione[data-fit] .lz-bubble {
-  padding: 10px 12px 12px;
+#lezione[data-fit] .lz-mentor {
+  gap: 8px;
+}
+#lezione[data-fit] .lz-opening {
+  gap: 10px;
 }
 #lezione[data-fit] .lz-q {
   line-height: 1.2;
@@ -4512,9 +4711,17 @@ body.in-lesson .toast {
 }
 #lezione[data-fit] .lz-brief {
   gap: 8px;
+  padding-top: 10px;
 }
-#lezione[data-fit] .lz-brief li {
+#lezione[data-fit] .lz-brief p,
+#lezione[data-fit] .lz-sub {
   line-height: 1.36;
+}
+#lezione[data-fit] .fx {
+  padding: 12px;
+}
+#lezione[data-fit] .figs li {
+  padding: 7px 0;
 }
 #lezione[data-fit] .lz-tray,
 #lezione[data-fit] .lz-cols {
@@ -4541,26 +4748,40 @@ body.in-lesson .toast {
 #lezione[data-fit] .lz-help {
   padding: 8px 10px;
 }
-/* 2 · the mentor's face smaller, the sizes a step down */
+/* 2 · the sizes a step down */
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) {
-  --lz-q: 19px;
+  --lz-q: 19.5px;
   --lz-lead: 15px;
   --lz-o: 16px;
+  --lz-h: 23px;
 }
-#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-mentor {
-  gap: 10px;
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-who {
+  min-height: 28px;
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-face {
-  width: 44px;
-  height: 48px;
-  border-radius: 13px;
-}
-#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-source {
-  margin-left: 54px;
+  width: 28px;
+  height: 28px;
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-idea {
   padding: 3px 8px;
-  font-size: calc(11px * var(--fs));
+  font-size: calc(11.5px * var(--fs));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-opening .lz-q {
+  font-size: calc(var(--lz-h) * var(--fs-l) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-opening .lz-q.lz-q-long {
+  font-size: calc(var(--lz-q) * var(--fs-l) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-sub {
+  font-size: calc((var(--lz-lead) + 1px) * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .figs li {
+  padding: 6px 0;
+  font-size: calc(var(--lz-lead) * var(--fs) * var(--lz-k, 1));
+}
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .fx {
+  padding: 10px 12px;
+  font-size: calc(16.5px * var(--fs-l) * var(--lz-k, 1));
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-q {
   font-size: calc(var(--lz-q) * var(--fs-l) * var(--lz-k, 1));
@@ -4579,7 +4800,7 @@ body.in-lesson .toast {
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-two .lz-opt {
   min-height: 72px;
 }
-#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-brief li {
+#lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-brief p {
   font-size: calc(var(--lz-lead) * var(--fs) * var(--lz-k, 1));
 }
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-answers {
@@ -4595,39 +4816,40 @@ body.in-lesson .toast {
 #lezione:is([data-fit='2'], [data-fit='3'], [data-fit='scroll']) .lz-value {
   font-size: calc(34px * var(--fs-l));
 }
-/* 3 · the face inside the bubble, beside the name: the question gets the whole width; the sizes another step */
+/* 3 · the sizes another step */
 #lezione:is([data-fit='3'], [data-fit='scroll']) {
   --lz-q: 17.5px;
   --lz-lead: 14.5px;
   --lz-o: 15px;
+  --lz-h: 20.5px;
 }
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-body {
   gap: 8px;
 }
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-mentor {
-  position: relative;
-  display: block;
+  gap: 6px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-who {
+  min-height: 24px;
 }
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-face {
-  position: absolute;
-  z-index: 1;
-  left: 12px;
-  top: 9px;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
 }
-#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-bubble {
-  border-radius: 18px;
+#lezione:is([data-fit='3'], [data-fit='scroll']) .figs li {
+  padding: 5px 0;
 }
-#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-bubble > b {
-  display: flex;
-  align-items: center;
-  min-height: 26px;
-  padding-left: 34px;
+#lezione:is([data-fit='3'], [data-fit='scroll']) .fx {
+  padding: 8px 10px;
+  gap: 4px 8px;
+  font-size: calc(15.5px * var(--fs-l) * var(--lz-k, 1));
 }
-#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-source {
-  margin-left: 0;
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-brief {
+  gap: 6px;
+  padding-top: 8px;
+}
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-opening {
+  gap: 8px;
 }
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-answers,
 #lezione:is([data-fit='3'], [data-fit='scroll']) .lz-opts,
@@ -4747,6 +4969,10 @@ body.in-lesson .toast {
   line-height: 1.45;
   color: var(--ink);
   outline: none; /* it takes the focus when «Spiegami» opens it, for the screen reader (lezione.js): no ring */
+}
+.lz-why.lz-why-sum {
+  font-size: calc(18px * var(--fs));
+  line-height: 1.5;
 }
 .lz-explain {
   padding: 12px 14px;
@@ -5239,64 +5465,22 @@ ol.lz-right-list li::before {
 .av-paper.stamped .av-stamp {
   transition: opacity 0.25s ease-out, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.25);
 }
-/* the line on the result, under the chips, with the banner's star */
+/* the line on the result, under the title: plain words (21/11/2026: it had a sparkle in a yellow circle) */
 .card-result {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: -2px 0 14px;
-  font-family: var(--title);
-  font-weight: 700;
+  margin: 0 0 16px;
   font-size: calc(17px * var(--fs));
-  line-height: 1.3;
-  color: var(--ink);
-}
-.card-result svg {
-  flex: none;
-  width: 32px;
-  height: 32px;
-  padding: 7px;
-  border-radius: 50%;
-  background: var(--reward-soft);
-  fill: var(--reward);
-  stroke: none;
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-wrap: pretty;
 }
 /* the trophies taken during the stage: in the card until «Continua», never in a pop during the flight */
-.card-prizes {
-  display: grid;
-  gap: 8px;
-  margin: -6px 0 18px;
-  padding: 0;
-  list-style: none;
-}
 .card-prize {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 14px 10px 10px;
-  border-radius: 18px;
-  background: var(--surface-2);
   animation: prize-in 0.4s var(--ease) 0.3s both;
 }
 .card-prize .trophy-emblem {
   background: var(--c, var(--achievement));
   box-shadow: 0 3px 0 color-mix(in srgb, var(--c, var(--achievement)) 68%, #000);
   color: var(--on-c, #ffffff);
-}
-.card-prize b {
-  display: block;
-  font-family: var(--title);
-  font-size: calc(16px * var(--fs));
-  font-weight: 700;
-  line-height: 1.25;
-}
-.card-prize-tag {
-  display: block;
-  font-size: calc(12px * var(--fs));
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
 }
 @keyframes prize-in {
   from {

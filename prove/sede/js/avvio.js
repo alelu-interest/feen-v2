@@ -24,6 +24,8 @@ const KEY = 'feen-avvio';
 const ORDER = ['alto-innovativo', 'alto-tradizionale', 'basso-innovativo', 'basso-tradizionale'];
 // the women first in every pair (CLAUDE.md §4): the partner is «la socia» or «il socio»
 const WOMEN = new Set(ORDER.map((k) => PROFILES[k].names[0]));
+// which side «D’accordo» is on: true, the right (21/11/2026); false, the left, as it was
+const AGREE_RIGHT = true;
 const LABELS = ['Molto d’accordo', 'D’accordo', 'Un po’ d’accordo', 'Né d’accordo né in disaccordo', 'Un po’ in disaccordo', 'In disaccordo', 'Per niente d’accordo'];
 // what the partner says in the empty company, one line per touch: two lines since 09/11/2026 (revisione UX, stanza 4),
 // the partner and the launch, then the contract. Provisional, Claude's: the product of the launch is never said.
@@ -235,9 +237,16 @@ export function makeAvvio(api) {
     if (!opened && s.i === 0 && s.answers.every((a) => a === null)) return apertura();
     const q = QUESTIONS[s.i];
     const pips = QUESTIONS.map((_, k) => `<i class="${k < s.i ? 'on' : k === s.i ? 'now' : ''}"></i>`).join('');
-    const dots = SCALE.values
-      .map((v, k) => `<button class="av-dot d${k}" data-val="${v}" aria-label="${LABELS[k]}" aria-pressed="${s.answers[s.i] === v}"></button>`)
+    // «In disaccordo» on the left, «D’accordo» on the right (21/11/2026, from a tester: «dovrebbero essere invertite
+    // accordo e disaccordo»): the scale reads like a cursor, from less to more, and no longer has the order of the
+    // test FEEN took the method from. Each circle keeps its value, its size and its colour: only the side changes.
+    const order = SCALE.values.map((v, k) => [v, k]);
+    if (AGREE_RIGHT) order.reverse();
+    const dots = order
+      .map(([v, k]) => `<button class="av-dot d${k}" data-val="${v}" aria-label="${LABELS[k]}" aria-pressed="${s.answers[s.i] === v}"></button>`)
       .join('');
+    const ends = [`<span class="yes">${SCALE.left}</span>`, `<span class="no">${SCALE.right}</span>`];
+    if (AGREE_RIGHT) ends.reverse();
     // the statement up top, the circles in the middle of the screen (10/11/2026, Davide)
     screen(
       'av-page av-test',
@@ -246,7 +255,7 @@ export function makeAvvio(api) {
       <div class="av-mid">
         <div class="av-scale" role="group" aria-label="Quanto sei d’accordo">
           <div class="av-dots">${dots}</div>
-          <div class="av-ends" aria-hidden="true"><span>${SCALE.left}</span><span>${SCALE.right}</span></div>
+          <div class="av-ends" aria-hidden="true">${ends.join('')}</div>
           ${s.i > 0 ? BACK : ''}
         </div>
       </div>`,

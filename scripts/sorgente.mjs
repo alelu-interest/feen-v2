@@ -30,6 +30,9 @@
 //    with the questions alone, the first one asked for something nobody had said.
 //  - the 3 variants say of which exercise they are a variant («variante di L1 es.3»): they are that exercise's other
 //    version in a review (CLAUDE.md §7, «nei ripassi i conti cambiano numeri»).
+//  - the figures of a question that lists them («Entrate 95 €, spese fisse 25 €, spese variabili 58 €. Qual è il
+//    saldo?») are also given as a small table, and a formula said in words («il saldo è entrate meno uscite») as a
+//    formula (21/11/2026, from a tester: «modi migliori per la syntax matematica»): see «the sums, set as sums».
 // A card written by hand and approved (1. LAVORO/lezioni/piano-N/Lx-scheda.md) takes the place of the lesson with the
 // same number: that is how one lesson is fixed without touching the Excel.
 
@@ -245,6 +248,135 @@ const MOMENT = [
   [/^Ripasso/, 'ripasso'],
 ];
 
+// ---------- the sums, set as sums ----------
+// (21/11/2026, from a tester: «trova forse anche modi migliori per la syntax matematica».) The team writes the numbers
+// of a question inside a sentence: «Entrate 95 € (60 € di paghetta e 35 € di un lavoretto), spese fisse 25 €, spese
+// variabili 58 €. Qual è il saldo?». On a phone it is a line of figures to keep in mind. Here such a list becomes a
+// small table, a name and its amount on a line, like a bank statement; and a formula said in words («il saldo del
+// mese è entrate meno uscite») is also shown as a formula. Nothing is rewritten: names, amounts and their order are
+// the team's. Only what reads as a list or a formula with certainty: anything else stays the sentence it was.
+const AMOUNT = String.raw`(?:circa )?[+−]?\d+(?:[.,]\d+)*\s?(?:€|%)(?:\/\p{Ll}+)?`;
+const NAME = String.raw`[\p{L}«»’][\p{L}«»’/ -]*?`;
+const ROW_NAME_FIRST = new RegExp(`^(${NAME})\\s(?:(?:di|del|della|da|dal|al|pari a)\\s)?(${AMOUNT})(?:\\s\\(([^)]*)\\))?$`, 'u');
+const ROW_AMOUNT_FIRST = new RegExp(`^(${AMOUNT})\\s(?:(?:di|del|della|dal|dalla|da|per)\\s|d’)?(${NAME})$`, 'u');
+// with one of these a name is a sentence, not the name of an amount («Hai comprato a», «Un gioco costa»)
+const NOT_A_NAME =
+  /(^|\s)(hai|ho|ha|hanno|è|sono|era|costa|costano|paga|paghi|pagano|versi|compri|comprato|perdi|perde|torna|scende|sale|resta|restano|restituisce|rimborsa|rimborsano|vanno|va|rende|raddoppia|guadagni|spendi|ti|si|ci|che|se|con|il|lo|la|i|gli|le|un|uno|una|ogni|entrambi|circa|media|non|ma|poi|su|tra|fra)(\s|$)|(^|\s)(l|un)’/i;
+/** The items of a list, split at the commas that are not inside brackets. */
+function commas(t) {
+  const out = [];
+  let depth = 0;
+  let cur = '';
+  for (let i = 0; i < t.length; i++) {
+    if (t[i] === '(') depth++;
+    if (t[i] === ')') depth--;
+    if (!depth && t[i] === ',' && t[i + 1] === ' ') {
+      out.push(cur);
+      cur = '';
+      i++;
+    } else cur += t[i];
+  }
+  return [...out, cur].map((x) => x.trim());
+}
+/** A sentence that is a list of amounts («Uscite: 250 € di affitto, 60 € di abbonamenti e 90 € di spese varie.»), as
+ *  its rows, with what it says before the colon as their title; null when it is not one. */
+function listOf(text) {
+  let t = text.replace(/[.]$/, '');
+  let head = '';
+  const colon = t.indexOf(': ');
+  if (colon > 0 && !/\d/.test(t.slice(0, colon)) && t.slice(0, colon).split(' ').length <= 4) {
+    head = t.slice(0, colon);
+    t = t.slice(colon + 2);
+  }
+  const named = (name) => !NOT_A_NAME.test(name) && name.split(/\s+/).length <= 5;
+  const row = (x) => {
+    let r = x.match(ROW_NAME_FIRST);
+    if (r && named(r[1])) return { name: cap(r[1]), amount: r[2], ...(r[3] ? { note: cap(r[3]) } : {}) };
+    r = x.match(ROW_AMOUNT_FIRST);
+    return r && named(r[2]) ? { name: cap(r[2]), amount: r[1] } : null;
+  };
+  let items = commas(t);
+  const last = items.at(-1);
+  const and = last.lastIndexOf(' e ');
+  if (!row(last) && and > 0) items = [...items.slice(0, -1), last.slice(0, and), last.slice(and + 3)];
+  const rows = items.map(row);
+  return rows.every(Boolean) ? { head, rows } : null;
+}
+/** The figures of a question as a table: { parts, ask }, where a part is a sentence ({ text }) or a list ({ head,
+ *  rows }) and `ask` is the question itself. null when the question has no list of at least two amounts. */
+function figures(text) {
+  const t = tidy(text);
+  const tries = [];
+  // as the lesson reads it: what comes before the last sentence, when that one asks
+  let at = -1;
+  if (t.endsWith('?')) for (const m of t.matchAll(/[.!?…]\s+(?=[\p{Lu}«“])/gu)) at = m.index + m[0].length;
+  if (at > 0) tries.push([t.slice(0, at).trim(), t.slice(at)]);
+  // «Ricavi 500.000 €, costi 450.000 €: utile?»
+  const colon = t.lastIndexOf(': ');
+  if (colon > 0) tries.push([t.slice(0, colon), cap(t.slice(colon + 2))]);
+  for (const [lead, ask] of tries) {
+    const parts = [];
+    for (const one of sentences(lead)) {
+      const list = listOf(one);
+      if (list) parts.push(list);
+      else if (parts.at(-1)?.text != null) parts.at(-1).text += ` ${one}`;
+      else parts.push({ text: sentence(one) });
+    }
+    if (parts.some((p) => p.rows?.length >= 2)) return { parts, ask };
+  }
+  return null;
+}
+
+const ARTICLE = String.raw`(?:il |lo |la |l’|i |gli |le |un |una |un’)?`;
+const TERM = String.raw`[\p{L}/][\p{L}/’ ]*?`;
+// «Il saldo del mese è entrate meno uscite» · «L’utile è la differenza: ricavi meno costi» · «Il margine è l’utile
+// diviso per i ricavi». Not «più»: «il modo più economico» is not a sum.
+const SAID = new RegExp(`^${ARTICLE}(${TERM})(?: \\([^)]*\\))? (?:è|sono)(?: la differenza:)? ${ARTICLE}(${TERM}) (meno|divis[oa] per|divis[oa]) ${ARTICLE}(${TERM})$`, 'iu');
+const NOT_A_TERM = /(^|\s)(che|se|non|ma|si|ti|ci|quanto|quello|ciò|come|quando|dove|è|sono|ha|hai|più|meno|molto|poco|sempre|mai|già|anche|solo)(\s|$)/i;
+/** A formula written with its signs («capitale × (1 + tasso)^anni») as its pieces: names, numbers and brackets kept
+ *  whole, the signs between them on their own. */
+function pieces(raw) {
+  const out = [];
+  let depth = 0;
+  let cur = '';
+  for (let i = 0; i < raw.length; i++) {
+    const c = raw[i];
+    if (c === '(') depth++;
+    if (c === ')') depth--;
+    if (!depth && '=×÷−+'.includes(c) && raw[i - 1] === ' ' && raw[i + 1] === ' ') {
+      out.push(cur.trim(), c);
+      cur = '';
+    } else cur += c;
+  }
+  out.push(cur.trim());
+  // a name takes a capital letter, as in the formulas said in words; a letter alone («i», «n») is a variable
+  const named = (x) => (/^\p{Ll}{2}/u.test(x) ? cap(x) : x);
+  for (let i = 0; i < out.length; i += 2) out[i] = named(out[i]);
+  // «Importo mensile = costo ÷ numero di mesi»: one division, as a fraction
+  if (out.length === 5 && out[1] === '=' && out[3] === '÷' && !/[()]/.test(raw)) return [out[0], '=', { num: named(out[2]), den: named(out[4]) }];
+  return out;
+}
+/** The formula a sentence says, if it says one: { tokens, whole }. `tokens`: names and signs in their order, a
+ *  division as { num, den }; `whole`: the sentence says nothing else, so the formula can stand in its place. */
+function formulaIn(text) {
+  const t = text.replace(/[.]$/, '');
+  const clauses = [t];
+  for (const cut of [': ', ', ']) if (t.includes(cut) && !/la differenza: /.test(t.slice(0, t.indexOf(cut) + 2))) clauses.push(t.slice(0, t.indexOf(cut)));
+  for (const c of clauses) {
+    const r = c.match(SAID);
+    if (!r || [r[1], r[2], r[4]].some((x) => NOT_A_TERM.test(x) || x.split(/\s+/).length > 6)) continue;
+    const [, left, a, op, b] = r;
+    return { tokens: /meno/i.test(op) ? [cap(left), '=', cap(a), '−', cap(b)] : [cap(left), '=', { num: cap(a), den: cap(b) }], whole: c === t };
+  }
+  // with its signs already: «Importo mensile = costo ÷ numero di mesi», «…la formula è capitale × (1 + tasso)^anni»,
+  // «…a tuo carico (danno − franchigia = rimborso)». A sum with its numbers is not a formula.
+  const begins = /^\p{L}[\p{L} ’/]* = /u.test(t);
+  const inside = t.match(/la formula (?:è )?(.+)$/i) ?? t.match(/\(([^()]* = [^()]*)\)$/);
+  const raw = begins ? t : inside?.[1].split(', dove ')[0];
+  if (!raw || /\d\s?[€%]/.test(raw) || !/ [=×÷−+] /.test(raw)) return null;
+  return { tokens: pieces(raw), whole: begins };
+}
+
 // ---------- before the questions ----------
 // what the kid cannot follow: «(L2)», «(Cap. 11 L3)», «Come visto in L1» point at pages of the team's document
 const POINTERS = /\s*\((?:vedi |cfr\.? )?(?:L\d|Cap\.|Piano \d)[^)]*\)|\s+in L\d\b/gi;
@@ -285,7 +417,37 @@ function introOf(src, concept) {
   const announces = (x) => /:$/.test(x) || /^(Attenzione|Ecco|Vediamo|Esempio)\b.{0,40}$/.test(x) || (cut && x.length <= 45);
   while (lines.length && announces(lines.at(-1))) lines.pop();
   // the idea is not said twice
-  return { say, lines: lines.filter((x) => !(share(x, say) >= 0.8 && share(say, x) >= 0.6)) };
+  const kept = lines.filter((x) => !(share(x, say) >= 0.8 && share(say, x) >= 0.6));
+  // (21/11/2026, from a tester: the screen was «molto slopped», a block of bold and three bullets.) The idea in two
+  // voices, as a question is: its first clause is the title of the screen, what follows it is said plainly under it.
+  const [title, sub] = headline(say);
+  const said = formulaIn(sentences(say)[0] ?? say);
+  let room = said ? 1 : 2; // two formulas on a screen at most
+  const out = [];
+  for (const x of kept) {
+    // «Il saldo mensile è la differenza.» under «Saldo del mese = Entrate − Uscite» says it a third time
+    if (said && /(^|\s)è la differenza\.?$/i.test(x) && x.length < 50) continue;
+    const f = room ? formulaIn(x) : null;
+    if (!f) {
+      out.push(x);
+      continue;
+    }
+    room--;
+    if (!f.whole) out.push(x);
+    out.push({ formula: f.tokens });
+  }
+  return { say: title, ...(sub ? { sub } : {}), ...(said ? { formula: said.tokens } : {}), lines: out };
+}
+const HEAD_MIN = 20;
+const HEAD_MAX = 120;
+/** The key concept as a title and what follows it: cut at the first colon, semicolon or full stop that leaves a title
+ *  neither too short nor too long. No such place: the whole concept is the title. */
+function headline(concept) {
+  const cuts = [...concept.matchAll(/: |; |(?<=[.!?…])\s+(?=[\p{Lu}«“])/gu)].filter((m) => m.index >= HEAD_MIN);
+  // the first place that leaves a short title; when the first sentence is long, its end
+  const m = cuts.find((x) => x.index <= HEAD_MAX) ?? cuts[0];
+  if (!m) return [concept.replace(/[.]$/, ''), ''];
+  return [concept.slice(0, m.index).replace(/[.]$/, ''), sentence(concept.slice(m.index + m[0].length))];
 }
 
 /** One question of the Excel as an exercise of the app. `ctx`: the lesson's concept, its sentences, the ones used. */
@@ -341,6 +503,11 @@ function exercise(q, n, ctx, notes, where) {
       seen.add(k);
     }
     e = { n, type: 'scelta', label: q.kind, moment, idea: null, mentor: text, options };
+    const table = figures(text);
+    if (table) {
+      e.table = table;
+      notes.tables.push(where);
+    }
     e.line = why;
     if (!said) notes.plain.push(where);
     if (/^Decidere/.test(q.kind) && NOTE.test(tidy(q.why))) notes.opinion.push(where);
@@ -377,7 +544,7 @@ function lessonFrom(src, notes) {
     // «Spiegami» of the variant: the base's, when it is about the same thing; else the closest sentence
     const explain = share(about, base.explain) >= 0.25 ? base.explain : explainFor(about, list, new Set(), [x.line]) ?? base.explain;
     delete x.line;
-    (base.variants ??= []).push({ type: x.type, mentor: x.mentor, options: x.options, groups: x.groups, items: x.items, pairs: x.pairs, order: x.order, why: x.why, explain });
+    (base.variants ??= []).push({ type: x.type, mentor: x.mentor, table: x.table ?? null, options: x.options, groups: x.groups, items: x.items, pairs: x.pairs, order: x.order, why: x.why, explain });
   });
   for (const e of exercises) delete e.line;
   if (!src.data_checked) notes.unchecked.push(src.id);
@@ -427,7 +594,7 @@ export async function fromSource(dir) {
     if (err.code === 'ENOENT') return null;
     throw err;
   }
-  const notes = { opinion: [], plain: [], unchecked: [], columns: [], pairs: [], orders: [], touches: [] };
+  const notes = { opinion: [], plain: [], unchecked: [], columns: [], pairs: [], orders: [], touches: [], tables: [], formulas: [] };
   const lessons = {};
   const stages = {};
   // a new kind of exercise is explained in one line the first time it is met, in the whole course (CLAUDE.md §6)
@@ -439,6 +606,7 @@ export async function fromSource(dir) {
   const met = new Set();
   for (const src of [...raw.lessons].sort((a, b) => a.floor - b.floor || a.n - b.n)) {
     const l = lessonFrom(src, notes);
+    if (l.intro.formula || l.intro.lines.some((x) => x.formula)) notes.formulas.push(src.id);
     for (const e of l.exercises) {
       if (HELP[e.type] && !met.has(e.type)) e.help = HELP[e.type];
       met.add(e.type);

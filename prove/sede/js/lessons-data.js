@@ -345,11 +345,18 @@ export const LESSONS = {
     "floor": 1,
     "title": "Entrate, uscite e saldo: dove finiscono i tuoi soldi",
     "intro": {
-      "say": "Il saldo del mese è entrate meno uscite: se è positivo si accumula patrimonio, se è negativo si consuma ciò che si ha o ci si fa prestare soldi.",
+      "say": "Il saldo del mese è entrate meno uscite",
+      "sub": "Se è positivo si accumula patrimonio, se è negativo si consuma ciò che si ha o ci si fa prestare soldi.",
+      "formula": [
+        "Saldo del mese",
+        "=",
+        "Entrate",
+        "−",
+        "Uscite"
+      ],
       "lines": [
         "Le entrate sono i soldi che ricevi: paghetta, lavoretti (ripetizioni, babysitting, aiuto in un’attività di famiglia), regali, rimborsi.",
-        "Le uscite si dividono in fisse (stesso importo ogni mese: abbonamento ai mezzi, ricarica del telefono, un abbonamento streaming) e variabili (cambiano: pizza con gli amici, vestiti, snack, giochi).",
-        "Il saldo mensile è la differenza."
+        "Le uscite si dividono in fisse (stesso importo ogni mese: abbonamento ai mezzi, ricarica del telefono, un abbonamento streaming) e variabili (cambiano: pizza con gli amici, vestiti, snack, giochi)."
       ]
     },
     "exercises": [
@@ -440,11 +447,35 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Entrate",
+                  "amount": "95 €",
+                  "note": "60 € di paghetta e 35 € di un lavoretto"
+                },
+                {
+                  "name": "Spese fisse",
+                  "amount": "25 €"
+                },
+                {
+                  "name": "Spese variabili",
+                  "amount": "58 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Qual è il saldo?"
+        },
         "explain": "Le entrate sono i soldi che ricevi: paghetta, lavoretti (ripetizioni, babysitting, aiuto in un’attività di famiglia), regali, rimborsi.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Hai 60 € a inizio mese. Ricevi 40 € di paghetta e spendi 30 € di spese fisse e 55 € di variabili. Quanto ti resta?",
+            "table": null,
             "options": [
               {
                 "text": "25 €",
@@ -503,6 +534,41 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Entrate: 350 € dal part-time e 120 € dalla famiglia. Uscite: 250 € di affitto e bollette, 60 € di abbonamenti e 90 € di spese varie. Saldo del mese?",
+            "table": {
+              "parts": [
+                {
+                  "head": "Entrate",
+                  "rows": [
+                    {
+                      "name": "Part-time",
+                      "amount": "350 €"
+                    },
+                    {
+                      "name": "Famiglia",
+                      "amount": "120 €"
+                    }
+                  ]
+                },
+                {
+                  "head": "Uscite",
+                  "rows": [
+                    {
+                      "name": "Affitto e bollette",
+                      "amount": "250 €"
+                    },
+                    {
+                      "name": "Abbonamenti",
+                      "amount": "60 €"
+                    },
+                    {
+                      "name": "Spese varie",
+                      "amount": "90 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Saldo del mese?"
+            },
             "options": [
               {
                 "text": "−70 €",
@@ -561,6 +627,45 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Stipendio netto 1.200 €. Affitto condiviso 400 €, bollette 80 €, trasporti 50 €, spesa 180 €, uscite 120 €. Saldo?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Stipendio netto",
+                      "amount": "1.200 €"
+                    }
+                  ]
+                },
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Affitto condiviso",
+                      "amount": "400 €"
+                    },
+                    {
+                      "name": "Bollette",
+                      "amount": "80 €"
+                    },
+                    {
+                      "name": "Trasporti",
+                      "amount": "50 €"
+                    },
+                    {
+                      "name": "Spesa",
+                      "amount": "180 €"
+                    },
+                    {
+                      "name": "Uscite",
+                      "amount": "120 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Saldo?"
+            },
             "options": [
               {
                 "text": "−370 €",
@@ -655,7 +760,8 @@ export const LESSONS = {
     "floor": 1,
     "title": "Bisogni, desideri e costo-opportunità",
     "intro": {
-      "say": "Ogni euro speso è un euro che non puoi spendere altrove: il vero costo di un acquisto è la migliore alternativa a cui rinunci.",
+      "say": "Ogni euro speso è un euro che non puoi spendere altrove",
+      "sub": "Il vero costo di un acquisto è la migliore alternativa a cui rinunci.",
       "lines": [
         "Un bisogno è ciò senza cui non funzioni (cibo, trasporti per andare a scuola, materiale per studiare, salute).",
         "Un desiderio è ciò che migliora la vita ma si può rimandare (l’ultimo telefono, le scarpe di marca, una serata fuori, una skin nel gioco)."
@@ -748,6 +854,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una felpa costa 60 € e guadagni 10 € a ripetizione. Quante ripetizioni servono?",
+            "table": null,
             "options": [
               {
                 "text": "6",
@@ -806,6 +913,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Prima di comprare un portatile da 600 € rinunci a un viaggio con gli amici. Che cos’è il viaggio?",
+            "table": null,
             "options": [
               {
                 "text": "Il costo-opportunità",
@@ -864,6 +972,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Il telefono nuovo costa 480 € e guadagni 9 € netti all’ora. Quante ore di lavoro?",
+            "table": null,
             "options": [
               {
                 "text": "48 ore",
@@ -958,7 +1067,7 @@ export const LESSONS = {
     "floor": 1,
     "title": "Abbonamenti e spese ricorrenti: il costo che non senti",
     "intro": {
-      "say": "Una spesa piccola che si ripete ogni mese costa dodici volte tanto in un anno, e proprio perché si paga da sola smetti di vederla.",
+      "say": "Una spesa piccola che si ripete ogni mese costa dodici volte tanto in un anno, e proprio perché si paga da sola smetti di vederla",
       "lines": [
         "Una spesa ricorrente si addebita da sola a intervalli regolari: streaming, musica, abbonamenti ai giochi, cloud, app a pagamento.",
         "Il meccanismo è pensato per essere comodo: dai l’autorizzazione una volta e il pagamento continua finché non lo disdici."
@@ -1049,6 +1158,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Il servizio musicale costa 10,99 € al mese. Costo annuo?",
+            "table": null,
             "options": [
               {
                 "text": "109,90 €",
@@ -1107,6 +1217,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Il cloud costa 2,99 € al mese e streaming 9,99 € al mese. Quanto spendi in un anno per i due?",
+            "table": null,
             "options": [
               {
                 "text": "155,76 €",
@@ -1165,6 +1276,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Che cosa fai se l’estratto conto mostra un addebito ricorrente che non riconosci?",
+            "table": null,
             "options": [
               {
                 "text": "Controllo, e se non è mio disdico o contesto con la banca",
@@ -1259,7 +1371,8 @@ export const LESSONS = {
     "floor": 1,
     "title": "Il budget 50/30/20 e come adattarlo",
     "intro": {
-      "say": "Un budget non è un divieto: è decidere prima dove va ogni euro, così che non lo decida il caso a fine mese.",
+      "say": "Un budget non è un divieto",
+      "sub": "È decidere prima dove va ogni euro, così che non lo decida il caso a fine mese.",
       "lines": [
         "Fare un budget significa dare una destinazione a ogni euro in entrata prima di spenderlo.",
         "La regola 50/30/20 è un punto di partenza: 50% per i bisogni (trasporti, pranzi, telefono, materiale scolastico), 30% per i desideri, 20% per risparmio e debiti.",
@@ -1351,6 +1464,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 80 € al mese: quanto va al risparmio con la regola 50/30/20?",
+            "table": null,
             "options": [
               {
                 "text": "24 €",
@@ -1409,6 +1523,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Entrate 900 € netti. Quanto ai bisogni con la regola 50/30/20?",
+            "table": null,
             "options": [
               {
                 "text": "270 €",
@@ -1467,6 +1582,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Stipendio netto 1.500 €: bisogni, desideri e risparmio con 50/30/20?",
+            "table": null,
             "options": [
               {
                 "text": "450 €, 750 €, 300 €",
@@ -1561,7 +1677,8 @@ export const LESSONS = {
     "floor": 1,
     "title": "Tracciare le spese senza mollare dopo una settimana",
     "intro": {
-      "say": "Il budget è un’ipotesi, le spese tracciate sono la prova: il metodo migliore è quello che continui a usare.",
+      "say": "Il budget è un’ipotesi, le spese tracciate sono la prova",
+      "sub": "Il metodo migliore è quello che continui a usare.",
       "lines": [
         "Tracciare le spese vuol dire registrare ogni movimento e assegnarlo a una categoria (trasporti, cibo, uscite, abbonamenti, giochi, varie).",
         "Si può fare in tre modi: a mano (quaderno o foglio di calcolo), con l’app della prepagata (che spesso categorizza da sola, con errori da correggere), con un’app dedicata."
@@ -1652,6 +1769,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spese «varie» 20 € su 80 € di entrate. Che percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "20%",
@@ -1710,6 +1828,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spese «varie» 90 € su 600 € di entrate. Che percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "9%",
@@ -1768,6 +1887,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Qual è il metodo di tracciamento migliore?",
+            "table": null,
             "options": [
               {
                 "text": "Quello che apri e continui a usare",
@@ -1862,7 +1982,8 @@ export const LESSONS = {
     "floor": 1,
     "title": "Spese fisse sotto controllo: telefono e spesa",
     "intro": {
-      "say": "Per confrontare due offerte non basta il prezzo in evidenza: servono il costo totale su un anno e il prezzo per unità.",
+      "say": "Per confrontare due offerte non basta il prezzo in evidenza",
+      "sub": "Servono il costo totale su un anno e il prezzo per unità.",
       "lines": [
         "Il telefono è la prima spesa fissa che molti ragazzi scelgono davvero: una ricaricabile ha un prezzo mensile, a volte un costo di attivazione, e spesso una promozione che dura pochi mesi.",
         "Due offerte con lo stesso prezzo in evidenza possono costare diversamente se una sale dopo 6 mesi o ha costi nascosti."
@@ -1953,6 +2074,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Ricarica 8 € al mese: costo annuo?",
+            "table": null,
             "options": [
               {
                 "text": "96 €",
@@ -2011,6 +2133,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Offerta internet A: 25 € al mese per 12 mesi. B: 15 € per 6 mesi e 30 € per altri 6. Qual è più economica su un anno?",
+            "table": null,
             "options": [
               {
                 "text": "A: 300 € contro 270 €",
@@ -2069,6 +2192,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un pacco da 1 kg a 3,20 € e uno da 400 g a 1,40 €. Qual è più conveniente al kg?",
+            "table": null,
             "options": [
               {
                 "text": "Il pacco da 1 kg: 3,20 €/kg contro 3,50 €/kg",
@@ -2163,7 +2287,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "Il conto, l’IBAN e il bonifico",
     "intro": {
-      "say": "Un conto è un registro di entrate e uscite; l’IBAN è l’indirizzo per ricevere soldi, non la chiave per prenderli.",
+      "say": "Un conto è un registro di entrate e uscite",
+      "sub": "L’IBAN è l’indirizzo per ricevere soldi, non la chiave per prenderli.",
       "lines": [
         "Un conto tiene traccia dei soldi: ogni volta che ne entrano o ne escono viene registrato un movimento.",
         "Un accredito aumenta il saldo (la paghetta, un bonifico dei nonni).",
@@ -2252,11 +2377,45 @@ export const LESSONS = {
             "why": "40 + 20 − 3,50 − 12 + 15 − 9,99 = 49,51 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "text": "Giulia ha 40 € lunedì."
+            },
+            {
+              "head": "Durante la settimana",
+              "rows": [
+                {
+                  "name": "Paghetta",
+                  "amount": "+20 €"
+                },
+                {
+                  "name": "Caffè",
+                  "amount": "−3,50 €"
+                },
+                {
+                  "name": "Cinema",
+                  "amount": "−12 €"
+                },
+                {
+                  "name": "Bonifico della nonna",
+                  "amount": "+15 €"
+                },
+                {
+                  "name": "Abbonamento musica",
+                  "amount": "−9,99 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto è il saldo contabile?"
+        },
         "explain": "Se guardi solo il saldo contabile, rischi di spendere soldi che non hai più. L’IBAN identifica il conto: in Italia è una sequenza di 27 caratteri che comincia con IT.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Hai 25 € sulla prepagata, ricevi 15 € di paghetta e paghi 9,99 € di abbonamento. Quanto resta?",
+            "table": null,
             "options": [
               {
                 "text": "49,99 €",
@@ -2315,6 +2474,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Conto con 380 €. Arriva il bonifico del part-time (+250 €) e l’addebito dell’affitto (−300 €). Nuovo saldo?",
+            "table": null,
             "options": [
               {
                 "text": "550 €",
@@ -2373,6 +2533,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Primo stipendio 1.100 € netti su un conto con 120 €. Hai pagato in anticipo 180 € con carta, non ancora registrati. Saldo disponibile dopo l’accredito?",
+            "table": null,
             "options": [
               {
                 "text": "1.220 €",
@@ -2467,7 +2628,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "I tuoi soldi sono al sicuro? La garanzia sui depositi",
     "intro": {
-      "say": "Se una banca fallisce, i depositi sono rimborsati fino a 100.000 € per persona e per banca: non tutto è un deposito e non tutto è coperto.",
+      "say": "Se una banca fallisce, i depositi sono rimborsati fino a 100.000 € per persona e per banca",
+      "sub": "Non tutto è un deposito e non tutto è coperto.",
       "lines": [
         "Una banca usa i soldi dei clienti per fare prestiti.",
         "Se i prestiti non vengono restituiti, la banca può fallire.",
@@ -2560,6 +2722,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 500 € sul conto: sono tutti coperti dalla garanzia sui depositi?",
+            "table": null,
             "options": [
               {
                 "text": "No: solo sopra 1.000 €",
@@ -2618,6 +2781,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 40.000 € nella banca X e 40.000 € nella banca Y. Quanto è coperto?",
+            "table": null,
             "options": [
               {
                 "text": "40.000 €",
@@ -2676,6 +2840,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una persona ha 150.000 € in una banca. Quanto non è coperto?",
+            "table": null,
             "options": [
               {
                 "text": "50.000 €",
@@ -2770,7 +2935,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "Carte: debito, prepagata e credito",
     "intro": {
-      "say": "La carta è un modo per autorizzare un pagamento: cambia da dove escono i soldi e quanto puoi perdere.",
+      "say": "La carta è un modo per autorizzare un pagamento",
+      "sub": "Cambia da dove escono i soldi e quanto puoi perdere.",
       "lines": [
         "La carta di debito è collegata a un conto e paga prelevando direttamente da lì: se un truffatore ruba i dati, il rischio arriva fino al saldo del conto e ai limiti di spesa della carta.",
         "La carta prepagata non è collegata a un conto: spende solo quello che ci hai caricato (il plafond), quindi la perdita massima è il saldo che c’è sopra."
@@ -2860,6 +3026,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Che cosa può perdere al massimo chi ha una prepagata con 30 €?",
+            "table": null,
             "options": [
               {
                 "text": "Tutti i soldi del genitore",
@@ -2918,6 +3085,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Commissione di 2 € a ricarica, 6 ricariche all’anno: costo?",
+            "table": null,
             "options": [
               {
                 "text": "2 €",
@@ -2976,6 +3144,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché la carta di credito è diversa dalla carta di debito?",
+            "table": null,
             "options": [
               {
                 "text": "Costa sempre meno",
@@ -3070,7 +3239,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "Pagare dopo: rate e «paga in 3 volte»",
     "intro": {
-      "say": "Pagare a rate non cancella il prezzo: sposta il costo nel futuro e a volte lo aumenta.",
+      "say": "Pagare a rate non cancella il prezzo",
+      "sub": "Sposta il costo nel futuro e a volte lo aumenta.",
       "lines": [
         "Con un pagamento a rate comperi subito e paghi in più scadenze.",
         "È un debito: chi vende, o una società finanziaria, ti anticipa i soldi e tu li restituisci.",
@@ -3162,6 +3332,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "6 rate da 20 € per una felpa da 100 €: costo del credito?",
+            "table": null,
             "options": [
               {
                 "text": "120 €",
@@ -3215,11 +3386,30 @@ export const LESSONS = {
             "why": "40 − 33 = 7 €; 7 ÷ 40 = 17,5%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Paghetta",
+                  "amount": "40 €"
+                },
+                {
+                  "name": "Rata",
+                  "amount": "33 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Che percentuale resta della paghetta?"
+        },
         "explain": "Guardare solo la rata e dire «costa poco al mese». L’altro errore: pensare che «senza interessi» voglia dire «senza costi», senza leggere le spese di gestione.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Un telefono da 400 € a 12 rate da 36 €: totale?",
+            "table": null,
             "options": [
               {
                 "text": "400 €",
@@ -3278,6 +3468,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Rate da 85 € per 6 mesi invece del prezzo da 480 €: costo del credito?",
+            "table": null,
             "options": [
               {
                 "text": "510 €",
@@ -3372,7 +3563,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "Phishing, smishing e vishing: il messaggio che ti mette fretta",
     "intro": {
-      "say": "Chi ti truffa non ha bisogno di scoprire la tua password: gli basta convincerti a dargliela, di solito mettendoti fretta.",
+      "say": "Chi ti truffa non ha bisogno di scoprire la tua password",
+      "sub": "Gli basta convincerti a dargliela, di solito mettendoti fretta.",
       "lines": [
         "Il phishing è un messaggio (email, chat, social) che finge di arrivare da qualcuno di fidato per farti cliccare un link o dare dei dati.",
         "Lo smishing arriva per SMS, il vishing per telefonata."
@@ -3463,6 +3655,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Ti arriva un SMS «Il tuo pacco è bloccato: paga subito a questo link». Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Pago subito",
@@ -3521,6 +3714,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una persona ti telefona dicendo di essere la banca e chiede il codice. Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Do il codice",
@@ -3579,6 +3773,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un’email dall’ufficio paghe chiede di cliccare per «confermare l’IBAN». Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Controllo in modo indipendente prima di rispondere",
@@ -3673,7 +3868,8 @@ export const LESSONS = {
     "floor": 2,
     "title": "Quando il truffato sei tu, o ti usano come strumento",
     "intro": {
-      "say": "Dopo una frode conta la velocità: prima si blocca, poi si avvisa la banca, poi si denuncia; e chi presta il proprio conto per «guadagni facili» rischia lui.",
+      "say": "Dopo una frode conta la velocità",
+      "sub": "Prima si blocca, poi si avvisa la banca, poi si denuncia; e chi presta il proprio conto per «guadagni facili» rischia lui.",
       "lines": [
         "Se ti accorgi di un pagamento che non hai fatto: blocca la carta dall’app o dal numero verde; avvisa la banca e disconosci l’operazione, conservando la prova della comunicazione; conserva le prove (messaggi, schermate) e presenta denuncia alla Polizia Postale o ad altre forze dell’ordine; cambia le password e controlla gli altri conti."
       ]
@@ -3750,6 +3946,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un amico ti chiede di ricevere 200 € sul tuo conto e girarli, tenendone 20. Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Accetto: sono 20 € facili",
@@ -3808,6 +4005,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Ricevi 600 €, tieni 60 € e giri il resto: quanto giri?",
+            "table": null,
             "options": [
               {
                 "text": "540 €",
@@ -3866,6 +4064,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai perso il telefono con l’app della banca. Quale è il primo passo?",
+            "table": null,
             "options": [
               {
                 "text": "Bloccare l’accesso e avvisare la banca",
@@ -3960,7 +4159,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Probabilità e valore atteso: la matematica del gioco",
     "intro": {
-      "say": "Un gioco in cui paghi per avere una probabilità di vincere ha un valore atteso: quanto ti restituisce in media ogni volta che paghi.",
+      "say": "Un gioco in cui paghi per avere una probabilità di vincere ha un valore atteso",
+      "sub": "Quanto ti restituisce in media ogni volta che paghi.",
       "lines": [
         "La probabilità dice quante volte, su tante prove, ci si aspetta un certo risultato.",
         "Si scrive come frazione o percentuale: con un dado a sei facce la probabilità di ottenere un 6 è 1 su 6, cioè circa 16,7%.",
@@ -4038,6 +4238,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Estrai una carta da un mazzo di 40: vinci 10 € se è un asso (4 carte), pagando 2 €. Valore atteso del ritorno?",
+            "table": null,
             "options": [
               {
                 "text": "10 €",
@@ -4096,6 +4297,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un gioco costa 4 € e restituisce in media 3,20 €. Quanto perdi in media in 25 giocate?",
+            "table": null,
             "options": [
               {
                 "text": "80 €",
@@ -4154,6 +4356,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un gratta e vinci da 5 € ha ritorno medio 70%. In 12 biglietti, perdita attesa?",
+            "table": null,
             "options": [
               {
                 "text": "60 €",
@@ -4248,7 +4451,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Trappole mentali: perché continuiamo a giocare",
     "intro": {
-      "say": "Il cervello non calcola il valore atteso: reagisce a emozioni e schemi. Le trappole mentali spingono a giocare anche quando i numeri dicono il contrario, e i giochi sono costruiti per farle scattare.",
+      "say": "Il cervello non calcola il valore atteso",
+      "sub": "Reagisce a emozioni e schemi. Le trappole mentali spingono a giocare anche quando i numeri dicono il contrario, e i giochi sono costruiti per farle scattare.",
       "lines": [
         "La fallacia del giocatore è credere che un evento casuale «debba» compensare quelli passati: dopo cinque rossi, «ora tocca al nero»."
       ]
@@ -4340,6 +4544,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai perso 10 € in un gioco e vuoi rigiocarne 10 per «rifarti». Quale trappola è?",
+            "table": null,
             "options": [
               {
                 "text": "Costo affondato",
@@ -4398,6 +4603,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "«Ho già pagato tre mesi di abbonamento, non lo disdico ora». Quale trappola?",
+            "table": null,
             "options": [
               {
                 "text": "Quasi-vincita",
@@ -4456,6 +4662,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Dopo cinque rossi di fila: «ora per forza il nero». Quale trappola?",
+            "table": null,
             "options": [
               {
                 "text": "Costo affondato",
@@ -4550,7 +4757,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Gratta e vinci, slot, scommesse e pacchetti a sorpresa: come funzionano",
     "intro": {
-      "say": "Ogni gioco, legale o no, ha una percentuale di ritorno (payout) decisa a monte: la parte che non torna ai giocatori finisce a chi lo organizza, allo Stato e ai punti vendita.",
+      "say": "Ogni gioco, legale o no, ha una percentuale di ritorno (payout) decisa a monte",
+      "sub": "La parte che non torna ai giocatori finisce a chi lo organizza, allo Stato e ai punti vendita.",
       "lines": [
         "In Italia il gioco con vincite in denaro è vietato ai minorenni.",
         "Gli adulti possono giocare solo a giochi autorizzati dall’Agenzia delle Dogane e dei Monopoli (ADM).",
@@ -4627,6 +4835,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un pacchetto da 2 € ha il 2% di carta rara. In 10 pacchetti quanto spendi?",
+            "table": null,
             "options": [
               {
                 "text": "2 €",
@@ -4685,6 +4894,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una slot ha payout 80% (dato fittizio). Su 200 € giocati, perdita media?",
+            "table": null,
             "options": [
               {
                 "text": "40 €",
@@ -4743,6 +4953,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una vincita da 700 € con ritenuta 20% sulla parte oltre 500 €: quanto resta (dato da verificare)?",
+            "table": null,
             "options": [
               {
                 "text": "560 €",
@@ -4837,7 +5048,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Quando il gioco diventa un problema",
     "intro": {
-      "say": "Il problema non sta nell’importo in sé ma nella perdita di controllo: quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne.",
+      "say": "Il problema non sta nell’importo in sé ma nella perdita di controllo",
+      "sub": "Quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne.",
       "lines": [
         "Giocare con soldi (o spendere in giochi con pacchetti a sorpresa) può diventare un problema anche senza perdite enormi."
       ]
@@ -4927,6 +5139,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un amico mente sui soldi spesi per i giochi. Che segnale è?",
+            "table": null,
             "options": [
               {
                 "text": "Perdita di controllo",
@@ -4985,6 +5198,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spendi 8 € a settimana in un gioco: quanto in un anno (52 settimane)?",
+            "table": null,
             "options": [
               {
                 "text": "8 €",
@@ -5043,6 +5257,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spendi 20 € a settimana. Il tuo stipendio mensile netto è 1.000 €. Quale quota va in gioco in un anno?",
+            "table": null,
             "options": [
               {
                 "text": "20%",
@@ -5137,7 +5352,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Trading e leva: investire o scommettere?",
     "intro": {
-      "say": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato.",
+      "say": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi",
+      "sub": "Fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato.",
       "lines": [
         "La leva finanziaria permette di controllare una posizione più grande del capitale versato.",
         "Con leva 10:1 un capitale di 100 € controlla 1.000 €: se il prezzo sale del 4%, il guadagno è 40 € (+40% sul capitale); se scende del 10%, la perdita è 100 €, cioè tutto il capitale."
@@ -5224,6 +5440,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Leva 5:1 con 20 € di capitale e prezzo +2%: guadagno?",
+            "table": null,
             "options": [
               {
                 "text": "0,40 €",
@@ -5282,6 +5499,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Leva 10:1 con 50 € e prezzo −5%: perdita?",
+            "table": null,
             "options": [
               {
                 "text": "25 €",
@@ -5340,6 +5558,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Leva 20:1 con 100 € e prezzo −5%: cosa succede?",
+            "table": null,
             "options": [
               {
                 "text": "Perdi tutto il capitale",
@@ -5434,7 +5653,8 @@ export const LESSONS = {
     "floor": 3,
     "title": "Proteggersi: limiti, regole e perdita massima",
     "intro": {
-      "say": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido. Il limite non si ritocca per rifarsi.",
+      "say": "La protezione migliore è una regola decisa a mente fredda, prima",
+      "sub": "Durante il gioco il cervello è meno lucido. Il limite non si ritocca per rifarsi.",
       "lines": [
         "La perdita massima accettabile è la cifra che puoi perdere senza che cambi nulla nella tua vita.",
         "Per un teenager si lega al budget visto nel Piano 1: la parte di «desideri» della paghetta.",
@@ -5526,6 +5746,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Paghetta 50 €, quota desideri 30%, limite di gioco pari a un terzo dei desideri: quanto?",
+            "table": null,
             "options": [
               {
                 "text": "15 €",
@@ -5584,6 +5805,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai raggiunto il limite di gioco del mese. Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Alzo il limite per recuperare",
@@ -5642,6 +5864,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un gioco vince una volta su 10. Probabilità di perdere 3 tentativi di fila?",
+            "table": null,
             "options": [
               {
                 "text": "30%",
@@ -5736,7 +5959,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "Come ti convince la pubblicità",
     "intro": {
-      "say": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta. Conoscerli non è diffidare di tutto, è rimettere il tempo di decidere nelle tue mani.",
+      "say": "La pubblicità non ti dice solo cosa c’è da comprare",
+      "sub": "Usa meccanismi ricorrenti per farti decidere in fretta. Conoscerli non è diffidare di tutto, è rimettere il tempo di decidere nelle tue mani.",
       "lines": [
         "Le tecniche più comuni sono poche e si ripetono.",
         "La scarsità dice che c’è poco prodotto («ultimi 3 pezzi»).",
@@ -5825,11 +6049,47 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Prezzo barrato",
+                  "amount": "120 €"
+                },
+                {
+                  "name": "Prezzo in offerta",
+                  "amount": "79 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Sconto dichiarato?"
+        },
         "explain": "Nessuna di queste tecniche è di per sé illegale o disonesta: un’offerta limitata può essere vera.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Sneakers: prezzo barrato 100 €, offerta 70 €. Sconto dichiarato?",
+            "table": {
+              "parts": [
+                {
+                  "head": "Sneakers",
+                  "rows": [
+                    {
+                      "name": "Prezzo barrato",
+                      "amount": "100 €"
+                    },
+                    {
+                      "name": "Offerta",
+                      "amount": "70 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Sconto dichiarato?"
+            },
             "options": [
               {
                 "text": "70%",
@@ -5888,6 +6148,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Uno zaino «da 80 € a 60 €» costava in media 66 €. Sconto reale?",
+            "table": null,
             "options": [
               {
                 "text": "25%",
@@ -5946,6 +6207,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un telefono costa 480 € o 12 rate da 42 €. Quanto in più con le rate?",
+            "table": null,
             "options": [
               {
                 "text": "42 €",
@@ -6040,7 +6302,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "Creator e finfluencer: chi ti sta vendendo cosa?",
     "intro": {
-      "say": "Chi parla di soldi online spesso guadagna da ciò che racconta: link, codici, iscrizioni, sponsor. Questo non lo rende per forza disonesto, ma devi sapere da dove arrivano i suoi guadagni prima di fidarti del suo consiglio.",
+      "say": "Chi parla di soldi online spesso guadagna da ciò che racconta",
+      "sub": "Link, codici, iscrizioni, sponsor. Questo non lo rende per forza disonesto, ma devi sapere da dove arrivano i suoi guadagni prima di fidarti del suo consiglio.",
       "lines": [
         "Un finfluencer è un creator che parla di finanza e investimenti.",
         "Il suo guadagno può venire da sponsorizzazioni, da link affiliati (riceve una somma se ti iscrivi o apri un conto), da corsi o gruppi a pagamento.",
@@ -6133,6 +6396,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un creator dice «iscriviti con il mio codice: guadagno una commissione». È trasparente?",
+            "table": null,
             "options": [
               {
                 "text": "Sì, dichiara l’interesse, che però resta",
@@ -6191,6 +6455,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Su 5 operazioni: 2 vinte da +30 € e 3 perse da −20 €. Saldo?",
+            "table": null,
             "options": [
               {
                 "text": "0 €",
@@ -6249,6 +6514,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un finfluencer prende 8 € per ogni abbonato. 150 abbonati: quanto guadagna?",
+            "table": null,
             "options": [
               {
                 "text": "1.200 €",
@@ -6343,7 +6609,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "Truffe: pump and dump, schemi Ponzi e rendimenti garantiti",
     "intro": {
-      "say": "Rendimento e rischio vanno insieme: se qualcuno promette molto e garantito, qualcosa non torna. Le truffe finanziarie hanno poche forme ricorrenti, e conoscerle è la difesa più efficace.",
+      "say": "Rendimento e rischio vanno insieme",
+      "sub": "Se qualcuno promette molto e garantito, qualcosa non torna. Le truffe finanziarie hanno poche forme ricorrenti, e conoscerle è la difesa più efficace.",
       "lines": [
         "Nel pump and dump (letteralmente «gonfia e scarica») un gruppo spinge via chat o social l’acquisto di un titolo di una società piccola e poco scambiata.",
         "Chi organizza ha comprato prima, a poco; quando il prezzo sale per effetto degli acquisti di chi si fida, vende.",
@@ -6431,6 +6698,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un gruppo ti scrive «compra subito, +300% domani». Cosa è?",
+            "table": null,
             "options": [
               {
                 "text": "Segnale di truffa (pump and dump)",
@@ -6489,6 +6757,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "100 € al 10% al mese per 6 mesi (composto): circa?",
+            "table": null,
             "options": [
               {
                 "text": "160 €",
@@ -6547,6 +6816,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Compri a 0,50 € e il titolo scende a 0,20 €. Perdita percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "−30%",
@@ -6641,7 +6911,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "Promesse commerciali e prodotti complessi",
     "intro": {
-      "say": "Una promessa commerciale è una frase scelta per vendere: dice poco di costi e rischi. Per decidere servono i numeri che la frase non riporta.",
+      "say": "Una promessa commerciale è una frase scelta per vendere",
+      "sub": "Dice poco di costi e rischi. Per decidere servono i numeri che la frase non riporta.",
       "lines": [
         "Le frasi più usate hanno un significato diverso da quello che sembra.",
         "«Fino al 6%» indica un massimo, non quanto otterrai.",
@@ -6730,6 +7001,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "«Capitale garantito» significa che non puoi mai perdere?",
+            "table": null,
             "options": [
               {
                 "text": "No: dipende da chi dà la garanzia e dalla scadenza",
@@ -6788,6 +7060,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Versi 800 € e 100 € vanno in costi iniziali: di quanto deve crescere il capitale rimasto per tornare a 800 €?",
+            "table": null,
             "options": [
               {
                 "text": "+12,5%",
@@ -6846,6 +7119,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "2.000 € per 10 anni al 3% oppure al 1,5%: quale differenza circa?",
+            "table": null,
             "options": [
               {
                 "text": "60 €",
@@ -6940,7 +7214,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "Bonus, gratis, prova e cashback: il prezzo nascosto",
     "intro": {
-      "say": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo. Il «gratis» è quasi sempre un inizio: la spesa arriva dopo, quando l’attenzione è calata.",
+      "say": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo",
+      "sub": "Il «gratis» è quasi sempre un inizio: la spesa arriva dopo, quando l’attenzione è calata.",
       "lines": [
         "La prova gratuita con rinnovo automatico dà accesso per qualche giorno e poi addebita il prezzo pieno, ogni mese, finché non si disdice.",
         "Il costo non parte il giorno dell’iscrizione ma una settimana, due o un mese dopo, quando probabilmente ci si è dimenticati.",
@@ -7032,6 +7307,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Prova gratis, poi 5 € al mese dimenticati per 4 mesi: quanto?",
+            "table": null,
             "options": [
               {
                 "text": "20 €",
@@ -7090,6 +7366,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Offerta A: 8 € al mese. B: 6 € al mese più 12 € di attivazione. Dopo quanti mesi conviene B?",
+            "table": null,
             "options": [
               {
                 "text": "Subito",
@@ -7148,6 +7425,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Canone carta 3 € al mese, cashback 1% su 200 € al mese. Saldo annuo?",
+            "table": null,
             "options": [
               {
                 "text": "+12 €",
@@ -7242,7 +7520,8 @@ export const LESSONS = {
     "floor": 4,
     "title": "I tuoi diritti di consumatore e i tuoi dati",
     "intro": {
-      "say": "Chi compra ha dei diritti per legge, anche se non li legge nessuno. Conoscerli trasforma «ho sbagliato io» in «posso chiedere indietro i soldi».",
+      "say": "Chi compra ha dei diritti per legge, anche se non li legge nessuno",
+      "sub": "Conoscerli trasforma «ho sbagliato io» in «posso chiedere indietro i soldi».",
       "lines": [
         "Il diritto di recesso permette, per gli acquisti fatti online, per telefono o fuori da un negozio, di restituire il prodotto o annullare il servizio entro 14 giorni, senza dover dare un motivo."
       ]
@@ -7333,6 +7612,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Compri online il 3 marzo. Ultimo giorno per il recesso di 14 giorni?",
+            "table": null,
             "options": [
               {
                 "text": "14 marzo",
@@ -7391,6 +7671,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Garanzia di 24 mesi: il difetto compare dopo 10 mesi. Mesi residui?",
+            "table": null,
             "options": [
               {
                 "text": "10",
@@ -7449,6 +7730,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un’app chiede accesso a foto e contatti per un semplice gioco. Cosa fai?",
+            "table": null,
             "options": [
               {
                 "text": "Accetto tutto",
@@ -7543,10 +7825,20 @@ export const LESSONS = {
     "floor": 5,
     "title": "Obiettivi di risparmio e piano mensile",
     "intro": {
-      "say": "Un obiettivo di risparmio diventa reale quando ha tre numeri: quanto costa, entro quando, e quanto metti da parte ogni mese. Senza uno dei tre è solo un desiderio.",
+      "say": "Un obiettivo di risparmio diventa reale quando ha tre numeri",
+      "sub": "Quanto costa, entro quando, e quanto metti da parte ogni mese. Senza uno dei tre è solo un desiderio.",
       "lines": [
         "Il piano si costruisce al contrario: si parte dal prezzo, si sceglie la scadenza e si divide.",
-        "Importo mensile = costo ÷ numero di mesi.",
+        {
+          "formula": [
+            "Importo mensile",
+            "=",
+            {
+              "num": "Costo",
+              "den": "Numero di mesi"
+            }
+          ]
+        },
         "Poi si controlla se l’importo è sostenibile rispetto a quello che entra ogni mese."
       ]
     },
@@ -7645,6 +7937,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Vuoi 300 € per un concerto in 6 mesi. Quanto metti da parte al mese?",
+            "table": null,
             "options": [
               {
                 "text": "50 €",
@@ -7703,6 +7996,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Vuoi 1.800 € per un trasloco in 12 mesi. Quanto al mese?",
+            "table": null,
             "options": [
               {
                 "text": "150 €",
@@ -7761,6 +8055,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Vuoi 3.000 € di anticipo per una macchina in 20 mesi. Quanto al mese?",
+            "table": null,
             "options": [
               {
                 "text": "300 €",
@@ -7855,7 +8150,8 @@ export const LESSONS = {
     "floor": 5,
     "title": "Il fondo di emergenza",
     "intro": {
-      "say": "Il fondo di emergenza è una somma tenuta da parte solo per gli imprevisti. Non serve a comprare cose desiderate: serve a non dover chiedere soldi in prestito (o rinunciare a qualcosa di importante) quando succede qualcosa.",
+      "say": "Il fondo di emergenza è una somma tenuta da parte solo per gli imprevisti",
+      "sub": "Non serve a comprare cose desiderate: serve a non dover chiedere soldi in prestito (o rinunciare a qualcosa di importante) quando succede qualcosa.",
       "lines": [
         "La misura tipica è un multiplo delle spese essenziali mensili: spesso si parla di 3–6 mesi, ma è una regola pratica divulgativa e non una norma.",
         "Per un adulto le spese essenziali sono affitto, bollette, cibo; per un teenager sono molto meno (trasporti, ricarica, merende, materiale scolastico), quindi il fondo è più piccolo e si può costruire in pochi mesi."
@@ -7956,6 +8252,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spese essenziali di 60 € al mese: quanto è un fondo di 3 mesi?",
+            "table": null,
             "options": [
               {
                 "text": "60 €",
@@ -8014,6 +8311,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spese essenziali di 700 € al mese: quanto è un fondo di 4 mesi?",
+            "table": null,
             "options": [
               {
                 "text": "700 €",
@@ -8072,6 +8370,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Spese essenziali di 1.000 € al mese: quanto è un fondo di 6 mesi?",
+            "table": null,
             "options": [
               {
                 "text": "3.000 €",
@@ -8166,10 +8465,18 @@ export const LESSONS = {
     "floor": 5,
     "title": "Dove metti i risparmi: conto deposito e interesse composto",
     "intro": {
-      "say": "Il denaro fermo può produrre interessi, ma il numero che leggi (tasso lordo) non è quello che ti entra in tasca: tasse e imposte lo riducono.",
+      "say": "Il denaro fermo può produrre interessi, ma il numero che leggi (tasso lordo) non è quello che ti entra in tasca",
+      "sub": "Tasse e imposte lo riducono.",
       "lines": [
         "Interesse semplice: si calcola sempre sul capitale iniziale.",
         "Interesse composto: ogni anno si calcola sul capitale più gli interessi già maturati, quindi la formula è capitale × (1 + tasso)^anni.",
+        {
+          "formula": [
+            "Capitale",
+            "×",
+            "(1 + tasso)^anni"
+          ]
+        },
         "Il tasso annuo lordo è quello pubblicizzato; per arrivare al netto si tolgono le imposte."
       ]
     },
@@ -8268,6 +8575,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "200 € al 2% lordo per un anno: interesse lordo?",
+            "table": null,
             "options": [
               {
                 "text": "2 €",
@@ -8326,6 +8634,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "1.000 € al 3% lordo: interesse netto dopo il 26% di imposta (senza bollo)?",
+            "table": null,
             "options": [
               {
                 "text": "22,20 €",
@@ -8384,6 +8693,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "5.000 € al 2,5% lordo composto per 2 anni: valore finale?",
+            "table": null,
             "options": [
               {
                 "text": "5.250 €",
@@ -8478,11 +8788,21 @@ export const LESSONS = {
     "floor": 5,
     "title": "L’assicurazione: trasferire il rischio",
     "intro": {
-      "say": "Con un’assicurazione paghi una somma certa e piccola (il premio) per far pagare a qualcun altro un danno grande ma poco probabile. Si assicurano i rischi che non potresti permetterti di pagare da solo, non quelli piccoli.",
+      "say": "Con un’assicurazione paghi una somma certa e piccola (il premio) per far pagare a qualcun altro un danno grande ma poco probabile",
+      "sub": "Si assicurano i rischi che non potresti permetterti di pagare da solo, non quelli piccoli.",
       "lines": [
         "Quattro parole da conoscere.",
         "Il premio è il prezzo della polizza.",
         "La franchigia è una parte fissa del danno che resta sempre a tuo carico (danno − franchigia = rimborso).",
+        {
+          "formula": [
+            "Danno",
+            "−",
+            "Franchigia",
+            "=",
+            "Rimborso"
+          ]
+        },
         "Lo scoperto è una parte del danno espressa in percentuale che resta a tuo carico, spesso con un minimo in euro.",
         "Il massimale è il tetto massimo che l’assicurazione può pagare, anche se il danno è più alto."
       ]
@@ -8547,6 +8867,24 @@ export const LESSONS = {
             "why": "200 − 50 = 150 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Danno",
+                  "amount": "200 €"
+                },
+                {
+                  "name": "Franchigia",
+                  "amount": "50 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto rimborsa l’assicurazione?"
+        },
         "explain": "La franchigia è una parte fissa del danno che resta sempre a tuo carico (danno − franchigia = rimborso). Lo scoperto è una parte del danno espressa in percentuale che resta a tuo carico, spesso con un minimo in euro."
       },
       {
@@ -8582,6 +8920,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Danno 120 €, franchigia 20 €: rimborso?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Danno",
+                      "amount": "120 €"
+                    },
+                    {
+                      "name": "Franchigia",
+                      "amount": "20 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Rimborso?"
+            },
             "options": [
               {
                 "text": "120 €",
@@ -8635,11 +8991,34 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Massimale",
+                  "amount": "300 €"
+                },
+                {
+                  "name": "Franchigia",
+                  "amount": "50 €"
+                },
+                {
+                  "name": "Danno",
+                  "amount": "450 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto rimborsa e quanto paghi tu?"
+        },
         "explain": "Franchigie, scoperti, massimali ed esclusioni riducono quello che arriva davvero, e vanno letti prima di firmare.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Danno 600 €, scoperto 10% con minimo 40 €: quanto resta a carico?",
+            "table": null,
             "options": [
               {
                 "text": "40 €",
@@ -8698,6 +9077,28 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Massimale 1.000 €, franchigia 100 €, danno 1.400 €: rimborso?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Massimale",
+                      "amount": "1.000 €"
+                    },
+                    {
+                      "name": "Franchigia",
+                      "amount": "100 €"
+                    },
+                    {
+                      "name": "Danno",
+                      "amount": "1.400 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Rimborso?"
+            },
             "options": [
               {
                 "text": "1.000 €",
@@ -8792,7 +9193,8 @@ export const LESSONS = {
     "floor": 5,
     "title": "Le polizze che servono davvero a un giovane",
     "intro": {
-      "say": "Non serve una polizza per ogni rischio: serve partire da quelli che farebbero davvero male (danni causati ad altri, infortuni gravi, obblighi di legge) e ignorare quelli che si pagano con il fondo di emergenza.",
+      "say": "Non serve una polizza per ogni rischio",
+      "sub": "Serve partire da quelli che farebbero davvero male (danni causati ad altri, infortuni gravi, obblighi di legge) e ignorare quelli che si pagano con il fondo di emergenza.",
       "lines": [
         "Altre sono facoltative: responsabilità civile verso terzi, infortuni, spese sanitarie, casa o affitto, dispositivi elettronici.",
         "Prima di comprarne una conviene chiedere se il rischio è già coperto da qualcosa che c’è già (per esempio una polizza della famiglia, la scuola, lo sport o una carta): pagare due volte per lo stesso rischio non raddoppia il rimborso."
@@ -8893,6 +9295,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Polizza a 48 € l’anno: quanto al mese?",
+            "table": null,
             "options": [
               {
                 "text": "48 €",
@@ -8951,6 +9354,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Danno a terzi di 8.000 € e massimale di 3.000 €: quanto resta a carico?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Danno a terzi",
+                      "amount": "8.000 €"
+                    },
+                    {
+                      "name": "Massimale",
+                      "amount": "3.000 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quanto resta a carico?"
+            },
             "options": [
               {
                 "text": "5.000 €",
@@ -9009,6 +9430,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un dipendente ha già un’assicurazione infortuni dal datore di lavoro. Cosa verifica prima di comprarne un’altra?",
+            "table": null,
             "options": [
               {
                 "text": "Il colore del contratto",
@@ -9103,7 +9525,8 @@ export const LESSONS = {
     "floor": 5,
     "title": "Polizze-trappola e come leggere una polizza",
     "intro": {
-      "say": "Una polizza è un contratto: conta quello che c’è scritto, non quello che dice chi la vende. Prima di firmare si leggono quattro cose: quanto costa in totale, cosa esclude, per quanto tempo vincola e come si esce.",
+      "say": "Una polizza è un contratto",
+      "sub": "Conta quello che c’è scritto, non quello che dice chi la vende. Prima di firmare si leggono quattro cose: quanto costa in totale, cosa esclude, per quanto tempo vincola e come si esce.",
       "lines": [
         "Le polizze-trappola non sono necessariamente illegali: sono poco chiare o poco convenienti."
       ]
@@ -9203,6 +9626,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Polizza da 5 € al mese per 12 mesi più 20 € di attivazione: costo totale?",
+            "table": null,
             "options": [
               {
                 "text": "60 €",
@@ -9261,6 +9685,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Che cos’è il periodo di carenza?",
+            "table": null,
             "options": [
               {
                 "text": "Un periodo iniziale in cui la copertura non vale",
@@ -9314,11 +9739,55 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Scoperto",
+                  "amount": "20%"
+                },
+                {
+                  "name": "Danno",
+                  "amount": "400 €"
+                },
+                {
+                  "name": "Massimale",
+                  "amount": "300 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto rimborsa?"
+        },
         "explain": "Se il danno è 400 €, lo scoperto vale 80 € e il rimborso è 320 €, ma il massimale lo porta a 300 €.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Scoperto 15%, danno 800 €, massimale 600 €: rimborso?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Scoperto",
+                      "amount": "15%"
+                    },
+                    {
+                      "name": "Danno",
+                      "amount": "800 €"
+                    },
+                    {
+                      "name": "Massimale",
+                      "amount": "600 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Rimborso?"
+            },
             "options": [
               {
                 "text": "680 €",
@@ -9413,7 +9882,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "Lordo, netto e costo per chi paga",
     "intro": {
-      "say": "Il compenso scritto nel contratto (lordo) non è quello che arriva sul conto (netto), e non è nemmeno quanto costa a chi paga. Sono tre numeri diversi per la stessa persona.",
+      "say": "Il compenso scritto nel contratto (lordo) non è quello che arriva sul conto (netto), e non è nemmeno quanto costa a chi paga",
+      "sub": "Sono tre numeri diversi per la stessa persona.",
       "lines": [
         "Il lordo è la retribuzione prima delle trattenute.",
         "Dal lordo si tolgono i contributi a carico del lavoratore (che finanziano la futura pensione e altre tutele) e le imposte sul reddito: quello che resta è il netto.",
@@ -9480,6 +9950,24 @@ export const LESSONS = {
             "why": "800 × 0,0919 = 73,52 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Lordo",
+                  "amount": "800 €"
+                },
+                {
+                  "name": "Contributi del lavoratore",
+                  "amount": "9,19%"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto trattengono?"
+        },
         "explain": "Chi paga, in più, versa a sua volta contributi a proprio carico: lordo più contributi del datore è il costo per chi paga."
       },
       {
@@ -9515,6 +10003,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo 400 € e contributi del lavoratore 9,19%: quanto trattengono?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Lordo",
+                      "amount": "400 €"
+                    },
+                    {
+                      "name": "Contributi del lavoratore",
+                      "amount": "9,19%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quanto trattengono?"
+            },
             "options": [
               {
                 "text": "40 €",
@@ -9573,6 +10079,28 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo 1.200 €, contributi 110,28 € e imposta 250 €. Netto?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Lordo",
+                      "amount": "1.200 €"
+                    },
+                    {
+                      "name": "Contributi",
+                      "amount": "110,28 €"
+                    },
+                    {
+                      "name": "Imposta",
+                      "amount": "250 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Netto?"
+            },
             "options": [
               {
                 "text": "1.200 €",
@@ -9631,6 +10159,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo 1.800 €: con contributi del datore al 23,81%, quanto costa al datore?",
+            "table": null,
             "options": [
               {
                 "text": "1.800 €",
@@ -9725,7 +10254,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "Contributi e IRPEF: dove vanno i soldi trattenuti",
     "intro": {
-      "say": "Le trattenute sono di due tipi: i contributi, che finanziano pensione e altre tutele di chi lavora, e le imposte, che finanziano i servizi pubblici.",
+      "say": "Le trattenute sono di due tipi",
+      "sub": "I contributi, che finanziano pensione e altre tutele di chi lavora, e le imposte, che finanziano i servizi pubblici.",
       "lines": [
         "I contributi vanno agli enti previdenziali (in Italia soprattutto l’INPS) e servono per pensione, malattia, maternità e altre prestazioni.",
         "L’IRPEF è l’imposta sul reddito delle persone: si calcola per scaglioni."
@@ -9791,6 +10321,24 @@ export const LESSONS = {
             "why": "20.000 × 0,0919 = 1.838 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Lordo annuo",
+                  "amount": "20.000 €"
+                },
+                {
+                  "name": "Contributi del lavoratore",
+                  "amount": "9,19%"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto vengono trattenuti?"
+        },
         "explain": "I contributi vanno agli enti previdenziali (in Italia soprattutto l’INPS) e servono per pensione, malattia, maternità e altre prestazioni."
       },
       {
@@ -9826,6 +10374,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo annuo 10.000 € e contributi 9,19%: quanti trattenuti?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Lordo annuo",
+                      "amount": "10.000 €"
+                    },
+                    {
+                      "name": "Contributi",
+                      "amount": "9,19%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quanti trattenuti?"
+            },
             "options": [
               {
                 "text": "9.190 €",
@@ -9884,6 +10450,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Imponibile 20.000 € con aliquota 23%: imposta?",
+            "table": null,
             "options": [
               {
                 "text": "2.000 €",
@@ -9942,6 +10509,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Imponibile 30.000 € (23% fino a 28.000, 33% oltre): imposta?",
+            "table": null,
             "options": [
               {
                 "text": "9.900 €",
@@ -10036,7 +10604,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "Leggere una busta paga",
     "intro": {
-      "say": "La busta paga è il documento che mostra come si arriva dal lordo al netto. Si legge dall’alto verso il basso e si può controllare con due moltiplicazioni e una sottrazione.",
+      "say": "La busta paga è il documento che mostra come si arriva dal lordo al netto",
+      "sub": "Si legge dall’alto verso il basso e si può controllare con due moltiplicazioni e una sottrazione.",
       "lines": [
         "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto."
       ]
@@ -10101,6 +10670,24 @@ export const LESSONS = {
             "why": "1.800 − 165,42 = 1.634,58 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Lordo",
+                  "amount": "1.800 €"
+                },
+                {
+                  "name": "Contributi",
+                  "amount": "165,42 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Qual è l’imponibile fiscale?"
+        },
         "explain": "Il controllo di base è: lordo − contributi = imponibile fiscale; imponibile fiscale − imposta = netto. Qui usiamo il modello semplificato di L1 e L2, senza detrazioni e addizionali: in una busta reale compaiono anche queste."
       },
       {
@@ -10136,6 +10723,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Quale voce non riduce il netto in busta paga?",
+            "table": null,
             "options": [
               {
                 "text": "I contributi del lavoratore",
@@ -10194,6 +10782,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo 1.000 € e contributi 91,90 €: imponibile?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Lordo",
+                      "amount": "1.000 €"
+                    },
+                    {
+                      "name": "Contributi",
+                      "amount": "91,90 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Imponibile?"
+            },
             "options": [
               {
                 "text": "1.000 €",
@@ -10252,6 +10858,28 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Lordo 1.500 €, contributi 137,85 € e imposta 313 €: netto?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Lordo",
+                      "amount": "1.500 €"
+                    },
+                    {
+                      "name": "Contributi",
+                      "amount": "137,85 €"
+                    },
+                    {
+                      "name": "Imposta",
+                      "amount": "313 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Netto?"
+            },
             "options": [
               {
                 "text": "1.362,15 €",
@@ -10346,7 +10974,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "Tipi di lavoro: dipendente, autonomo, occasionale",
     "intro": {
-      "say": "La stessa cifra può voler dire cose molto diverse a seconda del tipo di lavoro: cambiano chi versa i contributi, chi paga le imposte, quali tutele ci sono (ferie, malattia, infortunio) e quanto resta davvero.",
+      "say": "La stessa cifra può voler dire cose molto diverse a seconda del tipo di lavoro",
+      "sub": "Cambiano chi versa i contributi, chi paga le imposte, quali tutele ci sono (ferie, malattia, infortunio) e quanto resta davvero.",
       "lines": [
         "Il lavoratore dipendente lavora per un datore, con orari e direttive: il datore versa i contributi, trattiene le imposte e ci sono ferie, malattia e altre tutele."
       ]
@@ -10446,6 +11075,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Chi versa i contributi per un lavoratore dipendente?",
+            "table": null,
             "options": [
               {
                 "text": "Il datore (e il lavoratore con la trattenuta)",
@@ -10504,6 +11134,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Prestazione occasionale da 500 € con ritenuta 20%: quanto ricevi?",
+            "table": null,
             "options": [
               {
                 "text": "500 €",
@@ -10562,6 +11193,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Quale è un segnale di falsa partita IVA?",
+            "table": null,
             "options": [
               {
                 "text": "Tre clienti diversi",
@@ -10656,7 +11288,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "Dichiarazione dei redditi, detrazioni e famiglia",
     "intro": {
-      "say": "Dopo l’anno di lavoro si fa i conti con il fisco: chi guadagna dichiara i propri redditi, e alcune spese o situazioni familiari riducono l’imposta.",
+      "say": "Dopo l’anno di lavoro si fa i conti con il fisco",
+      "sub": "Chi guadagna dichiara i propri redditi, e alcune spese o situazioni familiari riducono l’imposta.",
       "lines": [
         "La dichiarazione dei redditi (per esempio il modello 730 per i lavoratori dipendenti) riepiloga i redditi dell’anno, le imposte già pagate e quelle dovute: si può risultare a credito (rimborso) o a debito.",
         "Una detrazione si sottrae dall’imposta già calcolata; una deduzione si sottrae dal reddito prima di calcolare l’imposta."
@@ -10757,6 +11390,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Detrazione del 19% su 500 € di spese sanitarie: di quanto scende l’imposta?",
+            "table": null,
             "options": [
               {
                 "text": "500 €",
@@ -10815,6 +11449,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Soglia a carico 4.000 €, reddito 3.200 €: margine?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Soglia a carico",
+                      "amount": "4.000 €"
+                    },
+                    {
+                      "name": "Reddito",
+                      "amount": "3.200 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Margine?"
+            },
             "options": [
               {
                 "text": "3.200 €",
@@ -10873,6 +11525,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Quale spesa può dare diritto a una detrazione?",
+            "table": null,
             "options": [
               {
                 "text": "Un videogioco",
@@ -10967,7 +11620,8 @@ export const LESSONS = {
     "floor": 6,
     "title": "I diritti di chi lavora, lavoro nero e minori",
     "intro": {
-      "say": "Chi lavora ha diritti anche se non li legge nessuno: un contratto, una retribuzione dovuta, regole sull’orario, la sicurezza e le tutele in caso di infortunio e malattia.",
+      "say": "Chi lavora ha diritti anche se non li legge nessuno",
+      "sub": "Un contratto, una retribuzione dovuta, regole sull’orario, la sicurezza e le tutele in caso di infortunio e malattia.",
       "lines": []
     },
     "exercises": [
@@ -11065,6 +11719,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un lavoro in nero toglie quale tutela?",
+            "table": null,
             "options": [
               {
                 "text": "Nessuna",
@@ -11123,6 +11778,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "40 € a sabato per 6 sabati: totale?",
+            "table": null,
             "options": [
               {
                 "text": "240 €",
@@ -11181,6 +11837,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cosa fai se il datore rifiuta un contratto scritto?",
+            "table": null,
             "options": [
               {
                 "text": "Accetto: va bene",
@@ -11275,7 +11932,8 @@ export const LESSONS = {
     "floor": 7,
     "title": "Quanto costa studiare",
     "intro": {
-      "say": "Il costo di un percorso di studi non è solo la tassa: ci sono i materiali, gli spostamenti e, se si studia lontano da casa, l’affitto e la vita quotidiana. Spesso le spese di vita pesano più delle tasse.",
+      "say": "Il costo di un percorso di studi non è solo la tassa",
+      "sub": "Ci sono i materiali, gli spostamenti e, se si studia lontano da casa, l’affitto e la vita quotidiana. Spesso le spese di vita pesano più delle tasse.",
       "lines": [
         "Si distinguono i costi diretti (tasse e contributi, libri e materiali, trasporti) e i costi di vita (affitto, cibo, bollette, quando si vive fuori sede).",
         "Per stimare il totale si calcola un costo annuo e lo si moltiplica per gli anni del percorso.",
@@ -11342,6 +12000,28 @@ export const LESSONS = {
             "why": "1.200 + 300 + 400 = 1.900 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Tasse",
+                  "amount": "1.200 €"
+                },
+                {
+                  "name": "Libri",
+                  "amount": "300 €"
+                },
+                {
+                  "name": "Trasporti",
+                  "amount": "400 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto costa un anno vicino a casa?"
+        },
         "explain": "Per stimare il totale si calcola un costo annuo e lo si moltiplica per gli anni del percorso. Poi si controlla da dove arrivano i soldi: famiglia, lavoro, borse di studio, prestiti (L4, L5)."
       },
       {
@@ -11377,6 +12057,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un master costa 1.500 € di tasse e 300 € di libri all’anno per due anni. Totale?",
+            "table": null,
             "options": [
               {
                 "text": "3.600 €",
@@ -11435,6 +12116,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Affitto 380 € e vita 220 € al mese per 10 mesi, più 1.000 € di tasse. Costo dell’anno?",
+            "table": null,
             "options": [
               {
                 "text": "7.000 €",
@@ -11493,6 +12175,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Corso serale 2.400 € l’anno per 2 anni più 200 € di materiali l’anno. Totale?",
+            "table": null,
             "options": [
               {
                 "text": "4.800 €",
@@ -11587,7 +12270,8 @@ export const LESSONS = {
     "floor": 7,
     "title": "L’ISEE: come si calcola e a cosa serve",
     "intro": {
-      "say": "L’ISEE è un numero che misura la situazione economica di una famiglia, non solo il reddito: tiene conto anche del patrimonio e di quante persone compongono il nucleo.",
+      "say": "L’ISEE è un numero che misura la situazione economica di una famiglia, non solo il reddito",
+      "sub": "Tiene conto anche del patrimonio e di quante persone compongono il nucleo.",
       "lines": []
     },
     "exercises": [
@@ -11685,6 +12369,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "L’ISEE misura soltanto il reddito?",
+            "table": null,
             "options": [
               {
                 "text": "Sì: solo il reddito",
@@ -11743,6 +12428,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "ISE 24.000 € con parametro 2,04: ISEE?",
+            "table": null,
             "options": [
               {
                 "text": "24.000 €",
@@ -11801,6 +12487,25 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Reddito 22.000 € e patrimonio 10.000 € (conta il 20%): ISE?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Reddito",
+                      "amount": "22.000 €"
+                    },
+                    {
+                      "name": "Patrimonio",
+                      "amount": "10.000 €",
+                      "note": "Conta il 20%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "ISE?"
+            },
             "options": [
               {
                 "text": "32.000 €",
@@ -11895,7 +12600,8 @@ export const LESSONS = {
     "floor": 7,
     "title": "Tasse universitarie e fasce ISEE",
     "intro": {
-      "say": "Molti atenei fanno pagare tasse diverse a seconda dell’ISEE: chi ha un ISEE basso paga meno o niente, chi ha un ISEE alto paga di più.",
+      "say": "Molti atenei fanno pagare tasse diverse a seconda dell’ISEE",
+      "sub": "Chi ha un ISEE basso paga meno o niente, chi ha un ISEE alto paga di più.",
       "lines": [
         "Esistono anche esoneri per motivi economici o di merito.",
         "In questo capitolo usiamo una tabella di un ateneo inventato per far esercitare il calcolo."
@@ -11996,6 +12702,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Tassa 600 € contro 2.000 €: quanto risparmi in due anni?",
+            "table": null,
             "options": [
               {
                 "text": "2.800 €",
@@ -12054,6 +12761,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché si presenta la DSU?",
+            "table": null,
             "options": [
               {
                 "text": "Per pagare di più",
@@ -12112,6 +12820,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "ISEE 20.001 € paga 1.200 €; 20.000 € paga 600 €. Differenza?",
+            "table": null,
             "options": [
               {
                 "text": "1 €",
@@ -12206,7 +12915,8 @@ export const LESSONS = {
     "floor": 7,
     "title": "Borse di studio e diritto allo studio",
     "intro": {
-      "say": "Le borse di studio non sono regali: sono aiuti a chi rispetta requisiti economici (di solito legati all’ISEE) e di merito, e vanno chiesti entro scadenze precise. Conoscerli per tempo può cambiare molto il costo di un percorso.",
+      "say": "Le borse di studio non sono regali",
+      "sub": "Sono aiuti a chi rispetta requisiti economici (di solito legati all’ISEE) e di merito, e vanno chiesti entro scadenze precise. Conoscerli per tempo può cambiare molto il costo di un percorso.",
       "lines": [
         "In Italia gli aiuti per studiare sono di più tipi: borse di studio (somme di denaro), servizi (mensa, alloggio), esoneri o riduzioni delle tasse, contributi per chi studia in condizioni particolari."
       ]
@@ -12306,6 +13016,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Borsa da 2.500 € l’anno per 3 anni: totale?",
+            "table": null,
             "options": [
               {
                 "text": "7.500 €",
@@ -12364,6 +13075,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Servono 36 CFU e ne hai 27: quanti mancano e che percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "9; 9%",
@@ -12422,6 +13134,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Dove cerchi i bandi di borse di studio?",
+            "table": null,
             "options": [
               {
                 "text": "Enti regionali per il diritto allo studio e atenei",
@@ -12516,7 +13229,8 @@ export const LESSONS = {
     "floor": 7,
     "title": "Prestiti e debito per studiare",
     "intro": {
-      "say": "Un prestito dà oggi soldi che si restituiscono domani con gli interessi: il costo vero è la somma delle rate meno quanto si è ricevuto.",
+      "say": "Un prestito dà oggi soldi che si restituiscono domani con gli interessi",
+      "sub": "Il costo vero è la somma delle rate meno quanto si è ricevuto.",
       "lines": [
         "Il tasso è il prezzo del prestito in percentuale annua; la rata è quanto si paga a scadenze regolari; la durata è il tempo di restituzione.",
         "A parità di tasso, durata più lunga significa rata più bassa ma interessi totali più alti."
@@ -12617,6 +13331,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Prestito di 2.000 €, rimborsi totali 2.150 €: interessi?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Prestito",
+                      "amount": "2.000 €"
+                    },
+                    {
+                      "name": "Rimborsi totali",
+                      "amount": "2.150 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Interessi?"
+            },
             "options": [
               {
                 "text": "2.000 €",
@@ -12675,6 +13407,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una rata annua di 800 € su un netto annuo di 12.000 €: che percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "8%",
@@ -12733,6 +13466,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Quando ha senso un prestito per studiare?",
+            "table": null,
             "options": [
               {
                 "text": "Per una spesa essenziale, dopo aver cercato aiuti e letto i costi",
@@ -12827,9 +13561,20 @@ export const LESSONS = {
     "floor": 7,
     "title": "Scegliere un percorso con i numeri (e le trappole)",
     "intro": {
-      "say": "Un percorso di formazione si sceglie guardando costo totale, riconoscimento, contenuti e tempo di recupero dell’investimento, non la promessa. Chi garantisce un lavoro o mette fretta spesso vende più di quanto promette.",
+      "say": "Un percorso di formazione si sceglie guardando costo totale, riconoscimento, contenuti e tempo di recupero dell’investimento, non la promessa",
+      "sub": "Chi garantisce un lavoro o mette fretta spesso vende più di quanto promette.",
       "lines": [
-        "Il tempo di recupero è il costo diviso per l’aumento mensile atteso del reddito netto: se serve molto tempo per recuperare, o l’aumento è solo una speranza, l’investimento è debole."
+        "Il tempo di recupero è il costo diviso per l’aumento mensile atteso del reddito netto: se serve molto tempo per recuperare, o l’aumento è solo una speranza, l’investimento è debole.",
+        {
+          "formula": [
+            "Tempo di recupero",
+            "=",
+            {
+              "num": "Costo",
+              "den": "Aumento mensile atteso del reddito netto"
+            }
+          ]
+        }
       ]
     },
     "exercises": [
@@ -12927,6 +13672,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Corso da 10 rate da 250 € più 90 € di iscrizione: totale?",
+            "table": null,
             "options": [
               {
                 "text": "2.500 €",
@@ -12985,6 +13731,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Corso da 3.000 € che fa crescere il netto di 150 € al mese: mesi per recuperarlo?",
+            "table": null,
             "options": [
               {
                 "text": "15",
@@ -13043,6 +13790,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una scuola promette «assunzione garantita». Cosa chiedi?",
+            "table": null,
             "options": [
               {
                 "text": "Accreditamento, programma e costi per iscritto",
@@ -13137,7 +13885,8 @@ export const LESSONS = {
     "floor": 8,
     "title": "Inflazione e potere d’acquisto",
     "intro": {
-      "say": "Con l’inflazione i prezzi salgono nel tempo: la stessa somma compra meno cose. Per capire se i soldi crescono davvero non basta guardare gli interessi, bisogna confrontarli con l’aumento dei prezzi.",
+      "say": "Con l’inflazione i prezzi salgono nel tempo",
+      "sub": "La stessa somma compra meno cose. Per capire se i soldi crescono davvero non basta guardare gli interessi, bisogna confrontarli con l’aumento dei prezzi.",
       "lines": [
         "L’inflazione è l’aumento generale dei prezzi in un periodo; si misura con indici (in Italia soprattutto quelli dell’ISTAT; i valori reali vanno reperiti con fonte e data).",
         "Se l’inflazione è il 3% all’anno, un prezzo di 100 € diventa 100 × 1,03 dopo un anno, e dopo n anni 100 × 1,03ⁿ."
@@ -13238,6 +13987,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un prezzo di 200 € con inflazione al 2% annuo per 5 anni: quanto diventa?",
+            "table": null,
             "options": [
               {
                 "text": "220,82 €",
@@ -13296,6 +14046,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una paghetta di 40 € resta ferma per 3 anni con inflazione al 3%. Quanto vale in potere d’acquisto di oggi?",
+            "table": null,
             "options": [
               {
                 "text": "40,00 €",
@@ -13354,6 +14105,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "I tuoi soldi crescono dell'1% e i prezzi del 3%: cosa succede al potere d’acquisto?",
+            "table": null,
             "options": [
               {
                 "text": "Sale",
@@ -13448,7 +14200,8 @@ export const LESSONS = {
     "floor": 8,
     "title": "Come cresce un debito",
     "intro": {
-      "say": "Un debito cresce con gli interessi, e gli interessi si calcolano anche sugli interessi non pagati. Più il tasso è alto e più tempo passa, più il debito pesa: pagare solo gli interessi tiene il debito fermo, non lo riduce.",
+      "say": "Un debito cresce con gli interessi, e gli interessi si calcolano anche sugli interessi non pagati",
+      "sub": "Più il tasso è alto e più tempo passa, più il debito pesa: pagare solo gli interessi tiene il debito fermo, non lo riduce.",
       "lines": [
         "Il TAN (tasso annuo nominale) è il tasso dichiarato su base annua; se gli interessi vengono aggiunti al debito ogni mese, il costo reale su un anno è un po’ più alto del TAN.",
         "Con un TAN del 18% il tasso mensile è 1,5%; senza pagamenti, in 12 mesi il debito diventa capitale × (1,015)¹²."
@@ -13514,6 +14267,24 @@ export const LESSONS = {
             "why": "18% ÷ 12 = 1,5%; 1.000 × 0,015 = 15 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Debito",
+                  "amount": "1.000 €"
+                },
+                {
+                  "name": "TAN",
+                  "amount": "18%"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto è l’interesse del primo mese?"
+        },
         "explain": "Con un TAN del 18% il tasso mensile è 1,5%; senza pagamenti, in 12 mesi il debito diventa capitale × (1,015)¹²."
       },
       {
@@ -13549,6 +14320,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Debito di 500 €, TAN 12%: interesse del primo mese?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Debito",
+                      "amount": "500 €"
+                    },
+                    {
+                      "name": "TAN",
+                      "amount": "12%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Interesse del primo mese?"
+            },
             "options": [
               {
                 "text": "60 €",
@@ -13607,6 +14396,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "1.000 € al TAN 12% con interessi mensili, senza pagare per 12 mesi: debito finale?",
+            "table": null,
             "options": [
               {
                 "text": "1.120,00 €",
@@ -13665,6 +14455,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché pagare solo gli interessi non riduce il debito?",
+            "table": null,
             "options": [
               {
                 "text": "Perché gli interessi sono capitale",
@@ -13759,9 +14550,21 @@ export const LESSONS = {
     "floor": 8,
     "title": "Comprare a rate",
     "intro": {
-      "say": "Pagare a rate fa sembrare un acquisto più leggero, ma il costo totale è la somma di tutte le rate: la differenza rispetto al prezzo è il costo del credito.",
+      "say": "Pagare a rate fa sembrare un acquisto più leggero, ma il costo totale è la somma di tutte le rate",
+      "sub": "La differenza rispetto al prezzo è il costo del credito.",
       "lines": [
-        "Con rate costanti mensili, la rata si calcola con la formula rata = capitale × i ÷ (1 − (1 + i)^−n), dove i è il tasso mensile (TAN ÷ 12) e n il numero di rate."
+        "Con rate costanti mensili, la rata si calcola con la formula rata = capitale × i ÷ (1 − (1 + i)^−n), dove i è il tasso mensile (TAN ÷ 12) e n il numero di rate.",
+        {
+          "formula": [
+            "Rata",
+            "=",
+            "Capitale",
+            "×",
+            "i",
+            "÷",
+            "(1 − (1 + i)^−n)"
+          ]
+        }
       ]
     },
     "exercises": [
@@ -13859,6 +14662,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "360 € in 12 rate a tasso zero: rata?",
+            "table": null,
             "options": [
               {
                 "text": "36 €",
@@ -13917,6 +14721,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Totale a rate 400 € su un prezzo di 360 €: costo del credito e percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "40 €, 1,1%",
@@ -13975,6 +14780,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché confrontare prezzo a rate e a vista?",
+            "table": null,
             "options": [
               {
                 "text": "Perché sono sempre uguali",
@@ -14069,7 +14875,8 @@ export const LESSONS = {
     "floor": 8,
     "title": "Affitto o acquisto: i costi della casa",
     "intro": {
-      "say": "Comprare casa non è sempre più conveniente che affittare, e affittare non è «buttare i soldi». Si confrontano i costi veri di ogni anno, comprese le spese che non si vedono nella rata.",
+      "say": "Comprare casa non è sempre più conveniente che affittare, e affittare non è «buttare i soldi»",
+      "sub": "Si confrontano i costi veri di ogni anno, comprese le spese che non si vedono nella rata.",
       "lines": [
         "Chi affitta paga il canone: non costruisce un patrimonio ma ha flessibilità (si può cambiare città o casa) e pochi costi extra.",
         "Chi compra paga la rata del mutuo, ma solo una parte della rata è costo vero: gli interessi; la parte restante è capitale che riduce il debito e diventa patrimonio."
@@ -14170,6 +14977,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Affitto 500 € al mese: quanto in 5 anni?",
+            "table": null,
             "options": [
               {
                 "text": "30.000 €",
@@ -14223,11 +15031,43 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "Primo anno di mutuo",
+              "rows": [
+                {
+                  "name": "Interessi",
+                  "amount": "circa 5.189 €"
+                },
+                {
+                  "name": "Manutenzione",
+                  "amount": "2.000 €"
+                }
+              ]
+            },
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Affitto annuo",
+                  "amount": "7.200 €"
+                },
+                {
+                  "name": "Costo opportunità dell’anticipo",
+                  "amount": "1.000 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Costo vero e confronto con l’affitto?"
+        },
         "explain": "Il costo vero di un anno di casa di proprietà è grosso modo interessi più spese (manutenzione, assicurazione, tasse) più il costo opportunità dell’anticipo, cioè quello che l’anticipo avrebbe potuto rendere altrove.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Rata 600 € al mese contro affitto annuo di 5.400 €: differenza annua?",
+            "table": null,
             "options": [
               {
                 "text": "1.800 € in più la rata",
@@ -14286,6 +15126,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché affittare non è «buttare i soldi»?",
+            "table": null,
             "options": [
               {
                 "text": "Perché l’affitto diventa proprietà",
@@ -14380,7 +15221,7 @@ export const LESSONS = {
     "floor": 8,
     "title": "Il mutuo: rata, tasso e ammortamento",
     "intro": {
-      "say": "Un mutuo è un prestito a lungo termine per comprare casa, restituito con rate costanti.",
+      "say": "Un mutuo è un prestito a lungo termine per comprare casa, restituito con rate costanti",
       "lines": [
         "Nell’ammortamento alla francese la rata è costante e ogni mese si divide in interessi (tasso mensile × debito residuo) e capitale (il resto).",
         "Man mano che il debito scende, gli interessi calano e la quota capitale cresce.",
@@ -14482,6 +15323,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Mutuo 100.000 € al 3%: interessi del primo mese?",
+            "table": null,
             "options": [
               {
                 "text": "3.000 €",
@@ -14540,6 +15382,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Rata 500 € per 240 mesi: totale restituito?",
+            "table": null,
             "options": [
               {
                 "text": "120.000 €",
@@ -14598,6 +15441,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché all’inizio la rata è soprattutto interessi?",
+            "table": null,
             "options": [
               {
                 "text": "Perché il capitale si paga per primo",
@@ -14692,7 +15536,8 @@ export const LESSONS = {
     "floor": 8,
     "title": "Un mutuo sostenibile",
     "intro": {
-      "say": "Un mutuo è sostenibile se la rata resta pagabile anche quando le cose vanno peggio: tassi che salgono, reddito che cala, spese impreviste.",
+      "say": "Un mutuo è sostenibile se la rata resta pagabile anche quando le cose vanno peggio",
+      "sub": "Tassi che salgono, reddito che cala, spese impreviste.",
       "lines": [
         "Più alto è il rapporto, più un imprevisto fa male.",
         "Un anticipo più alto riduce il debito e quindi la rata.",
@@ -14761,6 +15606,24 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Rata",
+                  "amount": "750,94 €"
+                },
+                {
+                  "name": "Reddito netto",
+                  "amount": "2.500 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Che percentuale?"
+        },
         "explain": "Con un tasso variabile la rata può salire: si simula uno scenario con tasso più alto e si verifica se il budget regge ancora."
       },
       {
@@ -14796,6 +15659,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Rata 600 € e reddito netto 2.000 €: quale percentuale?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Rata",
+                      "amount": "600 €"
+                    },
+                    {
+                      "name": "Reddito netto",
+                      "amount": "2.000 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quale percentuale?"
+            },
             "options": [
               {
                 "text": "3%",
@@ -14854,6 +15735,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "La rata sale da 600 € a 720 €: aumento in euro e percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "+120 €, +12%",
@@ -14912,6 +15794,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché valutare lo scenario peggiore?",
+            "table": null,
             "options": [
               {
                 "text": "Per sapere se la rata resta pagabile se le cose peggiorano",
@@ -15006,7 +15889,8 @@ export const LESSONS = {
     "floor": 9,
     "title": "Prestare denaro: cos’è un’obbligazione",
     "intro": {
-      "say": "Un’obbligazione è un prestito con regole scritte: tu presti soldi a uno Stato o a un’azienda, loro ti pagano un interesse a date fisse e ti restituiscono il capitale alla scadenza.",
+      "say": "Un’obbligazione è un prestito con regole scritte",
+      "sub": "Tu presti soldi a uno Stato o a un’azienda, loro ti pagano un interesse a date fisse e ti restituiscono il capitale alla scadenza.",
       "lines": [
         "Quando presti 100 € a un amico, di solito non scrivi niente: non sai quando te li dà e se aggiunge qualcosa.",
         "Un’obbligazione fissa tutto prima: il valore nominale (la cifra che ti sarà restituita, qui 1.000 €), la cedola (l’interesse, espresso in % del nominale e pagato ogni anno o ogni sei mesi) e la scadenza (la data in cui il nominale viene rimborsato)."
@@ -15107,6 +15991,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Obbligazione con nominale 500 € e cedola annua 4%: quanto paga ogni anno?",
+            "table": null,
             "options": [
               {
                 "text": "200 €",
@@ -15165,6 +16050,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Stessa obbligazione, durata 3 anni: quanto incassi in tutto tra cedole e rimborso?",
+            "table": null,
             "options": [
               {
                 "text": "560 €",
@@ -15223,6 +16109,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cosa restituisce l’emittente alla scadenza?",
+            "table": null,
             "options": [
               {
                 "text": "Il valore nominale",
@@ -15317,12 +16204,23 @@ export const LESSONS = {
     "floor": 9,
     "title": "Cedola, scadenza e rendimento",
     "intro": {
-      "say": "La cedola dice quanto paga l’obbligazione sul nominale, ma quello che guadagni dipende da quanto l’hai pagata: lo stesso titolo può rendere di più o di meno a seconda del prezzo di acquisto.",
+      "say": "La cedola dice quanto paga l’obbligazione sul nominale, ma quello che guadagni dipende da quanto l’hai pagata",
+      "sub": "Lo stesso titolo può rendere di più o di meno a seconda del prezzo di acquisto.",
       "lines": [
         "Le obbligazioni si possono comprare e vendere prima della scadenza, e il loro prezzo può essere diverso dal nominale.",
         "Se costa meno di 1.000 € si dice che è sotto la pari, se costa di più che è sopra la pari.",
         "La cedola resta quella (30 € l’anno), ma cambia il rendimento.",
-        "Il rendimento corrente è la cedola annua divisa per il prezzo pagato: 30 ÷ 960 = 3,12%."
+        "Il rendimento corrente è la cedola annua divisa per il prezzo pagato: 30 ÷ 960 = 3,12%.",
+        {
+          "formula": [
+            "Rendimento corrente",
+            "=",
+            {
+              "num": "Cedola annua",
+              "den": "Prezzo pagato"
+            }
+          ]
+        }
       ]
     },
     "exercises": [
@@ -15420,6 +16318,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cedola 20 € l’anno, prezzo pagato 980 €: rendimento corrente?",
+            "table": null,
             "options": [
               {
                 "text": "2,00%",
@@ -15478,6 +16377,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Compri a 920 € un titolo da 1.000 € con cedola 3% e 2 anni residui. Guadagno a scadenza?",
+            "table": null,
             "options": [
               {
                 "text": "140 €",
@@ -15536,6 +16436,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cosa significa che un titolo è «sopra la pari»?",
+            "table": null,
             "options": [
               {
                 "text": "Il prezzo è inferiore al nominale",
@@ -15589,6 +16490,43 @@ export const LESSONS = {
             "why": "B). A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "text": "Due titoli da 2 anni."
+            },
+            {
+              "head": "A",
+              "rows": [
+                {
+                  "name": "Cedola",
+                  "amount": "5%"
+                },
+                {
+                  "name": "Prezzo",
+                  "amount": "1.100 €"
+                }
+              ]
+            },
+            {
+              "head": "B",
+              "rows": [
+                {
+                  "name": "Cedola",
+                  "amount": "3%"
+                },
+                {
+                  "name": "Prezzo",
+                  "amount": "1.000 €"
+                }
+              ]
+            },
+            {
+              "text": "Entrambi rimborsano 1.000 €."
+            }
+          ],
+          "ask": "Quale rende di più se li tieni fino alla fine?"
+        },
         "explain": "Se costa meno di 1.000 € si dice che è sotto la pari, se costa di più che è sopra la pari."
       },
       {
@@ -15630,7 +16568,8 @@ export const LESSONS = {
     "floor": 9,
     "title": "Perché il prezzo si muove",
     "intro": {
-      "say": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende; quando i tassi scendono, sale. Se tieni il titolo fino alla scadenza il rimborso non cambia, ma se devi venderlo prima puoi perdere.",
+      "say": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende",
+      "sub": "Quando i tassi scendono, sale. Se tieni il titolo fino alla scadenza il rimborso non cambia, ma se devi venderlo prima puoi perdere.",
       "lines": [
         "Giulia compra oggi un’obbligazione con cedola 3%.",
         "Dopo un anno escono nuove obbligazioni che pagano il 5%: nessuno vuole più pagare 1.000 € un titolo da 3% quando ne trova uno da 5%, quindi il prezzo del vecchio titolo deve scendere finché il suo rendimento diventa competitivo.",
@@ -15732,6 +16671,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "I tassi di mercato scendono: cosa succede al prezzo di un’obbligazione già emessa?",
+            "table": null,
             "options": [
               {
                 "text": "Scende",
@@ -15790,6 +16730,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "A parità di altro, quale titolo è più sensibile ai tassi?",
+            "table": null,
             "options": [
               {
                 "text": "Quello con scadenza più breve",
@@ -15848,6 +16789,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Compri a 970 € un titolo senza cedole che rimborsa 1.000 €. Guadagno se lo tieni fino alla scadenza?",
+            "table": null,
             "options": [
               {
                 "text": "970 €",
@@ -15942,7 +16884,8 @@ export const LESSONS = {
     "floor": 9,
     "title": "Il rischio di chi presta",
     "intro": {
-      "say": "Chi presta rischia di non essere ripagato. Una cedola più alta è il prezzo di questo rischio: più è alta, più è probabile che dietro ci sia un emittente meno affidabile.",
+      "say": "Chi presta rischia di non essere ripagato",
+      "sub": "Una cedola più alta è il prezzo di questo rischio: più è alta, più è probabile che dietro ci sia un emittente meno affidabile.",
       "lines": [
         "Il rischio di emittente (o rischio di credito) è la possibilità che chi ha emesso l’obbligazione non paghi le cedole o non rimborsi il nominale.",
         "Se l’emittente fallisce, in genere si recupera solo una parte del capitale: qui supponiamo il 40%."
@@ -16043,6 +16986,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Presti 2.000 € a un emittente che fallisce e rimborsa il 50%: quanto perdi?",
+            "table": null,
             "options": [
               {
                 "text": "500 €",
@@ -16101,6 +17045,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Dividi 2.000 € in 5 emittenti da 400 €; uno fallisce e rimborsa il 50%: quanto perdi?",
+            "table": null,
             "options": [
               {
                 "text": "1.000 €",
@@ -16159,6 +17104,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché verificare chi è l’emittente?",
+            "table": null,
             "options": [
               {
                 "text": "Perché solo l’emittente può rimborsare il prestito",
@@ -16253,7 +17199,8 @@ export const LESSONS = {
     "floor": 9,
     "title": "Tasse, costi e inflazione",
     "intro": {
-      "say": "La cedola scritta sul titolo è lorda. Il guadagno vero è quello che resta dopo tasse e costi, e va confrontato con l’aumento dei prezzi.",
+      "say": "La cedola scritta sul titolo è lorda",
+      "sub": "Il guadagno vero è quello che resta dopo tasse e costi, e va confrontato con l’aumento dei prezzi.",
       "lines": [
         "Sulle cedole si pagano tasse: l’importo che ricevi è la cedola netta."
       ]
@@ -16318,6 +17265,24 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Cedola lorda",
+                  "amount": "30 €"
+                },
+                {
+                  "name": "Aliquota",
+                  "amount": "12,5%"
+                }
+              ]
+            }
+          ],
+          "ask": "Quanto ricevi?"
+        },
         "explain": "Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo."
       },
       {
@@ -16353,6 +17318,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cedola lorda 50 €, aliquota 12,5%: quanto ricevi?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Cedola lorda",
+                      "amount": "50 €"
+                    },
+                    {
+                      "name": "Aliquota",
+                      "amount": "12,5%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quanto ricevi?"
+            },
             "options": [
               {
                 "text": "6,25 €",
@@ -16411,6 +17394,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cedola lorda 50 €, aliquota 26%: quanto ricevi?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Cedola lorda",
+                      "amount": "50 €"
+                    },
+                    {
+                      "name": "Aliquota",
+                      "amount": "26%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Quanto ricevi?"
+            },
             "options": [
               {
                 "text": "37,00 €",
@@ -16469,6 +17470,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cedola 3% lorda e inflazione 2%: rendimento reale prima delle tasse?",
+            "table": null,
             "options": [
               {
                 "text": "Circa +0,98%",
@@ -16563,7 +17565,8 @@ export const LESSONS = {
     "floor": 9,
     "title": "Una scala di scadenze",
     "intro": {
-      "say": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse: ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo.",
+      "say": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse",
+      "sub": "Ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo.",
       "lines": [
         "Una scala di scadenze (in inglese ladder) divide la cifra in più obbligazioni che scadono a date diverse: ad esempio una a 1 anno, una a 2 e una a 3.",
         "Ogni volta che una scade, ricevi nominale e cedole e puoi decidere cosa farne: spenderli, se ti servono, o reinvestirli ai tassi di quel momento."
@@ -16664,6 +17667,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Scala di tre titoli da 500 € con scadenze a 1, 2 e 3 anni: quanto nominale rientra ogni anno?",
+            "table": null,
             "options": [
               {
                 "text": "1.500 €",
@@ -16722,6 +17726,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché la scala dà liquidità periodica?",
+            "table": null,
             "options": [
               {
                 "text": "Perché ogni anno scade un titolo",
@@ -16780,6 +17785,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Con cedole 3%, 3,5% e 4% su tre titoli da 1.000 €, quante cedole incassi il primo anno?",
+            "table": null,
             "options": [
               {
                 "text": "30 €",
@@ -16874,7 +17880,8 @@ export const LESSONS = {
     "floor": 10,
     "title": "Cos’è un’azione",
     "intro": {
-      "say": "Un’azione è una piccola quota di una società: chi la compra diventa socio e partecipa ai risultati, buoni o cattivi. Non ha una scadenza né un rimborso promesso.",
+      "say": "Un’azione è una piccola quota di una società",
+      "sub": "Chi la compra diventa socio e partecipa ai risultati, buoni o cattivi. Non ha una scadenza né un rimborso promesso.",
       "lines": [
         "Un negozio di quartiere può diventare una società divisa in azioni.",
         "Chi ne compra una è un azionista, cioè un socio: possiede una parte della società e, se i conti vanno bene, può incassare una parte degli utili (il dividendo, L4) o vedere salire il prezzo dell’azione."
@@ -16975,6 +17982,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Una società vale 200.000 € e ha 2.000 azioni. Quanto vale un’azione?",
+            "table": null,
             "options": [
               {
                 "text": "10 €",
@@ -17033,6 +18041,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Compri 20 azioni a 100 € (su 2.000): quanto spendi e che quota possiedi?",
+            "table": null,
             "options": [
               {
                 "text": "2.000 €; 10%",
@@ -17091,6 +18100,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cosa ottiene un azionista?",
+            "table": null,
             "options": [
               {
                 "text": "Partecipa ai risultati, senza rimborso garantito",
@@ -17185,12 +18195,31 @@ export const LESSONS = {
     "floor": 10,
     "title": "Ricavi, costi e utile",
     "intro": {
-      "say": "I ricavi dicono quanto incassa una società, l’utile quanto le resta dopo i costi. Una società può vendere di più e guadagnare di meno.",
+      "say": "I ricavi dicono quanto incassa una società, l’utile quanto le resta dopo i costi",
+      "sub": "Una società può vendere di più e guadagnare di meno.",
       "lines": [
         "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi.",
         "I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse.",
-        "L’utile è la differenza: ricavi meno costi.",
+        {
+          "formula": [
+            "Utile",
+            "=",
+            "Ricavi",
+            "−",
+            "Costi"
+          ]
+        },
         "Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato.",
+        {
+          "formula": [
+            "Margine",
+            "=",
+            {
+              "num": "Utile",
+              "den": "Ricavi"
+            }
+          ]
+        },
         "Se i costi superano i ricavi c’è una perdita."
       ]
     },
@@ -17254,6 +18283,24 @@ export const LESSONS = {
             "why": "500.000 − 450.000 = 50.000 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Ricavi",
+                  "amount": "500.000 €"
+                },
+                {
+                  "name": "Costi",
+                  "amount": "450.000 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Utile?"
+        },
         "explain": "L’utile è la differenza: ricavi meno costi. Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato."
       },
       {
@@ -17284,11 +18331,48 @@ export const LESSONS = {
             "why": "50.000 ÷ 500.000 = 10%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Ricavi",
+                  "amount": "500.000 €"
+                },
+                {
+                  "name": "Costi",
+                  "amount": "450.000 €",
+                  "note": "Utile 50.000 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Qual è il margine?"
+        },
         "explain": "Guardare solo i ricavi: «vende sempre di più» non vuol dire che guadagna. L’altro errore è confondere utile e cassa: una società può avere utile sulla carta e pochi soldi disponibili, per esempio se i clienti pagano in ritardo.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Ricavi 400.000 €, costi 360.000 €: utile?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Ricavi",
+                      "amount": "400.000 €"
+                    },
+                    {
+                      "name": "Costi",
+                      "amount": "360.000 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Utile?"
+            },
             "options": [
               {
                 "text": "760.000 €",
@@ -17342,11 +18426,30 @@ export const LESSONS = {
             "why": "Utile 30.000 €; margine 30.000 ÷ 600.000 = 5%. I ricavi sono saliti del 20% ma l’utile è sceso del 40%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Ricavi",
+                  "amount": "600.000 €"
+                },
+                {
+                  "name": "Costi",
+                  "amount": "570.000 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Utile e margine?"
+        },
         "explain": "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi. I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Nello stesso caso, margine?",
+            "table": null,
             "options": [
               {
                 "text": "90%",
@@ -17400,11 +18503,30 @@ export const LESSONS = {
             "why": "500.000 − 430.000 = 70.000; 70.000 ÷ 500.000 = 14%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Ricavi",
+                  "amount": "500.000 €"
+                },
+                {
+                  "name": "Costi",
+                  "amount": "430.000 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Utile e margine?"
+        },
         "explain": "L’utile è la differenza: ricavi meno costi. Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Perché i ricavi in crescita non bastano?",
+            "table": null,
             "options": [
               {
                 "text": "Perché i ricavi non contano",
@@ -17488,6 +18610,24 @@ export const LESSONS = {
             "why": "30 × 0,875 = 26,25 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Cedola lorda",
+                  "amount": "30 €"
+                },
+                {
+                  "name": "Aliquota",
+                  "amount": "12,5%"
+                }
+              ]
+            }
+          ],
+          "ask": "Cedola netta?"
+        },
         "explain": "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi. I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse."
       }
     ],
@@ -17499,10 +18639,31 @@ export const LESSONS = {
     "floor": 10,
     "title": "Utile per azione e prezzo/utili",
     "intro": {
-      "say": "Per sapere se un’azione costa tanto o poco non basta il prezzo: serve confrontarlo con l’utile che ogni azione produce. È il rapporto prezzo/utili, in inglese P/E.",
+      "say": "Per sapere se un’azione costa tanto o poco non basta il prezzo",
+      "sub": "Serve confrontarlo con l’utile che ogni azione produce. È il rapporto prezzo/utili, in inglese P/E.",
       "lines": [
         "L’utile per azione (in inglese EPS) è l’utile della società diviso per il numero di azioni: dice quanto utile «è di» ogni azione.",
+        {
+          "formula": [
+            "Utile per azione",
+            "=",
+            {
+              "num": "Utile della società",
+              "den": "Numero di azioni"
+            }
+          ]
+        },
         "Il rapporto prezzo/utili (P/E) è il prezzo dell’azione diviso per l’utile per azione: dice quanti euro paghi per ogni euro di utile annuo.",
+        {
+          "formula": [
+            "Rapporto prezzo/utili",
+            "=",
+            {
+              "num": "Prezzo dell’azione",
+              "den": "Utile per azione"
+            }
+          ]
+        },
         "Un P/E di 20 significa che paghi 20 € per ogni euro che la società guadagna in un anno."
       ]
     },
@@ -17596,11 +18757,30 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Prezzo",
+                  "amount": "100 €"
+                },
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                }
+              ]
+            }
+          ],
+          "ask": "P/E?"
+        },
         "explain": "Il rapporto prezzo/utili (P/E) è il prezzo dell’azione diviso per l’utile per azione: dice quanti euro paghi per ogni euro di utile annuo.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Utile 80.000 € e 20.000 azioni: utile per azione?",
+            "table": null,
             "options": [
               {
                 "text": "0,25 €",
@@ -17659,6 +18839,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Prezzo 60 € e utile per azione 4 €: P/E?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Prezzo",
+                      "amount": "60 €"
+                    },
+                    {
+                      "name": "Utile per azione",
+                      "amount": "4 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "P/E?"
+            },
             "options": [
               {
                 "text": "0,07",
@@ -17717,6 +18915,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché un P/E basso non basta a dire che l’azione è conveniente?",
+            "table": null,
             "options": [
               {
                 "text": "Perché il P/E basso è sempre un errore",
@@ -17800,6 +18999,24 @@ export const LESSONS = {
             "why": "30 ÷ 960 = 3,12%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Cedola",
+                  "amount": "30 €"
+                },
+                {
+                  "name": "Prezzo pagato",
+                  "amount": "960 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Rendimento corrente?"
+        },
         "explain": "Non c’è un valore giusto in assoluto: si confronta con società simili e nel tempo, e si guarda sempre il perché."
       }
     ],
@@ -17811,10 +19028,20 @@ export const LESSONS = {
     "floor": 10,
     "title": "Il dividendo",
     "intro": {
-      "say": "Il dividendo è la parte dell’utile che la società distribuisce ai soci. Non è garantito: la società può ridurlo o toglierlo, e un dividendo troppo alto rispetto all’utile non regge.",
+      "say": "Il dividendo è la parte dell’utile che la società distribuisce ai soci",
+      "sub": "Non è garantito: la società può ridurlo o toglierlo, e un dividendo troppo alto rispetto all’utile non regge.",
       "lines": [
         "Una società può reinvestire l’utile oppure distribuirne una parte come dividendo, di solito per azione.",
-        "Il rendimento da dividendo è il dividendo per azione diviso per il prezzo.",
+        {
+          "formula": [
+            "Rendimento da dividendo",
+            "=",
+            {
+              "num": "Dividendo per azione",
+              "den": "Prezzo"
+            }
+          ]
+        },
         "La quota di utile distribuita si chiama payout: dividendo per azione diviso utile per azione."
       ]
     },
@@ -17878,6 +19105,24 @@ export const LESSONS = {
             "right": true
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Prezzo",
+                  "amount": "100 €"
+                },
+                {
+                  "name": "Dividendo",
+                  "amount": "2 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Rendimento da dividendo?"
+        },
         "explain": "Scegliere il dividendo più alto senza guardare l’utile che lo sostiene. L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione (Cap. 9): non c’è nessun obbligo di pagarlo."
       },
       {
@@ -17908,11 +19153,47 @@ export const LESSONS = {
             "why": "2 ÷ 5 = 40%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                },
+                {
+                  "name": "Dividendo",
+                  "amount": "2 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Payout?"
+        },
         "explain": "La quota di utile distribuita si chiama payout: dividendo per azione diviso utile per azione. Un payout sopra il 100% vuol dire distribuire più di quanto si guadagna: si può fare per poco usando riserve o debito, ma non a lungo.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Prezzo 50 €, dividendo 1,5 €: rendimento da dividendo?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Prezzo",
+                      "amount": "50 €"
+                    },
+                    {
+                      "name": "Dividendo",
+                      "amount": "1,5 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Rendimento da dividendo?"
+            },
             "options": [
               {
                 "text": "30%",
@@ -17971,6 +19252,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Utile per azione 3 € e dividendo 1,2 €: payout?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Utile per azione",
+                      "amount": "3 €"
+                    },
+                    {
+                      "name": "Dividendo",
+                      "amount": "1,2 €"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Payout?"
+            },
             "options": [
               {
                 "text": "40%",
@@ -18024,11 +19323,30 @@ export const LESSONS = {
             "why": "6 ÷ 5 = 120%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                },
+                {
+                  "name": "Dividendo",
+                  "amount": "6 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Payout?"
+        },
         "explain": "La quota di utile distribuita si chiama payout: dividendo per azione diviso utile per azione. Un payout sopra il 100% vuol dire distribuire più di quanto si guadagna: si può fare per poco usando riserve o debito, ma non a lungo.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Hai 200 azioni e il dividendo è 0,5 €: incasso lordo e netto (aliquota 26%)?",
+            "table": null,
             "options": [
               {
                 "text": "Lordo 100 €; netto 26 €",
@@ -18112,6 +19430,24 @@ export const LESSONS = {
             "why": "30 × 0,74 = 22,20 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Cedola lorda",
+                  "amount": "30 €"
+                },
+                {
+                  "name": "Aliquota",
+                  "amount": "26%"
+                }
+              ]
+            }
+          ],
+          "ask": "Cedola netta?"
+        },
         "explain": "L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione (Cap. 9): non c’è nessun obbligo di pagarlo."
       }
     ],
@@ -18123,7 +19459,8 @@ export const LESSONS = {
     "floor": 10,
     "title": "Il rischio delle azioni",
     "intro": {
-      "say": "Le azioni possono perdere valore anche a lungo, e per recuperare un calo serve un rialzo più grande del calo. Diversificare riduce il rischio di una singola società, non quello dell’intero mercato.",
+      "say": "Le azioni possono perdere valore anche a lungo, e per recuperare un calo serve un rialzo più grande del calo",
+      "sub": "Diversificare riduce il rischio di una singola società, non quello dell’intero mercato.",
       "lines": [
         "Il prezzo di un’azione cambia ogni giorno e, a differenza dell’obbligazione, non c’è una data in cui ti viene restituito un importo prefissato.",
         "Se perdi il 30% sei a 70 ogni 100 e, per tornare a 100, serve un guadagno di 30 ÷ 70 = 42,86%: i cali pesano più dei rialzi.",
@@ -18225,6 +19562,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 1.000 € e perdi il 20%: quanto resta e quale rialzo serve per tornare a 1.000 €?",
+            "table": null,
             "options": [
               {
                 "text": "800 €; +20%",
@@ -18283,6 +19621,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perdi il 40% di 1.000 €: quanto resta e quale rialzo serve?",
+            "table": null,
             "options": [
               {
                 "text": "600 €; +40%",
@@ -18341,6 +19680,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché diversificare non elimina il rischio di mercato?",
+            "table": null,
             "options": [
               {
                 "text": "Perché diversificare non serve",
@@ -18435,7 +19775,8 @@ export const LESSONS = {
     "floor": 10,
     "title": "Tempo, costi e comportamento",
     "intro": {
-      "say": "Nel lungo periodo contano tre cose: il tempo, i costi che paghi ogni anno e come ti comporti quando il prezzo scende. Nessun rendimento è garantito.",
+      "say": "Nel lungo periodo contano tre cose",
+      "sub": "Il tempo, i costi che paghi ogni anno e come ti comporti quando il prezzo scende. Nessun rendimento è garantito.",
       "lines": [
         "Con l’interesse composto un risultato ipotetico ogni anno si aggiunge al capitale e produce a sua volta risultato: più tempo passa, più pesa.",
         "Lo stesso vale per i costi: una commissione annua dell'1% sembra piccola, ma ogni anno riduce il capitale e quindi anche il risultato degli anni dopo."
@@ -18536,6 +19877,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Versi 100 € al mese per 5 anni: quanto versi in tutto?",
+            "table": null,
             "options": [
               {
                 "text": "6.000 €",
@@ -18594,6 +19936,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché un costo annuo dell'1% pesa nel tempo?",
+            "table": null,
             "options": [
               {
                 "text": "Viene tolto ogni anno e riduce il capitale degli anni successivi",
@@ -18652,6 +19995,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Dopo un calo, i soldi non servono per 8 anni e hai il fondo di emergenza: cosa ha senso?",
+            "table": null,
             "options": [
               {
                 "text": "Vendere tutto",
@@ -18746,7 +20090,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "Cos’è un fondo: il paniere",
     "intro": {
-      "say": "Un fondo è un paniere in comune: tante persone mettono soldi insieme e il fondo li investe in molti titoli. Tu possiedi una quota del paniere, non le singole società.",
+      "say": "Un fondo è un paniere in comune",
+      "sub": "Tante persone mettono soldi insieme e il fondo li investe in molti titoli. Tu possiedi una quota del paniere, non le singole società.",
       "lines": [
         "Immagina dieci amici che mettono 50 € ciascuno in una cassa comune per comprare insieme più cose invece di una sola: ognuno possiede una parte della cassa.",
         "Un fondo funziona così: il patrimonio totale è diviso in quote, e il valore di una quota è il patrimonio diviso per il numero di quote.",
@@ -18848,6 +20193,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Patrimonio 500.000 € e 50.000 quote: valore di una quota?",
+            "table": null,
             "options": [
               {
                 "text": "10 €",
@@ -18906,6 +20252,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 20 quote a 10 € e il valore della quota sale del 10%: quanto valgono?",
+            "table": null,
             "options": [
               {
                 "text": "220 €",
@@ -18964,6 +20311,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Il paniere riduce quale rischio?",
+            "table": null,
             "options": [
               {
                 "text": "Il rischio di mercato",
@@ -19047,6 +20395,24 @@ export const LESSONS = {
             "why": "100 ÷ 5 = 20."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Prezzo",
+                  "amount": "100 €"
+                },
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                }
+              ]
+            }
+          ],
+          "ask": "P/E?"
+        },
         "explain": "Immagina dieci amici che mettono 50 € ciascuno in una cassa comune per comprare insieme più cose invece di una sola: ognuno possiede una parte della cassa."
       }
     ],
@@ -19058,7 +20424,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "ETF e indici",
     "intro": {
-      "say": "Un indice è una lista di società con i loro pesi; un ETF è un fondo che copia quella lista e si compra in borsa come un’azione. Non cerca di fare meglio dell’indice: lo segue.",
+      "say": "Un indice è una lista di società con i loro pesi",
+      "sub": "Un ETF è un fondo che copia quella lista e si compra in borsa come un’azione. Non cerca di fare meglio dell’indice: lo segue.",
       "lines": [
         "Un indice misura l’andamento di un gruppo di titoli: elenca le società e il peso di ciascuna, e si calcola con una regola fissa (per esempio le 4 più grandi di un settore).",
         "Un ETF (exchange traded fund) è un fondo quotato in borsa che cerca di seguire un indice: si dice che lo replica."
@@ -19159,6 +20526,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un indice sale da 2.000 a 2.100 punti: variazione percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "+5%",
@@ -19217,6 +20585,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "5.000 € in un ETF con indice +5%, senza costi: quanto valgono?",
+            "table": null,
             "options": [
               {
                 "text": "5.250 €",
@@ -19275,6 +20644,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Che cosa fa un ETF indicizzato?",
+            "table": null,
             "options": [
               {
                 "text": "Garantisce di batterlo",
@@ -19358,6 +20728,24 @@ export const LESSONS = {
             "why": "2 ÷ 5 = 40%."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                },
+                {
+                  "name": "Dividendo",
+                  "amount": "2 €"
+                }
+              ]
+            }
+          ],
+          "ask": "Payout?"
+        },
         "explain": "Si compra e si vende durante il giorno come un’azione, a un prezzo che di solito segue il valore del paniere."
       }
     ],
@@ -19369,7 +20757,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "I costi di un fondo",
     "intro": {
-      "say": "Un fondo ti costa ogni anno una percentuale del capitale, anche se il mercato scende. A parità di paniere, il costo è una delle poche cose che puoi controllare.",
+      "say": "Un fondo ti costa ogni anno una percentuale del capitale, anche se il mercato scende",
+      "sub": "A parità di paniere, il costo è una delle poche cose che puoi controllare.",
       "lines": [
         "Il costo annuo di un fondo o di un ETF si indica con un numero, spesso chiamato TER (total expense ratio): la percentuale del capitale che si paga ogni anno per gestione e spese.",
         "Si aggiungono eventuali costi una tantum, come una commissione di ingresso quando compri, e i costi di negoziazione del tuo intermediario."
@@ -19435,6 +20824,24 @@ export const LESSONS = {
             "why": "10.000 × 0,002 = 20 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Capitale",
+                  "amount": "10.000 €"
+                },
+                {
+                  "name": "TER",
+                  "amount": "0,20%"
+                }
+              ]
+            }
+          ],
+          "ask": "Costo annuo?"
+        },
         "explain": "Il modo più chiaro di capirlo è trasformarlo in euro: costo annuo = capitale × TER. Pensare che 1,5% e 0,2% siano «poco», senza trasformarli in euro e in anni."
       },
       {
@@ -19465,11 +20872,47 @@ export const LESSONS = {
             "why": "10.000 × 0,015 = 150 €."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Capitale",
+                  "amount": "10.000 €"
+                },
+                {
+                  "name": "TER",
+                  "amount": "1,50%"
+                }
+              ]
+            }
+          ],
+          "ask": "Costo annuo?"
+        },
         "explain": "Un costo in percentuale sembra piccolo, ma si calcola sul capitale, quindi più capitale hai più paghi, e si ripete ogni anno riducendo il risultato.",
         "variants": [
           {
             "type": "scelta",
             "mentor": "Capitale 8.000 € e TER 0,25%: costo annuo?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Capitale",
+                      "amount": "8.000 €"
+                    },
+                    {
+                      "name": "TER",
+                      "amount": "0,25%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Costo annuo?"
+            },
             "options": [
               {
                 "text": "200 €",
@@ -19528,6 +20971,24 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Capitale 8.000 € e TER 1,2%: costo annuo?",
+            "table": {
+              "parts": [
+                {
+                  "head": "",
+                  "rows": [
+                    {
+                      "name": "Capitale",
+                      "amount": "8.000 €"
+                    },
+                    {
+                      "name": "TER",
+                      "amount": "1,2%"
+                    }
+                  ]
+                }
+              ],
+              "ask": "Costo annuo?"
+            },
             "options": [
               {
                 "text": "960 €",
@@ -19586,6 +21047,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché il costo conta anche quando il mercato scende?",
+            "table": null,
             "options": [
               {
                 "text": "Perché si paga solo quando sale",
@@ -19680,7 +21142,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "Diversificazione vera e sovrapposizioni",
     "intro": {
-      "say": "Avere tanti fondi non vuol dire essere diversificati: conta che cosa contengono. Due ETF che contengono le stesse società ti espongono due volte allo stesso rischio.",
+      "say": "Avere tanti fondi non vuol dire essere diversificati",
+      "sub": "Conta che cosa contengono. Due ETF che contengono le stesse società ti espongono due volte allo stesso rischio.",
       "lines": [
         "La diversificazione funziona se i titoli non si muovono tutti insieme.",
         "Un fondo può contenere centinaia di società ma avere la maggior parte del peso in poche: la concentrazione dei pesi conta più del numero di titoli.",
@@ -19782,6 +21245,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Hai 20.000 € in due ETF con sovrapposizione 50%: quanto è nelle stesse società?",
+            "table": null,
             "options": [
               {
                 "text": "50 €",
@@ -19840,6 +21304,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Due società pesano 25% e 15%: quanto insieme?",
+            "table": null,
             "options": [
               {
                 "text": "10%",
@@ -19898,6 +21363,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché tre ETF non bastano a dire che sei diversificato?",
+            "table": null,
             "options": [
               {
                 "text": "Perché tre sono pochi",
@@ -19992,7 +21458,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "Rischi e limiti degli ETF",
     "intro": {
-      "say": "Un ETF ampio riduce il rischio di una singola società, ma non protegge da un calo del mercato, dalle oscillazioni del cambio o dai piccoli scostamenti dall’indice. Non è un prodotto sicuro.",
+      "say": "Un ETF ampio riduce il rischio di una singola società, ma non protegge da un calo del mercato, dalle oscillazioni del cambio o dai piccoli scostamenti dall’indice",
+      "sub": "Non è un prodotto sicuro.",
       "lines": [
         "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30%.",
         "La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
@@ -20093,6 +21560,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "5.000 € in un ETF e l’indice perde il 20%: quanto valgono?",
+            "table": null,
             "options": [
               {
                 "text": "1.000 €",
@@ -20151,6 +21619,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Indice +5% in valuta estera e valuta −5% sull’euro: valore di 10.000 €?",
+            "table": null,
             "options": [
               {
                 "text": "10.000 €",
@@ -20209,6 +21678,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché un ETF non è adatto a soldi che ti servono tra pochi mesi?",
+            "table": null,
             "options": [
               {
                 "text": "Perché non si può vendere",
@@ -20292,6 +21762,24 @@ export const LESSONS = {
             "why": "150 ÷ 5 = 30."
           }
         ],
+        "table": {
+          "parts": [
+            {
+              "head": "",
+              "rows": [
+                {
+                  "name": "Prezzo",
+                  "amount": "150 €"
+                },
+                {
+                  "name": "Utile per azione",
+                  "amount": "5 €"
+                }
+              ]
+            }
+          ],
+          "ask": "P/E?"
+        },
         "explain": "Quando compri o vendi un ETF in borsa c’è anche uno scarto tra prezzo di acquisto e di vendita (lo spread): un costo che si paga ogni volta che si entra e si esce."
       }
     ],
@@ -20303,7 +21791,8 @@ export const LESSONS = {
     "floor": 11,
     "title": "Leggere la scheda informativa",
     "intro": {
-      "say": "Prima di comprare un fondo o un ETF c’è un documento che dice cos’è, quanto costa, quanto è rischioso e per quanto tempo conviene tenerlo. Leggerlo è il modo più economico per evitare errori.",
+      "say": "Prima di comprare un fondo o un ETF c’è un documento che dice cos’è, quanto costa, quanto è rischioso e per quanto tempo conviene tenerlo",
+      "sub": "Leggerlo è il modo più economico per evitare errori.",
       "lines": [
         "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli.",
         "Gli scenari non sono previsioni: sono esempi di cosa potrebbe succedere."
@@ -20404,6 +21893,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Costo annuo 0,5% su 4.000 €: quanto?",
+            "table": null,
             "options": [
               {
                 "text": "200 €",
@@ -20462,6 +21952,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un prodotto ha indicatore 2 su 7 e un altro 6 su 7: quale oscilla di più?",
+            "table": null,
             "options": [
               {
                 "text": "Quello con 6",
@@ -20520,6 +22011,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Scenario sfavorevole: 8.000 € diventano 6.000 €. Perdita in euro e percentuale?",
+            "table": null,
             "options": [
               {
                 "text": "6.000 €, −75%",
@@ -20614,7 +22106,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Le valute e il cambio",
     "intro": {
-      "say": "Ogni Paese ha una sua valuta e il cambio dice quante unità di una valuta servono per averne una di un’altra. Per sapere quanto costa davvero una cosa in euro, devi convertirla.",
+      "say": "Ogni Paese ha una sua valuta e il cambio dice quante unità di una valuta servono per averne una di un’altra",
+      "sub": "Per sapere quanto costa davvero una cosa in euro, devi convertirla.",
       "lines": [
         "Il cambio è il prezzo di una valuta in un’altra.",
         "Se 1 € = 1,10 $ (cambio fittizio) significa che con un euro ottieni 1,10 dollari; per convertire dollari in euro si divide per 1,10, per convertire euro in dollari si moltiplica."
@@ -20715,6 +22208,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Con 1 € = 1,10 $, un oggetto costa 77 $: prezzo in euro?",
+            "table": null,
             "options": [
               {
                 "text": "84,70 €",
@@ -20773,6 +22267,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Con 1 € = 1,10 $, quanti dollari ottieni con 300 €?",
+            "table": null,
             "options": [
               {
                 "text": "272,73 $",
@@ -20831,6 +22326,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "L’euro si rafforza sul dollaro: cosa succede al prezzo in euro di un oggetto quotato in dollari?",
+            "table": null,
             "options": [
               {
                 "text": "Sale",
@@ -20925,7 +22421,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Quanto costa cambiare",
     "intro": {
-      "say": "Cambiare valuta costa: chi cambia non usa il cambio di riferimento ma uno peggiore, e a volte aggiunge una commissione. Il costo vero si calcola in euro.",
+      "say": "Cambiare valuta costa",
+      "sub": "Chi cambia non usa il cambio di riferimento ma uno peggiore, e a volte aggiunge una commissione. Il costo vero si calcola in euro.",
       "lines": [
         "Il cambio che vedi in televisione o su un sito è un cambio di riferimento.",
         "Chi ti cambia i soldi (un’agenzia, un negozio, una carta di pagamento) applica un cambio un po’ peggiore: la differenza si chiama spread ed è il suo guadagno.",
@@ -21027,6 +22524,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cambio applicato 1 € = 1,04 $: quanti dollari ricevi per 250 €?",
+            "table": null,
             "options": [
               {
                 "text": "240,38 $",
@@ -21085,6 +22583,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Con il cambio di riferimento (1,10) avresti ricevuto 275 $. Quanti dollari in meno hai ricevuto (260 $)?",
+            "table": null,
             "options": [
               {
                 "text": "10 $",
@@ -21143,6 +22642,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "«Senza commissioni» vuol dire senza costi?",
+            "table": null,
             "options": [
               {
                 "text": "Sì, sempre",
@@ -21237,7 +22737,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Le materie prime",
     "intro": {
-      "say": "Le materie prime sono beni di base come petrolio, oro o caffè. Il loro prezzo sale e scende con la domanda e l’offerta e non producono interessi: guadagni solo se il prezzo sale, e puoi perdere se scende.",
+      "say": "Le materie prime sono beni di base come petrolio, oro o caffè",
+      "sub": "Il loro prezzo sale e scende con la domanda e l’offerta e non producono interessi: guadagni solo se il prezzo sale, e puoi perdere se scende.",
       "lines": [
         "Una materia prima è un bene che si scambia in grandi quantità e serve a produrre altro o come riserva di valore.",
         "Il prezzo dipende da domanda (quanta ne vuole il mondo) e offerta (quanta se ne produce): se un raccolto va male o una fonte si esaurisce, il prezzo può salire; se la domanda cala, scende.",
@@ -21339,6 +22840,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un barile costa 90 $ e 1 € = 1,20 $: prezzo in euro?",
+            "table": null,
             "options": [
               {
                 "text": "75 €",
@@ -21397,6 +22899,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Un sacco di caffè da 20 € scende del 10%: nuovo prezzo?",
+            "table": null,
             "options": [
               {
                 "text": "18 €",
@@ -21455,6 +22958,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché le materie prime non producono interessi?",
+            "table": null,
             "options": [
               {
                 "text": "Perché pagano cedole alte",
@@ -21549,7 +23053,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Le cripto-attività: cosa sono",
     "intro": {
-      "say": "Una cripto-attività è un oggetto digitale registrato su un registro condiviso. Non è una moneta di Stato e non ha nessuno che ne garantisca il valore: il suo prezzo lo decidono solo compratori e venditori.",
+      "say": "Una cripto-attività è un oggetto digitale registrato su un registro condiviso",
+      "sub": "Non è una moneta di Stato e non ha nessuno che ne garantisca il valore: il suo prezzo lo decidono solo compratori e venditori.",
       "lines": [
         "Le cripto-attività (spesso chiamate cripto) sono rappresentazioni digitali registrate su un sistema condiviso, chiamato in generale blockchain, senza un’autorità centrale come una banca.",
         "Non sono euro: non sono emesse da una banca centrale e, di regola, nessuno è obbligato a ricomprarle a un prezzo fisso."
@@ -21650,6 +23155,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "50 gettoni a 4 €: valore?",
+            "table": null,
             "options": [
               {
                 "text": "200 €",
@@ -21708,6 +23214,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Il prezzo sale a 6 €: nuovo valore e variazione?",
+            "table": null,
             "options": [
               {
                 "text": "300 €; +150%",
@@ -21766,6 +23273,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché «lo comprano tutti» non è un buon motivo?",
+            "table": null,
             "options": [
               {
                 "text": "Perché è sempre una truffa",
@@ -21860,7 +23368,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Il rischio delle cripto e delle promesse",
     "intro": {
-      "say": "I prezzi delle cripto-attività possono crollare, e i cali pesano più dei rialzi. Una promessa di guadagni alti, garantiti e rapidi è il segnale più chiaro di una truffa.",
+      "say": "I prezzi delle cripto-attività possono crollare, e i cali pesano più dei rialzi",
+      "sub": "Una promessa di guadagni alti, garantiti e rapidi è il segnale più chiaro di una truffa.",
       "lines": [
         "Il rischio di prezzo è molto alto: un calo dell'80% lascia il 20% del valore, e per tornare al punto di partenza serve +400%.",
         "Un calo del 50% seguito da un rialzo del 50% non ti riporta pari: lasci per strada il 25%.",
@@ -21962,6 +23471,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "2.000 € perdono il 50%: quanto resta e quale rialzo serve per tornare a 2.000 €?",
+            "table": null,
             "options": [
               {
                 "text": "1.000 €; +50%",
@@ -22020,6 +23530,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "500 € al 10% al mese per 6 mesi (composto): valore finale?",
+            "table": null,
             "options": [
               {
                 "text": "885,78 €",
@@ -22078,6 +23589,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché «garantito e alto» è un segnale d’allarme?",
+            "table": null,
             "options": [
               {
                 "text": "Perché è sempre legale",
@@ -22172,7 +23684,8 @@ export const LESSONS = {
     "floor": 12,
     "title": "Quanto vale in euro? Il metodo",
     "intro": {
-      "say": "Prima di mettere soldi in qualsiasi cosa, valuti cinque punti in euro: cos’è, quanto costa, quanto vale oggi, quanto potresti perdere e se puoi permettertelo.",
+      "say": "Prima di mettere soldi in qualsiasi cosa, valuti cinque punti in euro",
+      "sub": "Cos’è, quanto costa, quanto vale oggi, quanto potresti perdere e se puoi permettertelo.",
       "lines": [
         "Questo metodo vale per un’obbligazione, un’azione, un ETF, una valuta, una materia prima o una cripto-attività."
       ]
@@ -22272,6 +23785,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Cambio al 2% su 400 €: costo?",
+            "table": null,
             "options": [
               {
                 "text": "8 €",
@@ -22330,6 +23844,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "10% di 2.000 € di risparmi (regola dell’esercizio)?",
+            "table": null,
             "options": [
               {
                 "text": "20 €",
@@ -22388,6 +23903,7 @@ export const LESSONS = {
           {
             "type": "scelta",
             "mentor": "Perché si fissa un limite alla perdita?",
+            "table": null,
             "options": [
               {
                 "text": "Per non perdere più di quanto ci si può permettere",

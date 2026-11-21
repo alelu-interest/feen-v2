@@ -83,12 +83,16 @@
   <div class="sheet-wrap" id="card-wrap" hidden>
     <div class="sheet card" id="card" role="dialog" aria-modal="true" aria-labelledby="card-title">
       <div class="handle"></div>
-      <span class="chip chip-stage card-stage"><i></i><span id="card-tag">Lezione 1</span></span>
+      <p class="card-eyebrow" id="card-tag">Lezione 1</p>
       <h2 id="card-title" tabindex="-1">Dove sono finiti?</h2>
-      <div class="chips">
-        <span class="chip"><svg class="chip-office" viewBox="0 0 24 24"><rect class="f" x="14.5" y="2.5" width="5" height="18.5" rx="1" /><path d="M14.5 8H6.5a1 1 0 0 0-1 1v12M14.5 14.5h-9M3 21h18" /></svg><span id="card-object">Il portacarte vuoto</span></span>
-      </div>
+      <p class="card-result" id="card-result" hidden></p>
       <p class="card-idea" id="card-idea">…</p>
+      <ul class="card-got" id="card-got">
+        <li class="card-row" id="card-object-row">
+          <span class="card-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect class="f" x="14.5" y="2.5" width="5" height="18.5" rx="1" /><path d="M14.5 8H6.5a1 1 0 0 0-1 1v12M14.5 14.5h-9M3 21h18" /></svg></span>
+          <span class="card-row-text"><b id="card-object">Il portacarte vuoto</b><small id="card-object-note">Nuovo nel tuo ufficio</small></span>
+        </li>
+      </ul>
       <div class="card-actions">
         <button class="pill pill-light" id="card-review">Ripassa</button>
         <button class="pill pill-dark" id="card-continue">Continua</button>
