@@ -441,11 +441,11 @@ export function makeAvvio(api) {
   function avvisi() {
     screen(
       'av-page av-remind',
-      // the reminder as it will arrive (revisione della grafica, 10/11/2026 notte): the phone's screen at the time
-      // chosen, with FEEN's notification, in place of a bell on a white card; the time follows the one below. The
-      // notification comes with the app's icon, which since the choice is your character's face (icona.js, 22/11/2026)
+      // the reminder as it will arrive (revisione della grafica, 10/11/2026 notte): FEEN's notification, in place of a
+      // bell on a white card. The notification comes with the app's icon, which since the choice is your character's
+      // face (icona.js, 22/11/2026). Since 22/11/2026 without the big clock over it (the user, D9 of the bots: it looked
+      // like the button to choose the time, which is the line below): the only 18:00 is the one to touch
       `<div class="av-lock" aria-hidden="true">
-        <b class="av-lock-time">18:00</b>
         <div class="av-notif">
           <img class="av-notif-icon" src="${ICONS[s.pick] ?? ICONS.Jane}" alt="" />
           <div><p class="av-notif-head"><b>${REMIND.title}</b><span class="av-notif-when">ora</span></p><p class="av-notif-body">${REMIND.body}</p></div>
@@ -577,12 +577,6 @@ export function makeAvvio(api) {
   }
 
   // ---------- touches ----------
-  // the preview of the reminder follows the time being chosen
-  root.addEventListener('input', (e) => {
-    if (e.target.id !== 'av-time' || !e.target.value) return;
-    for (const t of root.querySelectorAll('.av-lock-time')) t.textContent = e.target.value;
-  });
-
   root.addEventListener('click', (e) => {
     // a touch during the opening: the first statement, at once
     if (root.classList.contains('av-open')) return endOpen();

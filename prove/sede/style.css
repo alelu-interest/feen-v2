@@ -3484,25 +3484,18 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   content: '';
   flex: 0.6 1 0;
 }
+/* since 22/11/2026 only the notification, without the big clock over it (D9 of the bots, avvio.js avvisi) */
 .av-lock {
   display: grid;
   justify-items: center;
   gap: 18px;
   margin: 0 0 8px;
-  padding: 26px 14px 14px;
+  padding: 14px;
   border-radius: 30px;
   background: var(--brand-soft);
 }
-.av-lock > .av-lock-time {
-  font-family: var(--title);
-  font-size: calc(60px * var(--fs-l));
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-  color: var(--brand-ink);
-}
-/* a short phone (the iPhone SE): a smaller clock, so that with large text «Non ora» still shows without scrolling */
+/* a short phone (the iPhone SE): less room around the notification, so that with large text «Non ora» still shows
+   without scrolling (until 22/11/2026 a smaller clock too) */
 @media (max-height: 700px) {
   .av-lock {
     gap: 8px;
@@ -3511,9 +3504,6 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   }
   .av-notif {
     padding: 10px 14px 11px 11px;
-  }
-  .av-lock > .av-lock-time {
-    font-size: calc(40px * var(--fs-l));
   }
 }
 .av-notif {
