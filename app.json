@@ -4,7 +4,7 @@
     "slug": "feen",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/feen/icon.png",
+    "icon": "./assets/feen/icona/feen.png",
     "userInterfaceStyle": "light",
     "ios": {
       "supportsTablet": false,
@@ -17,10 +17,9 @@
       "package": "it.buildinterest.feen",
       "allowBackup": true,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/feen/icona/feen-android.png",
+        "monochromeImage": "./assets/feen/icona/feen-mono.png"
       },
       "predictiveBackGestureEnabled": false
     },
@@ -41,7 +40,76 @@
           "backgroundColor": "#F4F8FD"
         }
       ],
-      "expo-status-bar"
+      "expo-status-bar",
+      [
+        "expo-alternate-app-icons",
+        [
+          {
+            "name": "Elizabeth",
+            "ios": "./assets/feen/icona/Elizabeth.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Elizabeth-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Leopold",
+            "ios": "./assets/feen/icona/Leopold.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Leopold-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Cathie",
+            "ios": "./assets/feen/icona/Cathie.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Cathie-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Jordan",
+            "ios": "./assets/feen/icona/Jordan.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Jordan-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Christine",
+            "ios": "./assets/feen/icona/Christine.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Christine-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Bill",
+            "ios": "./assets/feen/icona/Bill.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Bill-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Jane",
+            "ios": "./assets/feen/icona/Jane.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Jane-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          },
+          {
+            "name": "Warren",
+            "ios": "./assets/feen/icona/Warren.png",
+            "android": {
+              "foregroundImage": "./assets/feen/icona/Warren-android.png",
+              "backgroundColor": "#FFFFFF"
+            }
+          }
+        ]
+      ]
     ],
     "extra": {
       "eas": {

@@ -4,7 +4,7 @@
  * The built file knows it is the app (no Demo, js/app.js); this screen gives it the phone's vibration and the size
  * of the text chosen in the phone (09/11/2026), turns its reminders into the phone's notifications (reminders.ts), and
  * keeps a copy of its save in a file of the app, handed back when the page's own storage comes back empty
- * (save-copy.ts, 10/11/2026).
+ * (save-copy.ts, 10/11/2026), and changes the app's icon when the page asks (app-icon.ts, 22/11/2026).
  */
 
 import { Asset } from 'expo-asset';
@@ -14,6 +14,8 @@ import { useEffect, useRef, useState } from 'react';
 import { AppState, BackHandler, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { WebView, type WebViewMessageEvent } from 'react-native-webview';
 
+import { canChangeIcon, changeIcon, changeIconWaiting, iconForPage } from './app-icon';
+import { iconAnswer, iconScript, readIcon } from './app-icon-data';
 import { planReminders, readPlan } from './reminders';
 import { loadCopy, saveCopy } from './save-copy';
 import { copyScript, readCopy, type SaveCopy } from './save-copy-data';
@@ -24,11 +26,13 @@ const page = require('../../../assets/sede/sede.html');
 // The v1 is light only (the user, 10/11/2026): the dark one, #0D1529, waits with prove/sede/scuro.css
 const BG = '#F4F8FD';
 
-/** Runs before the page: the size of the text, the copy of the save, and the vibration iOS does not give to a web page. */
+/** Runs before the page: the size of the text, the copy of the save, the app's icon (app-icon.ts), and the vibration
+ *  iOS does not give to a web page. */
 function bridge(fontScale: number, copy: SaveCopy | null) {
   return `
   window.FEEN_FONT_SCALE = ${JSON.stringify(fontScale)};
   ${copyScript(copy)}
+  ${iconScript(canChangeIcon(), iconForPage())}
   navigator.vibrate = (ms) => {
     const total = [].concat(ms).reduce((a, b) => a + b, 0);
     window.ReactNativeWebView.postMessage(JSON.stringify({ buzz: total }));
@@ -53,6 +57,9 @@ function onMessage(e: WebViewMessageEvent, page: WebView<object> | null) {
     // the page saved: its copy in the app's file follows (js/copia.js)
     const copy = readCopy(msg.copia);
     if (copy) saveCopy(copy);
+    // the page chose a character, or the switch of the Tu was touched: the icon changes, and the page hears which it is
+    const icon = readIcon(msg);
+    if (icon !== undefined) changeIcon(icon).then((now) => page?.injectJavaScript(iconAnswer(now)));
     const plan = readPlan(msg.avvisi);
     if (plan) {
       // the phone's answer to a permission request goes back to the page (js/avvisi.js)
@@ -82,10 +89,12 @@ export function SedeScreen() {
     return () => clearTimeout(fallback);
   }, []);
 
-  // FEEN back to the front: the reminders are planned again (a day may have passed, the permission may have changed)
+  // FEEN back to the front: the reminders are planned again (a day may have passed, the permission may have changed).
+  // FEEN to the background: on Android the icon asked for goes on now (app-icon.ts)
   useEffect(() => {
     const sub = AppState.addEventListener('change', (st) => {
       if (st === 'active') web.current?.injectJavaScript('window.feenAvvisiSync && window.feenAvvisiSync(); true;');
+      if (st === 'background') changeIconWaiting();
     });
     return () => sub.remove();
   }, []);

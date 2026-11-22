@@ -9,6 +9,7 @@ import { FIGURES } from './figures.js';
 import { miniMap, signSvg } from './avvio.js';
 import { IN_APP } from './app.js';
 import { reminders } from './avvisi.js';
+import { canIcon, iconNow, onIcon, setIcon } from './icona.js';
 
 const cap = (t) => t[0].toUpperCase() + t.slice(1);
 const ofFloor = (f) => f.the.replace(/^la /, 'della ').replace(/^il /, 'del '); // «della Tesoreria», «del piano dei Soci»
@@ -149,6 +150,7 @@ export function makeMe(api) {
         ${row('suoni', 'Suoni', api.sound.on)}
         ${row('vibrazione', 'Vibrazione', settings.vibrazione)}
         ${row('movimento', 'Movimento ridotto', motion.calm, 'Meno animazioni e voli più brevi')}
+        ${iconRow(row)}
         <li class="privacy-row"><button class="link" data-act="privacy" aria-expanded="${privacyOpen}" aria-controls="privacy">Informazioni e privacy<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${privacy()}</li>
         <li class="wipe-row"><button class="link danger" data-act="wipe" aria-expanded="false" aria-controls="wipe-ask">Ricomincia da capo</button>
           <div class="wipe-ask" id="wipe-ask" role="group" aria-labelledby="wipe-q" hidden>
@@ -158,6 +160,14 @@ export function makeMe(api) {
           </div></li>
       </ul>
     </section>`;
+  }
+
+  /** The app's icon with your character's face, or white (icona.js, 22/11/2026): Apple wants a way back to the first
+   *  icon in the settings. Only in the app, once the character is chosen; the switch shows what the phone has. */
+  function iconRow(row) {
+    const who = api.who();
+    if (!canIcon() || !who) return '';
+    return row('icona', `Icona con ${who.me}`, iconNow() !== null, 'Spenta, l’icona di FEEN torna bianca');
   }
 
   /** What FEEN keeps and what it does not (cubotto 9.8, 09/11/2026; CLAUDE.md §1 and §8): open under its row. */
@@ -195,6 +205,13 @@ export function makeMe(api) {
     if (!t) return;
     api.sfx.tap();
     if (t.dataset.share) return api.toast('Qui nell’app parte la card «Condividi»: il palazzo com’è adesso, una frase sul traguardo, il personaggio e FEEN. Niente nome né dati.');
+    if (t.dataset.set === 'icona') {
+      // the phone keeps it, not the save (icona.js); iOS says the change in its own box
+      const on = iconNow() === null;
+      setIcon(on ? api.who()?.me : null);
+      t.setAttribute('aria-checked', String(iconNow() !== null));
+      return;
+    }
     if (t.dataset.set) {
       const key = t.dataset.set;
       if (key === 'suoni') api.toggleSound();
@@ -248,6 +265,9 @@ export function makeMe(api) {
     // as in the app: everything goes, back to the welcome, the test and the choice of the character
     if (t.dataset.act === 'wipe-yes') api.wipe();
   });
+
+  // the phone's answer: if it could not change the icon, the switch goes back to the one it has
+  onIcon((name) => body.querySelector('[data-set="icona"]')?.setAttribute('aria-checked', String(name !== null)));
 
   return { render };
 }

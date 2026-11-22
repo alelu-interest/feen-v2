@@ -3526,19 +3526,14 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
+/* FEEN's icon, small: since 22/11/2026 the face of your character on white (js/icona.js, mobile/assets/feen/icona/) */
 .av-notif-icon {
   flex: none;
   width: 40px;
   height: 40px;
-  stroke: none; /* the app's svg rule draws lines; the icon is only filled */
+  background: #fff;
   box-shadow: 0 0 0 1px var(--line);
   border-radius: 9.5px;
-}
-/* FEEN's icon, small: the word in black on its cream, the orange line under it (mobile/assets/feen/icon.png) */
-.av-notif-icon text {
-  font: 800 10.6px var(--title);
-  letter-spacing: -0.02em;
-  fill: #151515;
 }
 .av-notif > div {
   flex: 1;

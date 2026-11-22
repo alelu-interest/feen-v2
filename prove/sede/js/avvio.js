@@ -19,6 +19,7 @@ import { IN_APP } from './app.js';
 import { inkOn } from './kit.js';
 import { TEXT as REMIND } from './avvisi.js';
 import { copySoon } from './copia.js';
+import { ICONS, setIcon } from './icona.js';
 
 const KEY = 'feen-avvio';
 const ORDER = ['alto-innovativo', 'alto-tradizionale', 'basso-innovativo', 'basso-tradizionale'];
@@ -437,11 +438,12 @@ export function makeAvvio(api) {
     screen(
       'av-page av-remind',
       // the reminder as it will arrive (revisione della grafica, 10/11/2026 notte): the phone's screen at the time
-      // chosen, with FEEN's notification, in place of a bell on a white card; the time follows the one below
+      // chosen, with FEEN's notification, in place of a bell on a white card; the time follows the one below. The
+      // notification comes with the app's icon, which since the choice is your character's face (icona.js, 22/11/2026)
       `<div class="av-lock" aria-hidden="true">
         <b class="av-lock-time">18:00</b>
         <div class="av-notif">
-          <svg class="av-notif-icon" viewBox="0 0 40 40"><rect width="40" height="40" rx="9.5" fill="#F3EEE6"/><text x="20" y="22.4" text-anchor="middle">FEEN</text><rect x="16.2" y="25.6" width="7.6" height="2.2" rx="1.1" fill="#FF9466"/></svg>
+          <img class="av-notif-icon" src="${ICONS[s.pick] ?? ICONS.Jane}" alt="" />
           <div><p class="av-notif-head"><b>${REMIND.title}</b><span class="av-notif-when">ora</span></p><p class="av-notif-body">${REMIND.body}</p></div>
         </div>
       </div>
@@ -634,7 +636,13 @@ export function makeAvvio(api) {
       flight = calm() ? null : [...root.querySelectorAll('.st-pair.me .av-sil')].map((el) => el.getBoundingClientRect());
       return go('scelta');
     }
-    if (act === 'pick') return s.pick && go('azienda', { line: 0 });
+    if (act === 'pick') {
+      if (!s.pick) return;
+      // the app's icon becomes this face (22/11/2026, the user): the touch that chooses is the touch Apple asks for,
+      // and iOS says it in its own box while the partner comes on
+      setIcon(s.pick);
+      return go('azienda', { line: 0 });
+    }
     if (act === 'line') {
       if (s.line < PARTNER.length - 1) return go('azienda', { line: s.line + 1 });
       return go('contratto');
@@ -687,6 +695,7 @@ export function makeAvvio(api) {
     /** «Ricomincia da capo» and DEMO: everything goes, the test comes back. */
     restart() {
       s = fresh();
+      setIcon(null); // back to the test, back to the white icon (icona.js)
       opened = false; // starting again from the test starts again from the opening
       save();
       show();
