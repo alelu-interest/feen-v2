@@ -704,6 +704,21 @@ body:not([data-tab='ufficio']) .bottom::before {
   fill: var(--accent);
   stroke: var(--accent);
 }
+/* the object's photo instead of the sign of the Ufficio (22/11/2026, D6 of the bots; main.js openCard): a little
+   bigger, on the light of its floor, as on its circle in the Percorso */
+.card-ico.pic {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+.card-ico.pic svg {
+  display: none;
+}
+.card-ico img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 .card-row .trophy-emblem svg {
   width: 22px;
   height: 22px;

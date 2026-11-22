@@ -868,6 +868,19 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   $('card-title').textContent = s.title;
   $('card-object').textContent = s.object ?? '';
   $('card-object-row').hidden = !s.object; // a lesson without an object: no line
+  // the object's own photo in its line, the one on its circle in the Percorso (the user, 22/11/2026, D6 of the bots:
+  // the line had the sign of the Ufficio, and who read the card did not know what had been won); the sign stays when
+  // the phone cannot take the photo
+  const pic = s.object ? path?.photoOf(n, i) : null;
+  const ico = $('card-object-row').querySelector('.card-ico');
+  ico.querySelector('img')?.remove();
+  ico.classList.toggle('pic', !!pic);
+  if (pic) {
+    const img = document.createElement('img');
+    img.src = pic;
+    img.alt = '';
+    ico.append(img);
+  }
   $('card-object-note').hidden = !fresh; // «Nuovo nel tuo ufficio» when it has just landed; opened from the Ufficio, you are looking at it
   $('card-got').hidden = !s.object && !won.length;
   $('card-idea').textContent = s.idea;

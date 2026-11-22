@@ -782,5 +782,11 @@ export function makePath(api) {
     builtFor = '';
     if (!root.hidden) render();
   });
-  return { render, scrollToNext, step: () => {}, rebuild: () => (builtFor = '') };
+  /** The photo of the object stage i of floor n brings, as on its circle; null without an object, or when the phone
+   *  cannot take it. The card of the stage shows it in its line (main.js openCard, 22/11/2026). */
+  const photoOf = (n, i) => {
+    const slot = built.get(n)?.office?.slotOf(i);
+    return slot ? photo(`${n}:${i}`, slot.obj, slot.place.pose) : null;
+  };
+  return { render, scrollToNext, photoOf, step: () => {}, rebuild: () => (builtFor = '') };
 }
