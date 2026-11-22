@@ -4638,6 +4638,21 @@ body.in-lesson .toast {
   border-color: var(--action);
   background: var(--brand-soft);
 }
+/* the lit item, light, where it would go (22/11/2026, D8 of the bots; lezione.js drawGroups): on one line, cut short
+   if it is long (the whole of it is lit in the tray above), and not to be touched: the touch goes to its column */
+#lezione .lz-col .lz-chip.lz-peek {
+  opacity: 0.55;
+  pointer-events: none;
+  border-color: color-mix(in srgb, var(--action) 50%, transparent);
+  background: var(--brand-soft);
+  box-shadow: none;
+  color: var(--brand-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  hyphens: none;
+  -webkit-hyphens: none;
+}
 .lz-chip.right {
   border-color: var(--ok-line);
   background: var(--ok-soft);

@@ -407,13 +407,19 @@ export function makeLesson(api) {
       .map((i) => chip(i, false))
       .join('');
     tray.hidden = ex.placed.length === e.items.length;
+    // the lit item, light, where it would go in every column, until the first one has gone in (the user, 22/11/2026,
+    // D8 of the bots: the empty columns did not look like places to touch, and from the second time there is no line
+    // of help). On one line whatever its length, and only at the start: the room of the columns stays the one measured
+    // for every phone. Not a button: a touch on it is a touch on its column.
+    const peek = ex.sel != null && ex.placed.length === 0 ? `<span class="lz-chip lz-peek" aria-hidden="true">${esc(e.items[ex.sel].text)}</span>` : '';
     root.querySelectorAll('.lz-col').forEach((col, k) => {
       col.classList.toggle('ask', ex.sel != null);
       col.classList.remove('over');
-      col.querySelector('.lz-col-items').innerHTML = ex.placed
-        .filter((i) => ex.where[i] === k)
-        .map((i) => chip(i, true))
-        .join('');
+      col.querySelector('.lz-col-items').innerHTML =
+        ex.placed
+          .filter((i) => ex.where[i] === k)
+          .map((i) => chip(i, true))
+          .join('') + peek;
     });
     ex.pick = ex.placed.length === e.items.length || null;
     wholeWords();
