@@ -560,7 +560,10 @@ function onPick(pick) {
       showcase(n, i);
       openCard(n, i, false).then(unshow);
     } else {
-      if (!looking) go('interior', n);
+      if (!looking) {
+        hintDone();
+        go('interior', n);
+      }
       toast(arrives(built.get(n).office.stages[i], n, i));
     }
     return;
@@ -572,6 +575,7 @@ function onPick(pick) {
   }
   if (pick.type === 'floor' && !looking) {
     sfx.whoosh();
+    hintDone();
     go('interior', pick.n);
   }
 }
@@ -618,6 +622,40 @@ function say(text) {
 
 /** The plate tells the floor you look at: the one in progress from outside, the one you are in from close. */
 const plateFloor = () => (state.view === 'overview' ? state.floor : state.viewFloor);
+
+// ---------- the first touch (22/11/2026, D4 of the bots) ----------
+// From outside nothing said that a floor opens at a touch: the line «Scorri su e giù · Tocca un piano per entrarci» went
+// on 10/11/2026 (Davide: let the screen say it). Until a finger first opens a floor, a ring spreads from the room of the
+// floor in progress, without words; once a floor has been opened by touch it never comes back (saved, `hinted`).
+let hinted = false;
+const hintAt = new THREE.Vector3();
+let hintShown = false;
+function placeHint() {
+  const el = $('tap-hint');
+  // only where the sede is under the finger: the Ufficio, or the sede after leaving the first lesson; not during a
+  // flight, a card or the screens of the first start
+  const show = !hinted && state.tab === 'ufficio' && state.view === 'overview' && !state.busy && $('card-wrap').hidden && !!built.get(state.floor)?.office && (avvio?.done() || avvio?.looking());
+  let v = null;
+  if (show) {
+    v = hintAt.set(-0.6, roomY(state.floor) - 0.5, 0.35).project(camera); // on the floor in front of the desk: no object under it
+    if (v.z > 1 || Math.abs(v.x) > 0.9 || Math.abs(v.y) > 0.9) v = null; // the room scrolled away
+  }
+  if (!v) {
+    if (hintShown) el.hidden = true;
+    hintShown = false;
+    return;
+  }
+  el.style.transform = `translate(${((v.x * 0.5 + 0.5) * window.innerWidth).toFixed(1)}px, ${((-v.y * 0.5 + 0.5) * window.innerHeight).toFixed(1)}px)`;
+  if (!hintShown) el.hidden = false;
+  hintShown = true;
+}
+/** A finger has opened a floor: the ring goes, for good. */
+function hintDone() {
+  if (hinted) return;
+  hinted = true;
+  placeHint();
+  persist();
+}
 let platedFloor = 0;
 function renderPips(newIndex = -1) {
   const n = plateFloor();
@@ -1665,6 +1703,7 @@ function reset(floor = 1, earned = 0) {
   if (floor === 1 && earned === 0) {
     trophies?.reset();
     for (const m of [played, missed, eggsFound, looked]) m.clear();
+    hinted = false;
   }
   hideSheets();
   shown = null;
@@ -1768,6 +1807,7 @@ function persist() {
     eggs: [...eggsFound],
     looked: Object.fromEntries([...looked].map(([n, s]) => [n, [...s]])),
     trophies: trophies.list(),
+    hinted,
     settings: { ...settings, suoni: sound.on },
     avvisi: reminders.save(),
   });
@@ -1779,6 +1819,8 @@ function restore(d) {
   for (const [n, o] of Object.entries(d.missed ?? {})) missed.set(Number(n), o);
   for (const n of d.eggs ?? []) eggsFound.add(n);
   for (const [n, a] of Object.entries(d.looked ?? {})) looked.set(Number(n), new Set(a));
+  // saved before 22/11/2026: whoever has opened an object from the Ufficio knows that the floors open
+  hinted = !!d.hinted || looked.size > 0;
   Object.assign(settings, { avvisi: d.settings?.avvisi ?? true, vibrazione: d.settings?.vibrazione ?? true, movimento: d.settings?.movimento ?? null });
   applySettings();
   if (d.settings?.suoni === false && sound.on) toggleSound();
@@ -2043,6 +2085,7 @@ async function start() {
     updateFx(dt);
     updateCamera(dt);
     updateGlow(dt);
+    placeHint();
     // the Percorso and the Tu are pages: only the Ufficio is drawn (the Percorso is no longer a garden in 3D, 10/11/2026)
     if (force || state.tab === 'ufficio') renderer.render(scene, camera);
   };

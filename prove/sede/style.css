@@ -1135,8 +1135,57 @@ body[data-festa] .banner {
   bottom: calc(var(--safe-b) + 40px);
 }
 /* ---------- the bar's tabs: away from the Ufficio the sede steps aside (28/10/2026) ---------- */
-body:not([data-tab='ufficio']) :is(#scene, #plate, #btn-back, #cta, #coach, #a11y) {
+body:not([data-tab='ufficio']) :is(#scene, #plate, #btn-back, #cta, #coach, #a11y, #tap-hint) {
   display: none !important;
+}
+/* the first touch (22/11/2026, D4 of the bots; main.js placeHint): no words, a ring that spreads from the room of the
+   floor in progress, as a finger would; it follows the room while the camera moves, and goes for good once a finger
+   has opened a floor. White with a dark edge, to read on the wall, the sky and the street. */
+.tap-hint {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  pointer-events: none;
+}
+.tap-hint::before,
+.tap-hint i {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+}
+.tap-hint::before {
+  inset: 22px;
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(20, 33, 61, 0.28), 0 2px 6px rgba(20, 33, 61, 0.3);
+}
+.tap-hint i {
+  inset: 0;
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 1px rgba(20, 33, 61, 0.22), inset 0 0 0 1px rgba(20, 33, 61, 0.22);
+  animation: tap-ring 1.8s var(--ease) infinite;
+}
+@keyframes tap-ring {
+  0% {
+    transform: scale(0.35);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  80%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+/* with «Movimento ridotto» (html[data-calm], the switch of the Tu) the ring stays, still, at its size */
+html[data-calm] .tap-hint i {
+  animation: none;
+  transform: scale(0.8);
 }
 /* without the plate, the round buttons keep to the right */
 .top-right {
