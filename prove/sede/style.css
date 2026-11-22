@@ -1543,6 +1543,13 @@ html:not([data-app]) .pf-head::after {
   font-weight: 600;
   line-height: 1.35;
 }
+/* what a Caso and a Prova sul campo are, under the title (22/11/2026, path.js WHAT) */
+.pop-what {
+  margin-top: 4px;
+  font-size: calc(15px * var(--fs));
+  font-weight: 500;
+  line-height: 1.35;
+}
 
 /* the people beside the way, standing in the room the zigzag leaves; grey until you get there */
 .pfig {

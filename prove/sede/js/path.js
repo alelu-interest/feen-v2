@@ -45,6 +45,11 @@ const LAUNCH = [
   'Cosa lanciamo? Bella domanda. La risposta è sul tetto.',
 ];
 let touches = 0; // how many times the partner was touched since FEEN opened: the lines go on from where they were
+/** The line under the title of a stage that is not a lesson, in its card (tapStage). */
+const WHAT = {
+  Caso: 'Scegli tu, e vedi cosa succede all’azienda.',
+  'Prova sul campo': 'L’ultima tappa: tutto il livello in una situazione.',
+};
 const mentorSays = (name, n, done) => () => {
   const first = done ? 'Il Caso è fatto. Il lancio si prepara un piano alla volta.' : `Ci vediamo al Caso: si decide ${n > 1 ? 'in tre' : 'insieme'}.`;
   const lines = [first, ...LAUNCH];
@@ -671,6 +676,10 @@ export function makePath(api) {
     pop.style.top = `${below + 14}px`;
     pop.style.setProperty('--tip', `${x}px`);
     pop.innerHTML = `<span class="pop-tag">${stageLabel(n, i)}</span><span class="pop-title">${s.title}</span>`;
+    // what a Caso and a Prova sul campo are, in one line, until you have played them (the user, 22/11/2026, D2 of the
+    // bots: nobody said what a «Caso» is; provisional lines, Claude's)
+    const what = st !== 'done' && WHAT[s.tag];
+    if (what) pop.append(el('span', 'pop-what', what));
     if (st === 'locked') {
       const before = list[i - 1]?.title;
       pop.append(el('span', 'pop-note', before ? `Si apre dopo «${before}».`.replace('««', '«').replace('»»', '»') : 'Si apre con il piano.'));
