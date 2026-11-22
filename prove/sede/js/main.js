@@ -880,8 +880,9 @@ function back() {
     return true;
   }
   // the first start has no back (every step is saved, the app may close), except in the test, where it goes one
-  // statement back as «Indietro» does (19/11/2026), and while «Guarda la tua azienda» has the sede under the finger: a
-  // room goes back to the building, the building to the page it came from
+  // statement back as «Indietro» does (19/11/2026), and while the sede is under the finger after leaving the first
+  // lesson: a room goes back to the building, and from the building there is nothing left, so FEEN closes (22/11/2026;
+  // until then it went back to «Ti aspetta quando vuoi», the page that is gone)
   const look = avvio?.looking();
   if (!$('avvio').hidden && !look) return !!avvio?.back();
   if (state.busy) return true; // a flight, a landing: it ends by itself
@@ -892,7 +893,7 @@ function back() {
     const n = state.viewFloor;
     go('overview', { n });
     if (document.activeElement === document.body) focusFloor(n);
-  } else if (look) avvio.unlook();
+  } else if (look) return false;
   else if (state.tab !== 'percorso') setTab('percorso');
   else return false;
   return true;

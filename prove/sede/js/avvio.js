@@ -528,30 +528,22 @@ export function makeAvvio(api) {
   // ---------- the steps that happen in the sede ----------
   async function lezione() {
     screen('av-off', '');
-    // left with the X: the lesson starts again from the beginning when you want (CLAUDE.md §6)
-    if ((await api.firstLesson()) === false) return waiting();
+    // left with the X: the lesson starts again from the beginning when you want (CLAUDE.md §6), and meanwhile the
+    // sede is under the finger
+    if ((await api.firstLesson()) === false) return looking();
     go('avvisi');
   }
-  function waiting() {
-    const who = whoOf(s);
-    screen(
-      'av-page av-reveal',
-      `<p class="av-eyebrow">La prima lezione</p>
-      <h1>Ti aspetta quando vuoi</h1>
-      <p class="av-lead">Si riparte dall’inizio: circa 3 minuti.</p>
-      <div class="av-fill"></div>
-      <button class="pill pill-light wide" data-act="look">Guarda la tua azienda</button>
-      <button class="pill pill-dark wide" data-act="lesson-again">Inizia la lezione</button>`,
-    );
-  }
-  /** «Guarda la tua azienda» (17/11/2026, Dorigo: «non posso uscire dalle domande e vedere la mia azienda»): until
-   *  the first lesson is done there is no bar and no Ufficio, so whoever left the lesson could only start it again.
-   *  Here the sede is under the finger as in the Ufficio (scroll, zoom, into the floor, the stands say what arrives),
-   *  and of the first start only the button that starts the lesson stays, at the bottom. Not a step: the app closed
-   *  here opens again on the lesson, as from the page before. */
+  /** Leaving the first lesson with the X (17/11/2026, Dorigo: «non posso uscire dalle domande e vedere la mia
+   *  azienda»): until the first lesson is done there is no bar and no Ufficio, so whoever left it could only start it
+   *  again. Here the sede is under the finger as in the Ufficio (scroll, zoom, into the floor, the stands say what
+   *  arrives), and of the first start only the button that starts the lesson stays, at the bottom. Since 22/11/2026
+   *  the X comes straight here: the page in between («Ti aspetta quando vuoi», with «Guarda la tua azienda») is gone,
+   *  because it was almost empty and on the iPhone there was no way back to it from the sede (D5 and D10 of the bots;
+   *  «Vuoi uscire?» already says that the lesson starts again). Not a step: the app closed here opens again on the
+   *  lesson. */
   function looking() {
     api.toSede();
-    screen('av-look', `<h2 class="sr-only">La tua azienda</h2><button class="pill pill-dark wide" data-act="lesson-again">Inizia la lezione</button>`);
+    screen('av-look', `<h2 class="sr-only">La tua azienda</h2><button class="pill pill-dark wide" data-act="lesson-again">Inizia la lezione · 3 min</button>`);
   }
 
   // what lies under the screens is out of reach of the finger, the keyboard and the screen reader
@@ -632,7 +624,6 @@ export function makeAvvio(api) {
       return;
     }
     if (act === 'lesson-again') return show();
-    if (act === 'look') return looking();
     if (act === 'next') {
       // where the two shadows of your type stand on the map: the choice starts them from there (scelta)
       flight = calm() ? null : [...root.querySelectorAll('.st-pair.me .av-sil')].map((el) => el.getBoundingClientRect());
@@ -698,9 +689,7 @@ export function makeAvvio(api) {
     who: () => whoOf(s),
     /** The back key in the test (main.js back): one statement back; false when there is none to go back to. */
     back: stepBack,
-    /** True while «Guarda la tua azienda» has the sede under the finger: there the back key works (main.js back). */
+    /** True while the sede is under the finger after leaving the first lesson: there the back key works (main.js back). */
     looking: () => !root.hidden && root.classList.contains('av-look'),
-    /** Back from the sede to «Ti aspetta quando vuoi». */
-    unlook: waiting,
   };
 }

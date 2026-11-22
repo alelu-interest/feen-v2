@@ -3130,7 +3130,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   animation: rise 0.3s var(--ease) both;
 }
 
-/* «Guarda la tua azienda» (17/11/2026, avvio.js looking): the sede is under the finger, and of the first start only
+/* after leaving the first lesson (17/11/2026, straight from the X since 22/11/2026; avvio.js looking): the sede is under the finger, and of the first start only
    the button that starts the lesson is left, where the bar will be */
 .avvio.av-look {
   inset: auto 0 0 0;
