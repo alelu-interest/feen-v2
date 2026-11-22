@@ -416,6 +416,31 @@ export function makeLesson(api) {
         .join('');
     });
     ex.pick = ex.placed.length === e.items.length || null;
+    wholeWords();
+  }
+  /** In three narrow columns a long word did not fit and broke in two («Abbona-mento», 22/11/2026: four readers of
+   *  the album stopped there). The items in the columns take a text a little smaller, as far as the smallest an answer
+   *  gets (13 px, times the text of the phone), when that keeps every word whole; where even that is not enough (a
+   *  small phone with the largest text) the word still breaks where Italian breaks it, as before. */
+  function wholeWords() {
+    const cols = root.querySelector('.lz-cols');
+    if (!cols) return;
+    cols.style.removeProperty('--lz-chip-in');
+    const chips = [...cols.querySelectorAll('.lz-chip')];
+    if (!chips.length) return;
+    const cs = getComputedStyle(chips[0]);
+    const size = parseFloat(cs.fontSize);
+    const room = Math.min(...chips.map((c) => c.clientWidth)) - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - 1;
+    const pen = (wholeWords.pen ??= document.createElement('canvas').getContext('2d'));
+    pen.font = `${cs.fontWeight} ${size}px ${cs.fontFamily}`;
+    const widest = Math.max(...chips.flatMap((c) => c.textContent.split(/\s+/).map((w) => pen.measureText(w).width)));
+    if (!(widest > room)) return;
+    const least = 13 * (parseFloat(getComputedStyle(root).getPropertyValue('--fs')) || 1);
+    const want = Math.max(least, (size * room) / widest);
+    if (want >= size) return;
+    // the size in the style sheet is a base times the text of the phone and the fit of the page: the base goes down by as much
+    const base = parseFloat(getComputedStyle(cols).getPropertyValue('--lz-chip-in')) || 15;
+    cols.style.setProperty('--lz-chip-in', `${((base * want) / size).toFixed(2)}px`);
   }
   /** Item i into column k, or back into the tray (k null). */
   function groupPut(i, k) {
@@ -531,6 +556,11 @@ export function makeLesson(api) {
     // a line that is one sum and nothing else («95 − (25 + 58) = 95 − 83 = +12 €.») is set larger, as the sum it is
     const why = v.why ? words(v.why, e, seen) : '';
     const whySum = /^<span class="sum">.*<\/span>\.?$/s.test(why) && why.split('class="sum"').length === 2;
+    // what «Spiegami» opens: the theory card, when it is due, and the lesson's own sentence about this question. A
+    // question of the «casa sorgente» may have no such sentence (sorgente.mjs, NEAR: before 22/11/2026 it got one
+    // about something else): with nothing to open there is no «Spiegami», and «Continua» takes the row.
+    const card = theory ? e.theory ?? e.explain : null;
+    const more = theory && !e.theory ? null : e.explain;
     sheet.className = `lz-sheet ${v.ok ? 'ok' : 'no'}`;
     sheet.innerHTML = `<div class="lz-verdict">
         <span class="lz-mark" aria-hidden="true">${v.ok ? '<svg viewBox="0 0 24 24"><path d="M5.5 12.5l4.2 4.2 8.8-9.4"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></svg>'}</span>
@@ -538,12 +568,12 @@ export function makeLesson(api) {
       </div>
       ${v.ok ? '' : rightAnswer(v, shownAbove)}
       ${why ? `<p class="lz-why${whySum ? ' lz-why-sum' : ''}">${whySum ? why.replace(/\.$/, '') : why}</p>` : ''}
-      <div class="lz-more" id="lz-explain" tabindex="-1" hidden>
-        ${theory ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(e.theory ?? e.explain, e, seen)}</p></div>` : ''}
-        ${theory && !e.theory ? '' : `<p class="lz-explain">${words(e.explain, e, seen)}</p>`}
-      </div>
+      ${card || more ? `<div class="lz-more" id="lz-explain" tabindex="-1" hidden>
+        ${card ? `<div class="lz-theory"><span>Idea nuova${e.idea ? ` · ${esc(e.idea)}` : ''}</span><p>${words(card, e, seen)}</p></div>` : ''}
+        ${more ? `<p class="lz-explain">${words(more, e, seen)}</p>` : ''}
+      </div>` : ''}
       <div class="lz-sheet-acts">
-        <button class="pill pill-light" data-act="explain" aria-expanded="false" aria-controls="lz-explain">Spiegami</button>
+        ${card || more ? '<button class="pill pill-light" data-act="explain" aria-expanded="false" aria-controls="lz-explain">Spiegami</button>' : ''}
         <button class="pill pill-dark" data-act="next">Continua</button>
       </div>`;
     sheet.hidden = false;

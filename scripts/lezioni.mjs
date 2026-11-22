@@ -759,6 +759,8 @@ if (source) {
   for (const t of source.notes.touches) notes.push(`un ritocco a una pagina dei Casi non trova più il suo testo, e la pagina è rimasta com'è (${t}): scripts/sorgente.mjs, TOUCHES`);
   if (source.notes.unchecked.length) notes.push(`${source.notes.unchecked.length} lezioni della casa sorgente hanno dati ancora da verificare`);
   if (source.notes.plain.length) notes.push(`${source.notes.plain.length} domande della casa sorgente non hanno una spiegazione loro (vuota, o ripete la risposta): dopo l'errore l'app dice il concetto della lezione`);
+  if (source.notes.silent.length) notes.push(`${source.notes.silent.length} fra domande e varianti della casa sorgente non hanno «Spiegami»: nessuna frase della lezione ha una parola in comune con la domanda (scripts/sorgente.mjs, NEAR)`);
+  if (source.notes.scrubbed.length || source.notes.letters.length || source.notes.dependent.length) notes.push(`tolto da quello che il ragazzo legge (scripts/sorgente.mjs, SCRUB): ${source.notes.scrubbed.length} note di redazione e rimandi fra parentesi («da verificare», «(Cap. 5)»), ${source.notes.letters.length} lettere in testa a una spiegazione («B).»), e dal ripasso ${source.notes.dependent.length} varianti che hanno bisogno di un'altra domanda (${source.notes.dependent.join(', ')})`);
   if (source.notes.opinion.length) notes.push(`${source.notes.opinion.length} domande «Decidere» della casa sorgente dicono che nessuna risposta è giusta («dipende», «il feedback mostra…»), ma l'app dice giusto o sbagliato: ${source.notes.opinion.join(', ')}`);
 }
 if (skipped.length) console.log(`Non ancora approvate, lasciate fuori: ${skipped.join(', ')}`);

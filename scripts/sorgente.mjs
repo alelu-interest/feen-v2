@@ -22,7 +22,9 @@
 //    names the answer («streaming.») or is a note for who writes the game («il feedback mostra…»), the line is the
 //    key concept of the lesson.
 //  - «Spiegami» is the sentence of the lesson's own text that is closest to the question, a different one for each
-//    exercise: nothing is written here, everything the player reads is the team's.
+//    exercise: nothing is written here, everything the player reads is the team's. When no sentence left has a word
+//    in common with the question, the exercise has no «Spiegami» (22/11/2026, NEAR below): better none than one
+//    about something else.
 //  - the key concept is the theory card of exercise 1, the one with «Idea nuova».
 //  - before the questions, one screen says what they are about (19/11/2026, from a tester: «farei prima lezioni e poi
 //    quiz»; the user: «fai te»): the key concept, said by the partner, and the first lines of the lesson's own
@@ -33,6 +35,13 @@
 //  - the figures of a question that lists them («Entrate 95 €, spese fisse 25 €, spese variabili 58 €. Qual è il
 //    saldo?») are also given as a small table, and a formula said in words («il saldo è entrate meno uscite») as a
 //    formula (21/11/2026, from a tester: «modi migliori per la syntax matematica»): see «the sums, set as sums».
+//  - what was written for who edits the lessons, not for who plays, is taken out (22/11/2026, after the reviewers of
+//    the bots read all twelve floors; the user: «sistema tutto quello che può fare da solo»): the notes in brackets
+//    with «da verificare», which sat mostly on the right answer and gave it away; the letter of the PDF in front of
+//    an explanation («B). Se la scadenza…») and the explanations that name the answers by those letters, which the
+//    app does not show; the pointers to what the player has not got («(Cap. 5)», «(L3)»); and, in a review, the
+//    variants that need another question to be answered («Nello stesso caso, margine?»). Nothing is added: see
+//    «what is not for the player». SCRUB = false puts everything back.
 // A card written by hand and approved (1. LAVORO/lezioni/piano-N/Lx-scheda.md) takes the place of the lesson with the
 // same number: that is how one lesson is fixed without touching the Excel.
 
@@ -60,6 +69,36 @@ const sentences = (t) =>
     .split(/(?<=[.!?…])\s+(?=[\p{Lu}«“])/u)
     .map((s) => s.trim())
     .filter(Boolean);
+
+// ---------- what is not for the player ----------
+const SCRUB = true;
+const EDITOR_NOTE = /\s*\([^()]*da verificare[^()]*\)/gi; // «(dato da verificare)», «(da verificare il conteggio)»
+const POINTER = /\s*\((?:Cap\.?\s*\d+(?:[\s,]*L\d+)?|L\d+)\)/g; // «(Cap. 5)», «(L3)», «(Cap. 10 L5)»
+const LETTERED = /(^|[\s:;,(«])[a-d]\)\s/i; // a list «a) … b) …», or an answer named by its letter
+/** A text of the Excel as the player reads it: without the editor's notes and the pointers to other pages. */
+function shown(t, notes) {
+  const raw = tidy(t);
+  if (!SCRUB) return raw;
+  const out = raw.replace(EDITOR_NOTE, '').replace(POINTER, '').replace(/\s+([.,;:!?])/g, '$1').trim();
+  if (notes && out !== raw) notes.scrubbed.push(raw.match(EDITOR_NOTE)?.[0]?.trim() ?? raw.match(POINTER)?.[0]?.trim());
+  return out;
+}
+/** The explanation of a question. The Excel keeps the letters of the PDF («B). Il fondo…», «a) cede alla pressione;
+ *  c) sposta solo il problema»), but its answers are in another order and the app shows none: the letter in front
+ *  goes, and an explanation that still tells the answers apart by letter says nothing here (empty: the lesson's key
+ *  concept takes its place, as for the ones that do not explain). Not when the question itself lists «a) … b) …». */
+function shownWhy(why, question, notes) {
+  let w = shown(why, notes);
+  if (!SCRUB || LETTERED.test(question)) return w;
+  const led = w.replace(/^[A-Da-d]\)\.?\s*/, '');
+  if (led !== w) notes.letters.push(w.slice(0, 40));
+  w = led;
+  if (LETTERED.test(w) || /^[a-d]\)/i.test(w)) return '';
+  return w;
+}
+// a variant comes alone in a review: one that points at another question cannot be answered there
+const NEEDS_ANOTHER = /^(Nello stesso|Nella stessa|Stess[ao] |Lo stesso |La stessa )/i;
+const NEEDS_ANOTHER_ID = new Set(['C12-L04-RB']); // «Il prezzo sale a 6 €: nuovo valore e variazione?»: how many, from what price?
 
 // the words that say what a text is about: no short or common ones, the last vowel off («entrata», «entrate»)
 const COMMON = new Set('della delle dello degli dalla dalle nella nelle sulla sulle questo questa questi queste quello quella quelli quelle come anche dove quando quanto quanta quanti perché oppure però mentre sono essere viene fare fatto ogni tutto tutti tutta tutte molto poco meno solo sempre ancora dopo prima senza verso così cosa cose quale quali ciò cioè puoi deve devi serve hanno abbia stesso stessa altro altra altri altre'.split(' '));
@@ -105,11 +144,20 @@ const INSIDE = /\butente\b|da verificare|da reperire|materiali di partenza/i;
 /** The sentences of the lesson's own text, in the order they are read: the explanation, then the typical mistake. */
 function pool(lesson) {
   const c = lesson.content;
-  return [...sentences(c.SPI), ...sentences(c.ERR)].filter((s) => s.length >= 40 && !INSIDE.test(s));
+  return [...sentences(c.SPI), ...sentences(c.ERR)].filter((s) => s.length >= 40 && !INSIDE.test(s)).map((s) => shown(s));
 }
 
+// How close a sentence must be to a question to be its «Spiegami» (22/11/2026). The lesson's text has fewer
+// sentences than a lesson needs, and each is used once: the last questions got what was left, and «in quale categoria
+// metti la ricarica del telefono?» was explained with the price per kilo at the supermarket. Below 0.1 the two have
+// no word in common. Read by hand on the 42 questions of floor 1: the 4 below it were all about something else, and
+// none of the 27 good ones is lost; a higher bar (0.15, 0.22) starts to drop good ones, because counting words
+// cannot tell the rest apart (11 more of the 42 are off the point and stay: that needs a «Spiegami» written by the
+// team for each question). In the whole course 73 questions out of 504 are below it.
+const NEAR = 0.1;
+
 /** «Spiegami» for a question: the sentence of the lesson closest to it, not said yet in this lesson, and not the
- *  line the player has just read. A short one takes the sentence after it too. */
+ *  line the player has just read. A short one takes the sentence after it too. Null when nothing is close enough. */
 function explainFor(about, list, used, avoid) {
   let best = -1;
   let score = -1;
@@ -121,7 +169,7 @@ function explainFor(about, list, used, avoid) {
       best = i;
     }
   });
-  if (best < 0) return null;
+  if (best < 0 || score < NEAR) return null;
   used.add(best);
   let out = list[best];
   const next = list[best + 1];
@@ -451,7 +499,9 @@ function headline(concept) {
 }
 
 /** One question of the Excel as an exercise of the app. `ctx`: the lesson's concept, its sentences, the ones used. */
-function exercise(q, n, ctx, notes, where) {
+function exercise(q0, n, ctx, notes, where) {
+  const asked = shown(q0.text, notes);
+  const q = { ...q0, text: asked, options: q0.options.map((o) => shown(o, notes)), why: shownWhy(q0.why, asked, notes) };
   const right = tidy(q.options[q.right]);
   const said = explains(q.why, right) ? sentence(q.why) : null;
   const text = tidy(q.text);
@@ -518,7 +568,7 @@ function exercise(q, n, ctx, notes, where) {
 /** A lesson of the Excel as the app plays it. */
 function lessonFrom(src, notes) {
   const id = `p${src.floor}-l${src.n}`;
-  const concept = sentence(src.content.CON || src.concept);
+  const concept = sentence(shown(src.content.CON || src.concept));
   const list = pool(src);
   const used = new Set();
   const ctx = { concept: sentences(concept)[0] ?? concept };
@@ -531,7 +581,10 @@ function lessonFrom(src, notes) {
       e.theory = concept;
     }
     const about = `${e.mentor} ${q.options[q.right]} ${q.why}`;
-    e.explain = explainFor(about, list, used, [e.line, e.theory]) ?? explainFor(about, list, new Set(), [e.line, e.theory]) ?? concept;
+    // the closest sentence not said yet; if none of those is about the question, the closest one already said for
+    // another (the player meets it twice only by opening «Spiegami» both times); if not even that, none
+    e.explain = explainFor(about, list, used, [e.line, e.theory]) ?? explainFor(about, list, new Set(), [e.line, e.theory]);
+    if (!e.explain) notes.silent.push(`${src.id}-Q${k + 1}`);
     return e;
   });
   // the variants: «Nuovo (variante di L1 es.3)» is the other version of exercise 3 in a review
@@ -539,10 +592,12 @@ function lessonFrom(src, notes) {
     const n = Number(v.note.match(/es\.\s*(\d)/)?.[1]) || k + 3;
     const base = exercises[n - 1];
     if (!base) return;
+    if (SCRUB && (NEEDS_ANOTHER.test(tidy(v.text)) || NEEDS_ANOTHER_ID.has(`${src.id}-${v.unit}`))) return void notes.dependent.push(`${src.id}-${v.unit}`);
     const x = exercise(v, n, ctx, notes, `${src.id}-${v.unit}`);
     const about = `${x.mentor} ${v.options[v.right]} ${v.why}`;
     // «Spiegami» of the variant: the base's, when it is about the same thing; else the closest sentence
-    const explain = share(about, base.explain) >= 0.25 ? base.explain : explainFor(about, list, new Set(), [x.line]) ?? base.explain;
+    const explain = base.explain && share(about, base.explain) >= 0.25 ? base.explain : explainFor(about, list, new Set(), [x.line]);
+    if (!explain) notes.silent.push(`${src.id}-${v.unit}`);
     delete x.line;
     (base.variants ??= []).push({ type: x.type, mentor: x.mentor, table: x.table ?? null, options: x.options, groups: x.groups, items: x.items, pairs: x.pairs, order: x.order, why: x.why, explain });
   });
@@ -594,7 +649,7 @@ export async function fromSource(dir) {
     if (err.code === 'ENOENT') return null;
     throw err;
   }
-  const notes = { opinion: [], plain: [], unchecked: [], columns: [], pairs: [], orders: [], touches: [], tables: [], formulas: [] };
+  const notes = { opinion: [], plain: [], silent: [], scrubbed: [], letters: [], dependent: [], unchecked: [], columns: [], pairs: [], orders: [], touches: [], tables: [], formulas: [] };
   const lessons = {};
   const stages = {};
   // a new kind of exercise is explained in one line the first time it is met, in the whole course (CLAUDE.md §6)

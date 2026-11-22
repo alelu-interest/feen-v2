@@ -643,7 +643,9 @@ export function makePath(api) {
       ev.stopPropagation();
       if (state.busy) return;
       sfx.tap();
-      if (mentor) api.trophy?.('mentore');
+      // the trophy after the partner's words, not together with them (22/11/2026, from the album: the line at the
+      // top and the trophy in the middle of the page came at once, and four readers saw two notices to read)
+      if (mentor) setTimeout(() => api.trophy?.('mentore'), 1800);
       api.toast(typeof say === 'function' ? say() : say); // the partner has more than one line (mentorSays)
     };
     return b;

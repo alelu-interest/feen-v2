@@ -1056,7 +1056,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Un bisogno è ciò senza cui non funzioni (cibo, trasporti per andare a scuola, materiale per studiare, salute)."
+        "explain": "Se spendi 120 € per una felpa, il costo non è solo 120 €: è anche il viaggio, il corso o il risparmio che quei 120 € avrebbero finanziato."
       }
     ],
     "source": "C01-L02"
@@ -1666,7 +1666,7 @@ export const LESSONS = {
             "why": "Un abbonamento da 4,99 €/mese mai usato."
           }
         ],
-        "explain": "Fare un budget significa dare una destinazione a ogni euro in entrata prima di spenderlo."
+        "explain": "Su 200 € al mese tra paghetta e lavoretti: 100 € bisogni, 60 € desideri, 40 € risparmio."
       }
     ],
     "source": "C01-L04"
@@ -1823,7 +1823,7 @@ export const LESSONS = {
             "why": "38 ÷ 110 ≈ 34,5%."
           }
         ],
-        "explain": "Ogni metodo ha un costo diverso: a mano costa tempo ma ti fa guardare ogni spesa; automatico costa poco ma rischia di diventare un riepilogo che non guardi.",
+        "explain": "Si individuano sommando per categoria: se la categoria «varie» è la più grande del mese, significa che le categorie non sono abbastanza chiare.",
         "variants": [
           {
             "type": "scelta",
@@ -1850,7 +1850,7 @@ export const LESSONS = {
                 "why": "90 ÷ 600 = 15%."
               }
             ],
-            "explain": "Ogni metodo ha un costo diverso: a mano costa tempo ma ti fa guardare ogni spesa; automatico costa poco ma rischia di diventare un riepilogo che non guardi."
+            "explain": "Si individuano sommando per categoria: se la categoria «varie» è la più grande del mese, significa che le categorie non sono abbastanza chiare."
           }
         ]
       },
@@ -2276,7 +2276,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Al supermercato lo strumento è il prezzo per unità (€/kg, €/litro), spesso scritto in piccolo sull’etichetta: la confezione più grande non è sempre la più conveniente, e la marca non è sempre sinonimo di qualità superiore."
+        "explain": "Il telefono è la prima spesa fissa che molti ragazzi scelgono davvero: una ricaricabile ha un prezzo mensile, a volte un costo di attivazione, e spesso una promozione che dura pochi mesi."
       }
     ],
     "source": "C01-L06"
@@ -2924,7 +2924,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Anche il denaro su una carta prepagata o su un portafoglio digitale segue regole diverse dai depositi: di solito è protetto in altro modo, non dalla garanzia sui depositi."
+        "explain": null
       }
     ],
     "source": "C02-L02"
@@ -3080,7 +3080,7 @@ export const LESSONS = {
             "why": "1 × 12 = 12 € l’anno."
           }
         ],
-        "explain": "Per i minorenni di norma non è disponibile. Ogni carta ha limiti: un massimo di spesa giornaliero e mensile, un limite per i prelievi e, per i pagamenti contactless (con l’avvicinamento), un importo massimo oltre cui chiede il PIN.",
+        "explain": null,
         "variants": [
           {
             "type": "scelta",
@@ -3107,7 +3107,7 @@ export const LESSONS = {
                 "why": "2 × 6 = 12 €."
               }
             ],
-            "explain": "La carta di debito è collegata a un conto e paga prelevando direttamente da lì: se un truffatore ruba i dati, il rischio arriva fino al saldo del conto e ai limiti di spesa della carta."
+            "explain": null
           }
         ]
       },
@@ -3857,7 +3857,7 @@ export const LESSONS = {
             "why": "Chi ti truffa non ha bisogno di scoprire la tua password: gli basta convincerti a dargliela, di solito mettendoti fretta."
           }
         ],
-        "explain": "Il phishing è un messaggio (email, chat, social) che finge di arrivare da qualcuno di fidato per farti cliccare un link o dare dei dati."
+        "explain": "Apri l’app o il sito che usi di solito, o chiama il numero che già conosci, e verifica lì. Pensare che una truffa si riconosca sempre dagli errori di scrittura: molte oggi sono scritte bene."
       }
     ],
     "source": "C02-L05"
@@ -3941,7 +3941,7 @@ export const LESSONS = {
             "why": "500 − 50 = 450 €."
           }
         ],
-        "explain": "Se la banca rifiuta o non risponde, c’è il reclamo e poi il ricorso all’Arbitro Bancario Finanziario (ABF). Se sei minorenne, avvisa subito un genitore o chi ha il conto con te.",
+        "explain": null,
         "variants": [
           {
             "type": "scelta",
@@ -4027,7 +4027,7 @@ export const LESSONS = {
                 "why": "600 − 60 = 540 €."
               }
             ],
-            "explain": "Se ti accorgi di un pagamento che non hai fatto: blocca la carta dall’app o dal numero verde; avvisa la banca e disconosci l’operazione, conservando la prova della comunicazione; conserva le prove (messaggi, schermate) e presenta denuncia alla Polizia Postale o ad altre forze dell’ordine; cambia le password e controlla gli altri conti."
+            "explain": null
           }
         ]
       },
@@ -4059,7 +4059,7 @@ export const LESSONS = {
             "why": "Il codice non si comunica mai: la banca può contestare il rimborso."
           }
         ],
-        "explain": "L’altro errore: aspettare qualche giorno per «vedere se i soldi tornano» prima di avvisare la banca.",
+        "explain": "Se la banca rifiuta o non risponde, c’è il reclamo e poi il ricorso all’Arbitro Bancario Finanziario (ABF). Se sei minorenne, avvisa subito un genitore o chi ha il conto con te.",
         "variants": [
           {
             "type": "scelta",
@@ -4148,7 +4148,7 @@ export const LESSONS = {
             "why": "No, verifica dall’app o dal sito."
           }
         ],
-        "explain": "Quei soldi arrivano da frodi: tu diventi lo strumento."
+        "explain": "Per le operazioni non autorizzate, la regola è che la banca deve di norma rimborsare entro la giornata lavorativa successiva alla richiesta."
       }
     ],
     "source": "C02-L06"
@@ -4539,7 +4539,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "La fallacia del giocatore è credere che un evento casuale «debba» compensare quelli passati: dopo cinque rossi, «ora tocca al nero».",
+        "explain": null,
         "variants": [
           {
             "type": "scelta",
@@ -4746,7 +4746,7 @@ export const LESSONS = {
             "why": "30 × 0,02 = 0,60 €."
           }
         ],
-        "explain": "Come visto in L1, la roulette non ricorda."
+        "explain": null
       }
     ],
     "source": "C03-L02"
@@ -4870,7 +4870,7 @@ export const LESSONS = {
         "mentor": "Una vincita di 1.000 € con ritenuta 20% sulla parte oltre 500 €: quanto resta? E con una vincita di 400 €?",
         "options": [
           {
-            "text": "900 € per la vincita da 1.000 €; 400 € per quella da 400 € (dato da verificare)",
+            "text": "900 € per la vincita da 1.000 €; 400 € per quella da 400 €",
             "right": true
           },
           {
@@ -4952,7 +4952,7 @@ export const LESSONS = {
         "variants": [
           {
             "type": "scelta",
-            "mentor": "Una vincita da 700 € con ritenuta 20% sulla parte oltre 500 €: quanto resta (dato da verificare)?",
+            "mentor": "Una vincita da 700 € con ritenuta 20% sulla parte oltre 500 €: quanto resta?",
             "table": null,
             "options": [
               {
@@ -5294,17 +5294,17 @@ export const LESSONS = {
           {
             "text": "Prestargli i soldi così li rimette",
             "right": false,
-            "why": "A) peggiora il problema e crea un debito; b) lascia tutto com’è."
+            "why": "Il problema non sta nell’importo in sé ma nella perdita di controllo: quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne."
           },
           {
             "text": "Far finta di niente",
             "right": false,
-            "why": "A) peggiora il problema e crea un debito; b) lascia tutto com’è."
+            "why": "Il problema non sta nell’importo in sé ma nella perdita di controllo: quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne."
           },
           {
             "text": "Dirlo solo agli altri amici",
             "right": false,
-            "why": "A) peggiora il problema e crea un debito; b) lascia tutto com’è."
+            "why": "Il problema non sta nell’importo in sé ma nella perdita di controllo: quando il gioco prende tempo, soldi e pensieri a scapito del resto, è il momento di parlarne."
           },
           {
             "text": "Dirgli che sei preoccupato e proporre di parlarne con un adulto di fiducia, restando con lui",
@@ -5599,17 +5599,17 @@ export const LESSONS = {
           {
             "text": "Provo con 100 €",
             "right": false,
-            "why": "Le analisi ESMA parlano di 74–89% di conti in perdita; a) e c) si basano solo sulla promessa."
+            "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           },
           {
             "text": "Chiedo consiglio a chi lo segue",
             "right": false,
-            "why": "Le analisi ESMA parlano di 74–89% di conti in perdita; a) e c) si basano solo sulla promessa."
+            "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           },
           {
             "text": "Compro subito per non perdere l’occasione",
             "right": false,
-            "why": "Le analisi ESMA parlano di 74–89% di conti in perdita; a) e c) si basano solo sulla promessa."
+            "why": "Investire significa possedere qualcosa che nel tempo produce valore (utili, interessi) e tenere i costi bassi; fare trading con la leva significa scommettere su un movimento di prezzo in poco tempo, con un’esposizione molto più grande del capitale versato."
           }
         ],
         "explain": "Per un teenager il tema è soprattutto culturale: video e canali che promettono «trading facile» mostrano i casi vincenti e quasi mai quelli in perdita, e spesso vivono di link affiliati e commissioni."
@@ -5642,7 +5642,7 @@ export const LESSONS = {
             "why": "0,45 × 40 − 0,55 × 50 = 18 − 27,50 = −9,50 €."
           }
         ],
-        "explain": "Si può puntare sul rialzo (long) o sul ribasso (short). Oltre al rischio di prezzo ci sono costi: spread, commissioni, costi di mantenimento per tenere aperta la posizione."
+        "explain": "Nel 2018 l’ESMA, l’autorità europea dei mercati, ha limitato i CFD ai clienti al dettaglio: leva massima 30:1 sulle principali valute, 20:1 su oro e principali indici, 10:1 su altre materie prime, 5:1 sulle azioni, 2:1 sulle criptovalute; chiusura automatica della posizione se il margine scende al 50% di quello richiesto; protezione contro il saldo negativo; avviso di rischio che riporta la percentuale di clienti del fornitore che perde."
       }
     ],
     "source": "C03-L05"
@@ -5690,7 +5690,7 @@ export const LESSONS = {
             "why": "A) importo massimo, c) nessun prestito, d) pausa dopo una perdita."
           }
         ],
-        "theory": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2). Il limite non si ritocca per rifarsi.",
+        "theory": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido. Il limite non si ritocca per rifarsi.",
         "explain": "La regola funziona se è scritta, semplice e senza eccezioni: un importo mensile; stop quando lo raggiungi; nessun prestito da amici o da casa; pausa di 24 ore dopo una perdita; metodi di pagamento collegati al telefono tolti o limitati; notifiche del gioco spente."
       },
       {
@@ -5787,17 +5787,17 @@ export const LESSONS = {
           {
             "text": "20%",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           },
           {
             "text": "80%",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           },
           {
             "text": "Circa 67%",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           }
         ],
         "explain": "In un gioco che vince una volta su cinque, la probabilità di perdere 5 tentativi di fila è circa 32,8% (0,8⁵), mentre perderne 25 di fila è circa 0,4% (0,8²⁵).",
@@ -5931,7 +5931,7 @@ export const LESSONS = {
           {
             "text": "Un normale errore di calcolo",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           },
           {
             "text": "Mentire su quanto si spende: perdita di controllo, il momento di parlarne",
@@ -5940,12 +5940,12 @@ export const LESSONS = {
           {
             "text": "Un segnale di buona gestione",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           },
           {
             "text": "Nessun segnale",
             "right": false,
-            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido (L2)."
+            "why": "La protezione migliore è una regola decisa a mente fredda, prima: durante il gioco il cervello è meno lucido."
           }
         ],
         "explain": "La perdita massima accettabile è la cifra che puoi perdere senza che cambi nulla nella tua vita. Per un teenager si lega al budget visto nel Piano 1: la parte di «desideri» della paghetta."
@@ -6244,24 +6244,24 @@ export const LESSONS = {
           {
             "text": "Compro subito",
             "right": false,
-            "why": "A) cede alla pressione; c) sposta solo il problema."
+            "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           },
           {
             "text": "Chiedo a un amico di comprare per me",
             "right": false,
-            "why": "A) cede alla pressione; c) sposta solo il problema."
+            "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           },
           {
             "text": "Condivido il banner",
             "right": false,
-            "why": "A) cede alla pressione; c) sposta solo il problema."
+            "why": "La pubblicità non ti dice solo cosa c’è da comprare: usa meccanismi ricorrenti per farti decidere in fretta."
           },
           {
             "text": "Chiudo, aspetto 24 ore e confronto il prezzo",
             "right": true
           }
         ],
-        "explain": "Le tecniche più comuni sono poche e si ripetono."
+        "explain": "La prova sociale dice che molti altri lo fanno («2.000 persone lo stanno guardando»). L’ancoraggio mostra un prezzo alto vicino a uno basso («da 120 € a 79 €»), così il secondo sembra un affare."
       },
       {
         "n": 7,
@@ -6291,7 +6291,7 @@ export const LESSONS = {
             "why": "79 ÷ 8 ≈ 9,9 ore di lavoro."
           }
         ],
-        "explain": "Si aggiungono la pubblicità mirata, che usa i tuoi dati (cosa guardi, dove sei, cosa cerchi) per mostrarti l’annuncio nel momento giusto, e la pubblicità occulta, cioè un contenuto pagato presentato come opinione spontanea."
+        "explain": null
       }
     ],
     "source": "C04-L01"
@@ -6568,7 +6568,7 @@ export const LESSONS = {
             "why": "Un metodo «sicuro» non esiste: ogni investimento ha un rischio."
           }
         ],
-        "explain": "I rendimenti passati presentati come futuri: «ho fatto +40%, lo rifai anche tu»."
+        "explain": "Un finfluencer è un creator che parla di finanza e investimenti. Il suo guadagno può venire da sponsorizzazioni, da link affiliati (riceve una somma se ti iscrivi o apri un conto), da corsi o gruppi a pagamento."
       },
       {
         "n": 7,
@@ -6900,7 +6900,7 @@ export const LESSONS = {
             "why": "Rendimento e rischio vanno insieme: se qualcuno promette molto e garantito, qualcosa non torna."
           }
         ],
-        "explain": "Chi organizza ha comprato prima, a poco; quando il prezzo sale per effetto degli acquisti di chi si fida, vende."
+        "explain": "Un 10% al mese sembra poco, ma composto in 12 mesi diventa 1,1 elevato alla 12, cioè circa 3,14 volte il capitale: +213,8% in un anno."
       }
     ],
     "source": "C04-L03"
@@ -7141,7 +7141,7 @@ export const LESSONS = {
                 "why": "2.000 × (1,03¹⁰ − 1,015¹⁰) ≈ 2.688 − 2.321 = 367 €."
               }
             ],
-            "explain": "Le frasi più usate hanno un significato diverso da quello che sembra. «Fino al 6%» indica un massimo, non quanto otterrai."
+            "explain": null
           }
         ]
       },
@@ -7160,17 +7160,17 @@ export const LESSONS = {
           {
             "text": "Firmo",
             "right": false,
-            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo (da verificare)."
+            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo."
           },
           {
             "text": "Ne parlo con un’amica che ne ha uno",
             "right": false,
-            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo (da verificare)."
+            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo."
           },
           {
             "text": "Firmo solo se sicuro",
             "right": false,
-            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo (da verificare)."
+            "why": "Senza costi e rischi non si può giudicare; un minorenne non firma da solo."
           }
         ],
         "explain": "I prodotti complessi (certe polizze con parte di investimento, certi prodotti strutturati) sono più difficili da capire e possono avere costi doppi o penali di uscita."
@@ -7462,7 +7462,7 @@ export const LESSONS = {
           {
             "text": "Mi iscrivo e non metto promemoria",
             "right": false,
-            "why": "B) rischia 12 € al mese; c) è sempre valida se non ti serve davvero."
+            "why": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo."
           },
           {
             "text": "è sensato se segno subito il promemoria e verifico come si disdice",
@@ -7471,12 +7471,12 @@ export const LESSONS = {
           {
             "text": "È sempre sbagliato non iscriversi",
             "right": false,
-            "why": "B) rischia 12 € al mese; c) è sempre valida se non ti serve davvero."
+            "why": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo."
           },
           {
             "text": "Mi iscrivo con un secondo account",
             "right": false,
-            "why": "B) rischia 12 € al mese; c) è sempre valida se non ti serve davvero."
+            "why": "Un’offerta va giudicata dal costo totale nel tempo, non dal titolo."
           }
         ],
         "explain": "Pensare «la prova è gratis, quindi non rischio». L’altro errore è confrontare i prezzi mensili senza contare costi di attivazione o durata minima."
@@ -7538,22 +7538,22 @@ export const LESSONS = {
           {
             "left": "Restituire un acquisto online senza motivo entro 14 giorni",
             "right": "Recesso",
-            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
+            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente."
           },
           {
             "left": "Un difetto che compare dopo 8 mesi",
             "right": "Garanzia legale",
-            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
+            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente."
           },
           {
             "left": "Chiedere a un’app di cancellare i dati",
             "right": "Diritto alla cancellazione",
-            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
+            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente."
           },
           {
             "left": "Un’offerta pubblicitaria ingannevole",
             "right": "Segnalazione all’autorità",
-            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente (AGCM, da verificare)."
+            "why": "A) recesso; b) garanzia legale; c) diritto alla cancellazione dei dati; d) segnalazione all’autorità competente."
           }
         ],
         "theory": "Chi compra ha dei diritti per legge, anche se non li legge nessuno. Conoscerli trasforma «ho sbagliato io» in «posso chiedere indietro i soldi».",
@@ -7570,7 +7570,7 @@ export const LESSONS = {
           {
             "text": "Vero",
             "right": false,
-            "why": "È previsto per vendite a distanza o fuori dai locali; in negozio dipende dal negozio (da verificare)."
+            "why": "È previsto per vendite a distanza o fuori dai locali; in negozio dipende dal negozio."
           },
           {
             "text": "Falso",
@@ -7603,7 +7603,7 @@ export const LESSONS = {
             "why": "10 + 14 = 24 novembre."
           },
           {
-            "text": "24 novembre (da verificare il conteggio)",
+            "text": "24 novembre",
             "right": true
           }
         ],
@@ -7617,7 +7617,7 @@ export const LESSONS = {
               {
                 "text": "14 marzo",
                 "right": false,
-                "why": "3 + 14 = 17 marzo (da verificare)."
+                "why": "3 + 14 = 17 marzo."
               },
               {
                 "text": "17 marzo",
@@ -7626,12 +7626,12 @@ export const LESSONS = {
               {
                 "text": "3 aprile",
                 "right": false,
-                "why": "3 + 14 = 17 marzo (da verificare)."
+                "why": "3 + 14 = 17 marzo."
               },
               {
                 "text": "10 marzo",
                 "right": false,
-                "why": "3 + 14 = 17 marzo (da verificare)."
+                "why": "3 + 14 = 17 marzo."
               }
             ],
             "explain": "Il diritto di recesso permette, per gli acquisti fatti online, per telefono o fuori da un negozio, di restituire il prodotto o annullare il servizio entro 14 giorni, senza dover dare un motivo."
@@ -7666,7 +7666,7 @@ export const LESSONS = {
             "why": "24 − 8 = 16 mesi."
           }
         ],
-        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso.",
+        "explain": "La garanzia legale di conformità dura almeno 2 anni dalla consegna e copre i difetti che c’erano già alla consegna.",
         "variants": [
           {
             "type": "scelta",
@@ -7725,7 +7725,7 @@ export const LESSONS = {
             "why": "9 × 3 = 27 €."
           }
         ],
-        "explain": "Sui dati personali, chi tratta i tuoi dati ha l’obbligo di dirti cosa raccoglie e perché. Hai diritto di sapere quali dati ha, correggerli, chiedere di cancellarli e di opporti all’uso per pubblicità.",
+        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso.",
         "variants": [
           {
             "type": "scelta",
@@ -7814,7 +7814,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "In genere si chiede prima la riparazione o la sostituzione; se non sono possibili si può chiedere una riduzione del prezzo o il rimborso."
+        "explain": "Hai diritto di sapere quali dati ha, correggerli, chiedere di cancellarli e di opporti all’uso per pubblicità."
       }
     ],
     "source": "C04-L06"
@@ -7991,7 +7991,7 @@ export const LESSONS = {
             "why": "Vale la pena scegliere il piano che si riesce a rispettare, non quello più veloce sulla carta."
           }
         ],
-        "explain": "Una regola semplice per ripartire le entrate è la 50/30/20 (50% bisogni, 30% desideri, 20% risparmio): è una convenzione didattica, non una legge, e va adattata alla propria situazione.",
+        "explain": "Importo mensile = costo ÷ numero di mesi. Poi si controlla se l’importo è sostenibile rispetto a quello che entra ogni mese.",
         "variants": [
           {
             "type": "scelta",
@@ -8050,7 +8050,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Per un teenager con paghetta i \"bisogni\" sono pochi, quindi la quota risparmio può essere più alta, ma non conviene arrivare al 100%: serve spazio per gli imprevisti.",
+        "explain": "Una regola semplice per ripartire le entrate è la 50/30/20 (50% bisogni, 30% desideri, 20% risparmio): è una convenzione didattica, non una legge, e va adattata alla propria situazione.",
         "variants": [
           {
             "type": "scelta",
@@ -8139,7 +8139,7 @@ export const LESSONS = {
             "why": "Falso. Un piano senza margine per gli imprevisti e per qualche spesa piacevole è poco sostenibile e di solito si interrompe."
           }
         ],
-        "explain": "Poi si controlla se l’importo è sostenibile rispetto a quello che entra ogni mese."
+        "explain": "Per un teenager con paghetta i \"bisogni\" sono pochi, quindi la quota risparmio può essere più alta, ma non conviene arrivare al 100%: serve spazio per gli imprevisti."
       }
     ],
     "source": "C05-L01"
@@ -8570,7 +8570,7 @@ export const LESSONS = {
             "why": "0,20% di 500 = 1 €; 11,10 − 1 = 10,10 €; 10,10 ÷ 500 = 2,02%."
           }
         ],
-        "explain": "I minorenni, in genere, aprono i conti tramite un genitore o tutore: le regole variano e vanno verificate con la banca.",
+        "explain": "Interesse semplice: si calcola sempre sul capitale iniziale. Interesse composto: ogni anno si calcola sul capitale più gli interessi già maturati, quindi la formula è capitale × (1 + tasso)^anni.",
         "variants": [
           {
             "type": "scelta",
@@ -8597,7 +8597,7 @@ export const LESSONS = {
                 "why": "200 × 0,02 = 4 €."
               }
             ],
-            "explain": "Interesse composto: ogni anno si calcola sul capitale più gli interessi già maturati, quindi la formula è capitale × (1 + tasso)^anni."
+            "explain": "Interesse semplice: si calcola sempre sul capitale iniziale. Interesse composto: ogni anno si calcola sul capitale più gli interessi già maturati, quindi la formula è capitale × (1 + tasso)^anni."
           }
         ]
       },
@@ -8688,7 +8688,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "I tassi usati qui sono cifre di esempio, non offerte reali.",
+        "explain": "Un conto vincolato paga di solito di più di uno libero, ma il denaro non è subito disponibile. I minorenni, in genere, aprono i conti tramite un genitore o tutore: le regole variano e vanno verificate con la banca.",
         "variants": [
           {
             "type": "scelta",
@@ -8747,7 +8747,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Confrontare i tassi lordi tra loro senza guardare vincoli, costi e tasse; oppure scegliere il conto più \"alto\" e scoprire dopo che non puoi prelevare quando serve."
+        "explain": "I minorenni, in genere, aprono i conti tramite un genitore o tutore: le regole variano e vanno verificate con la banca."
       },
       {
         "n": 7,
@@ -8777,7 +8777,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Il tasso annuo lordo è quello pubblicizzato; per arrivare al netto si tolgono le imposte. Un conto vincolato paga di solito di più di uno libero, ma il denaro non è subito disponibile."
+        "explain": "I tassi usati qui sono cifre di esempio, non offerte reali."
       }
     ],
     "source": "C05-L03"
@@ -8915,7 +8915,7 @@ export const LESSONS = {
             "why": "10% di 200 = 20, ma il minimo è 30; 10% di 500 = 50."
           }
         ],
-        "explain": "Per i danni piccoli conviene il fondo di emergenza (L2). Credere che l’assicurazione «paghi tutto».",
+        "explain": "Per i danni piccoli conviene il fondo di emergenza. Credere che l’assicurazione «paghi tutto».",
         "variants": [
           {
             "type": "scelta",
@@ -8959,7 +8959,7 @@ export const LESSONS = {
                 "why": "120 − 20 = 100 €."
               }
             ],
-            "explain": "Per i danni piccoli conviene il fondo di emergenza (L2). Credere che l’assicurazione «paghi tutto»."
+            "explain": "Per i danni piccoli conviene il fondo di emergenza. Credere che l’assicurazione «paghi tutto»."
           }
         ]
       },
@@ -9072,7 +9072,7 @@ export const LESSONS = {
             "why": "150 ÷ 5 = 30 € l’anno; 30 − 36 = −6 €."
           }
         ],
-        "explain": "Il valore sta nel non dover affrontare da soli il danno grande, quando capita.",
+        "explain": "Un fatto onesto da dire: in media, una persona paga all’assicurazione più di quanto riceva in rimborsi, altrimenti l’assicurazione non potrebbe sostenere i costi.",
         "variants": [
           {
             "type": "scelta",
@@ -9152,7 +9152,7 @@ export const LESSONS = {
             "why": "Se il danno è molto più grande di quello che puoi pagare, trasferire il rischio ha senso."
           }
         ],
-        "explain": "Il massimale è il tetto massimo che l’assicurazione può pagare, anche se il danno è più alto. Un fatto onesto da dire: in media, una persona paga all’assicurazione più di quanto riceva in rimborsi, altrimenti l’assicurazione non potrebbe sostenere i costi."
+        "explain": "Il valore sta nel non dover affrontare da soli il danno grande, quando capita."
       },
       {
         "n": 7,
@@ -9182,7 +9182,7 @@ export const LESSONS = {
             "why": "No. Il fondo copre gli imprevisti che puoi pagare; l’assicurazione quelli troppo grandi per essere pagati con i tuoi risparmi."
           }
         ],
-        "explain": "Per i danni piccoli conviene il fondo di emergenza (L2). Credere che l’assicurazione «paghi tutto»."
+        "explain": "Per i danni piccoli conviene il fondo di emergenza. Credere che l’assicurazione «paghi tutto»."
       }
     ],
     "source": "C05-L04"
@@ -9207,7 +9207,7 @@ export const LESSONS = {
         "label": "Capire",
         "moment": "capire",
         "idea": "Le polizze che servono davvero a un giovane",
-        "mentor": "Quale di queste polizze è obbligatoria per chi guida un motorino (da verificare con le norme attuali)?",
+        "mentor": "Quale di queste polizze è obbligatoria per chi guida un motorino?",
         "options": [
           {
             "text": "Polizza telefono",
@@ -9471,17 +9471,17 @@ export const LESSONS = {
           {
             "text": "Vero: vieni rimborsato due volte",
             "right": false,
-            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi (da verificare le regole sull’assicurazione multipla nel Codice civile)."
+            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi."
           },
           {
             "text": "Vero, se le polizze sono di compagnie diverse",
             "right": false,
-            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi (da verificare le regole sull’assicurazione multipla nel Codice civile)."
+            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi."
           },
           {
             "text": "Falso: le polizze non rimborsano nulla",
             "right": false,
-            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi (da verificare le regole sull’assicurazione multipla nel Codice civile)."
+            "why": "Falso, in generale. Il rimborso copre il danno una volta sola; due polizze significano due premi."
           }
         ],
         "explain": "Prima di comprarne una conviene chiedere se il rischio è già coperto da qualcosa che c’è già (per esempio una polizza della famiglia, la scuola, lo sport o una carta): pagare due volte per lo stesso rischio non raddoppia il rimborso."
@@ -9514,7 +9514,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "I tre profili che seguono sono inventati e servono a ragionare, non a consigliare prodotti."
+        "explain": "Prima di comprarne una conviene chiedere se il rischio è già coperto da qualcosa che c’è già (per esempio una polizza della famiglia, la scuola, lo sport o una carta): pagare due volte per lo stesso rischio non raddoppia il rimborso."
       }
     ],
     "source": "C05-L05"
@@ -10504,7 +10504,7 @@ export const LESSONS = {
             "why": "Solo i 1.000 € in più sono tassati al 33%: 330 €."
           }
         ],
-        "explain": "Così non è: l’aliquota più alta tocca solo l’euro in più oltre la soglia.",
+        "explain": "L’IRPEF è l’imposta sul reddito delle persone: si calcola per scaglioni. Ogni aliquota si applica solo alla parte di reddito che cade nel suo scaglione.",
         "variants": [
           {
             "type": "scelta",
@@ -10531,7 +10531,7 @@ export const LESSONS = {
                 "why": "6.440 + 2.000 × 0,33 = 7.100 €."
               }
             ],
-            "explain": "Così non è: l’aliquota più alta tocca solo l’euro in più oltre la soglia."
+            "explain": "L’IRPEF è l’imposta sul reddito delle persone: si calcola per scaglioni. Ogni aliquota si applica solo alla parte di reddito che cade nel suo scaglione."
           }
         ]
       },
@@ -10563,7 +10563,7 @@ export const LESSONS = {
             "why": "L’aliquota del 33% si applica solo alla parte di reddito oltre i 28.000 €. Con un aumento il netto sale sempre, anche se meno di quanto sale il lordo."
           }
         ],
-        "explain": "Credere che passare a un reddito più alto «faccia perdere soldi» perché si entra in uno scaglione con aliquota maggiore."
+        "explain": "Così non è: l’aliquota più alta tocca solo l’euro in più oltre la soglia."
       },
       {
         "n": 7,
@@ -10755,7 +10755,7 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Il TFR accantonato è circa un tredicesimo e mezzo del lordo (da verificare). Per 1.800 €, quanto in un mese?",
+        "mentor": "Il TFR accantonato è circa un tredicesimo e mezzo del lordo. Per 1.800 €, quanto in un mese?",
         "options": [
           {
             "text": "1.800 €",
@@ -10777,7 +10777,7 @@ export const LESSONS = {
             "why": "1.800 ÷ 13,5 = 133,33 €."
           }
         ],
-        "explain": "L’altro errore è pensare che il TFR sia «trattenuto»: è un accantonamento a favore del lavoratore.",
+        "explain": "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto.",
         "variants": [
           {
             "type": "scelta",
@@ -10821,7 +10821,7 @@ export const LESSONS = {
                 "why": "1.000 − 91,90 = 908,10 €."
               }
             ],
-            "explain": "Il controllo di base è: lordo − contributi = imponibile fiscale; imponibile fiscale − imposta = netto. Qui usiamo il modello semplificato di L1 e L2, senza detrazioni e addizionali: in una busta reale compaiono anche queste."
+            "explain": "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto."
           }
         ]
       },
@@ -10853,7 +10853,7 @@ export const LESSONS = {
             "why": "No. Il netto atteso è 1.258,63 €: ci sono 31,37 € in più senza una voce che li spieghi. Va chiesto un chiarimento."
           }
         ],
-        "explain": "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto.",
+        "explain": "L’altro errore è pensare che il TFR sia «trattenuto»: è un accantonamento a favore del lavoratore.",
         "variants": [
           {
             "type": "scelta",
@@ -10901,7 +10901,7 @@ export const LESSONS = {
                 "why": "1.500 − 137,85 − 313 = 1.049,15 €."
               }
             ],
-            "explain": "Una busta paga ha di solito quattro blocchi: i dati (chi paga, chi riceve, il mese, il livello e il contratto collettivo applicato), la retribuzione lorda con le sue voci (stipendio base, eventuali straordinari, ferie e permessi), le trattenute (contributi del lavoratore e imposte) e il netto."
+            "explain": "Il controllo di base è: lordo − contributi = imponibile fiscale; imponibile fiscale − imposta = netto. Qui usiamo il modello semplificato di L1 e L2, senza detrazioni e addizionali: in una busta reale compaiono anche queste."
           }
         ]
       },
@@ -11107,7 +11107,7 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Prestazione occasionale da 1.000 € con ritenuta del 20% (da verificare). Quanto ricevi?",
+        "mentor": "Prestazione occasionale da 1.000 € con ritenuta del 20%. Quanto ricevi?",
         "options": [
           {
             "text": "Ricevi 800 € (ritenuta 200 €)",
@@ -11129,7 +11129,7 @@ export const LESSONS = {
             "why": "20% di 1.000 = 200; 1.000 − 200 = 800 €."
           }
         ],
-        "explain": "Il lavoratore autonomo (per esempio con partita IVA) organizza il proprio lavoro, emette fatture e paga da sé imposte e contributi: non ha ferie o malattia retribuite.",
+        "explain": null,
         "variants": [
           {
             "type": "scelta",
@@ -11156,7 +11156,7 @@ export const LESSONS = {
                 "why": "500 − 100 = 400 €."
               }
             ],
-            "explain": "Il lavoratore dipendente lavora per un datore, con orari e direttive: il datore versa i contributi, trattiene le imposte e ci sono ferie, malattia e altre tutele."
+            "explain": null
           }
         ]
       },
@@ -11333,7 +11333,7 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Spesa sanitaria di 1.000 € con detrazione del 19% (esempio, da verificare). Di quanto scende l’imposta?",
+        "mentor": "Spesa sanitaria di 1.000 € con detrazione del 19%. Di quanto scende l’imposta?",
         "options": [
           {
             "text": "1.000 €",
@@ -11355,7 +11355,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "La dichiarazione dei redditi (per esempio il modello 730 per i lavoratori dipendenti) riepiloga i redditi dell’anno, le imposte già pagate e quelle dovute: si può risultare a credito (rimborso) o a debito."
+        "explain": "Conserva sempre le ricevute di spese importanti. Non dire in famiglia che si ha un reddito, oppure credere che la dichiarazione serva solo «se si deve pagare»: in molti casi è la dichiarazione che porta un rimborso o una detrazione."
       },
       {
         "n": 3,
@@ -11385,7 +11385,7 @@ export const LESSONS = {
             "why": "1.000 × 0,23 = 230 €."
           }
         ],
-        "explain": "Non dire in famiglia che si ha un reddito, oppure credere che la dichiarazione serva solo «se si deve pagare»: in molti casi è la dichiarazione che porta un rimborso o una detrazione.",
+        "explain": "Superare la soglia fa perdere ai genitori le detrazioni per quel figlio: per questo conviene parlarne in famiglia prima di accettare lavori più lunghi.",
         "variants": [
           {
             "type": "scelta",
@@ -11422,7 +11422,7 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Nadia guadagna 2.400 € in un anno. Resta a carico dei genitori con una soglia di 4.000 € (da verificare)?",
+        "mentor": "Nadia guadagna 2.400 € in un anno. Resta a carico dei genitori con una soglia di 4.000 €?",
         "options": [
           {
             "text": "Sì: 2.400 € sono sotto 4.000 €, con un margine di 1.600 €",
@@ -11444,7 +11444,7 @@ export const LESSONS = {
             "why": "Sì: 2.400 € è sotto 4.000 €, con un margine di 1.600 €."
           }
         ],
-        "explain": "Superare la soglia fa perdere ai genitori le detrazioni per quel figlio: per questo conviene parlarne in famiglia prima di accettare lavori più lunghi.",
+        "explain": "La dichiarazione dei redditi (per esempio il modello 730 per i lavoratori dipendenti) riepiloga i redditi dell’anno, le imposte già pagate e quelle dovute: si può risultare a credito (rimborso) o a debito.",
         "variants": [
           {
             "type": "scelta",
@@ -11488,7 +11488,7 @@ export const LESSONS = {
                 "why": "4.000 − 3.200 = 800 €."
               }
             ],
-            "explain": "Superare la soglia fa perdere ai genitori le detrazioni per quel figlio: per questo conviene parlarne in famiglia prima di accettare lavori più lunghi."
+            "explain": "La dichiarazione dei redditi (per esempio il modello 730 per i lavoratori dipendenti) riepiloga i redditi dell’anno, le imposte già pagate e quelle dovute: si può risultare a credito (rimborso) o a debito."
           }
         ]
       },
@@ -11498,10 +11498,10 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Nadia è a carico dei genitori se guadagna meno di 4.000 € l’anno (soglia da verificare). Se guadagnasse 4.500 €, di quanto supererebbe la soglia e cosa cambierebbe?",
+        "mentor": "Nadia è a carico dei genitori se guadagna meno di 4.000 € l’anno. Se guadagnasse 4.500 €, di quanto supererebbe la soglia e cosa cambierebbe?",
         "options": [
           {
-            "text": "500 € sopra la soglia: non sarebbe più a carico (da verificare)",
+            "text": "500 € sopra la soglia: non sarebbe più a carico",
             "right": true
           },
           {
@@ -11520,7 +11520,7 @@ export const LESSONS = {
             "why": "4.500 − 4.000 = 500 €."
           }
         ],
-        "explain": "Conserva sempre le ricevute di spese importanti.",
+        "explain": "Superare la soglia fa perdere ai genitori le detrazioni per quel figlio: per questo conviene parlarne in famiglia prima di accettare lavori più lunghi.",
         "variants": [
           {
             "type": "scelta",
@@ -11543,7 +11543,7 @@ export const LESSONS = {
                 "why": "Le spese sanitarie rientrano di norma tra le detrazioni."
               },
               {
-                "text": "Una spesa sanitaria (da verificare)",
+                "text": "Una spesa sanitaria",
                 "right": true
               }
             ],
@@ -11662,10 +11662,10 @@ export const LESSONS = {
         "label": "Capire",
         "moment": "capire",
         "idea": null,
-        "mentor": "Secondo le fonti consultate (da verificare), a che età si può in generale iniziare a lavorare in Italia?",
+        "mentor": "Secondo le fonti consultate, a che età si può in generale iniziare a lavorare in Italia?",
         "options": [
           {
-            "text": "A 16 anni, dopo l’obbligo di istruzione; a 15 anni solo con apprendistato o alternanza (da verificare)",
+            "text": "A 16 anni, dopo l’obbligo di istruzione; a 15 anni solo con apprendistato o alternanza",
             "right": true
           },
           {
@@ -11684,7 +11684,7 @@ export const LESSONS = {
             "why": "A 16 anni, dopo l’obbligo di istruzione; a 15 anni solo con apprendistato per la qualifica o alternanza scuola-lavoro."
           }
         ],
-        "explain": "Pensare che il lavoro in nero «conviene a tutti» perché il netto sembra più alto: il costo arriva dopo, in caso di problemi, e ricade quasi sempre sul lavoratore."
+        "explain": "Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto."
       },
       {
         "n": 3,
@@ -11714,7 +11714,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Orari, riposi e ferie hanno limiti di legge.",
+        "explain": "Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto.",
         "variants": [
           {
             "type": "scelta",
@@ -11773,7 +11773,7 @@ export const LESSONS = {
             "why": "9 − 8 = 1 ora oltre il limite giornaliero."
           }
         ],
-        "explain": "Orari, riposi e ferie hanno limiti di legge. Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto.",
+        "explain": "Orari, riposi e ferie hanno limiti di legge.",
         "variants": [
           {
             "type": "scelta",
@@ -11800,7 +11800,7 @@ export const LESSONS = {
                 "why": "40 × 6 = 240 €."
               }
             ],
-            "explain": "Orari, riposi e ferie hanno limiti di legge. Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto."
+            "explain": null
           }
         ]
       },
@@ -11832,7 +11832,7 @@ export const LESSONS = {
             "why": "Falso. Senza contratto e contributi mancano tutele in caso di infortunio, prova del lavoro e pensione futura."
           }
         ],
-        "explain": "Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto.",
+        "explain": "Pensare che il lavoro in nero «conviene a tutti» perché il netto sembra più alto: il costo arriva dopo, in caso di problemi, e ricade quasi sempre sul lavoratore.",
         "variants": [
           {
             "type": "scelta",
@@ -11899,7 +11899,7 @@ export const LESSONS = {
         "label": "Ripasso (L5)",
         "moment": "ripasso",
         "idea": null,
-        "mentor": "Un reddito di 2.400 € fa perdere la condizione di figlio a carico con soglia di 4.000 € (da verificare)?",
+        "mentor": "Un reddito di 2.400 € fa perdere la condizione di figlio a carico con soglia di 4.000 €?",
         "options": [
           {
             "text": "Sì: la supera di 1.600 €",
@@ -11921,7 +11921,7 @@ export const LESSONS = {
             "why": "Chi lavora ha diritti anche se non li legge nessuno: un contratto, una retribuzione dovuta, regole sull’orario, la sicurezza e le tutele in caso di infortunio e malattia."
           }
         ],
-        "explain": "Orari, riposi e ferie hanno limiti di legge. Il lavoro nero è un’attività senza contratto né contributi: se ti fai male non hai la copertura prevista, non maturi pensione e non hai prova del lavoro svolto."
+        "explain": null
       }
     ],
     "source": "C06-L06"
@@ -12170,7 +12170,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Gli importi usati qui sono ipotesi di studio, non i prezzi di un ateneo reale.",
+        "explain": "Si distinguono i costi diretti (tasse e contributi, libri e materiali, trasporti) e i costi di vita (affitto, cibo, bollette, quando si vive fuori sede).",
         "variants": [
           {
             "type": "scelta",
@@ -12589,7 +12589,7 @@ export const LESSONS = {
             "why": "7.500 × 3 = 22.500 €."
           }
         ],
-        "explain": "Primo: l’ISE (indicatore della situazione economica) è la somma dei redditi del nucleo e del 20% del patrimonio (mobiliare e immobiliare, al netto di franchigie e detrazioni che qui trascuriamo)."
+        "explain": null
       }
     ],
     "source": "C07-L02"
@@ -12619,21 +12619,21 @@ export const LESSONS = {
           {
             "text": "Perché la DSU è obbligatoria per tutti",
             "right": false,
-            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima (da verificare sul regolamento)."
+            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima."
           },
           {
-            "text": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri; senza ISEE di solito si paga la fascia massima (da verificare)",
+            "text": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri; senza ISEE di solito si paga la fascia massima",
             "right": true
           },
           {
             "text": "Perché fa guadagnare interessi",
             "right": false,
-            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima (da verificare sul regolamento)."
+            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima."
           },
           {
             "text": "Non conviene mai",
             "right": false,
-            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima (da verificare sul regolamento)."
+            "why": "Perché l’ISEE può abbassare le tasse e dare accesso a esoneri e riduzioni; senza ISEE di solito si paga la fascia massima."
           }
         ],
         "theory": "Molti atenei fanno pagare tasse diverse a seconda dell’ISEE: chi ha un ISEE basso paga meno o niente, chi ha un ISEE alto paga di più. Conoscere la propria fascia permette di stimare la spesa e di vedere quanto vale presentare la DSU in tempo.",
@@ -12874,7 +12874,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Esistono anche esoneri per motivi economici o di merito."
+        "explain": "Tabella dell’ateneo fittizio (tassa annua). ISEE Tassa annua fino a 10.000 € 0 € da 10.000,01 a 20.000 € 600 € da 20.000,01 a 30.000 € 1.200 € oltre 30.000 € 2.000 €"
       },
       {
         "n": 7,
@@ -13097,7 +13097,7 @@ export const LESSONS = {
                 "why": "36 − 27 = 9; 9 ÷ 36 = 25%."
               }
             ],
-            "explain": "In Italia gli aiuti per studiare sono di più tipi: borse di studio (somme di denaro), servizi (mensa, alloggio), esoneri o riduzioni delle tasse, contributi per chi studia in condizioni particolari."
+            "explain": null
           }
         ]
       },
@@ -13218,7 +13218,7 @@ export const LESSONS = {
             "why": "L’ISEE 13.821,14 € paga 600 €."
           }
         ],
-        "explain": "I bandi hanno scadenze: perderle significa perdere l’anno."
+        "explain": "Una borsa dell’ente fittizio dà 3.000 € l’anno e l’esonero dalle tasse (600 € nella fascia di L3) a chi ha ISEE fino a 15.000 € e consegue 40 CFU all’anno."
       }
     ],
     "source": "C07-L04"
@@ -13667,7 +13667,7 @@ export const LESSONS = {
             "why": "4.950 ÷ 12 = 412,50 €."
           }
         ],
-        "explain": "Fidarsi di una testimonianza o di una promessa senza chiedere dati e contratto, o firmare subito per non perdere lo sconto.",
+        "explain": "Il tempo di recupero è il costo diviso per l’aumento mensile atteso del reddito netto: se serve molto tempo per recuperare, o l’aumento è solo una speranza, l’investimento è debole.",
         "variants": [
           {
             "type": "scelta",
@@ -13844,7 +13844,7 @@ export const LESSONS = {
             "why": "Una promessa di lavoro non è un impegno scritto e la fretta è un segnale di allarme."
           }
         ],
-        "explain": "Segnali di corsi-trappola: «lavoro garantito», «sconto solo oggi», pagamento anticipato dell’intero importo, titolo non riconosciuto, difficoltà a ottenere il contratto scritto, pressione a decidere subito."
+        "explain": "Fidarsi di una testimonianza o di una promessa senza chiedere dati e contratto, o firmare subito per non perdere lo sconto."
       },
       {
         "n": 7,
@@ -13874,7 +13874,7 @@ export const LESSONS = {
             "why": "6.738,80 − 6.000 = 738,80 €."
           }
         ],
-        "explain": "Il tempo di recupero è il costo diviso per l’aumento mensile atteso del reddito netto: se serve molto tempo per recuperare, o l’aumento è solo una speranza, l’investimento è debole."
+        "explain": null
       }
     ],
     "source": "C07-L06"
@@ -14142,17 +14142,17 @@ export const LESSONS = {
           {
             "text": "Spostarli per forza in un investimento rischioso",
             "right": false,
-            "why": "B). Il fondo ha una funzione di sicurezza (Cap. 5); l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
+            "why": "Il fondo ha una funzione di sicurezza; l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
           },
           {
             "text": "Tenerli in contanti sotto il materasso",
             "right": false,
-            "why": "B). Il fondo ha una funzione di sicurezza (Cap. 5); l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
+            "why": "Il fondo ha una funzione di sicurezza; l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
           },
           {
             "text": "Spenderli subito prima che perdano valore",
             "right": false,
-            "why": "B). Il fondo ha una funzione di sicurezza (Cap. 5); l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
+            "why": "Il fondo ha una funzione di sicurezza; l’inflazione è un costo da conoscere, non un motivo per rischiare i soldi necessari a breve."
           },
           {
             "text": "Tenerli disponibili e sicuri, accettando che perdano un po’ di potere d’acquisto, e investire solo i soldi che non servono a breve",
@@ -14492,7 +14492,7 @@ export const LESSONS = {
           {
             "text": "Tiene i soldi sul conto",
             "right": false,
-            "why": "B). Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
+            "why": "Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
           },
           {
             "text": "Ne usa una parte per ridurre il debito caro, tenendo un piccolo fondo per gli imprevisti",
@@ -14501,12 +14501,12 @@ export const LESSONS = {
           {
             "text": "Apre un secondo debito per pagare il primo",
             "right": false,
-            "why": "B). Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
+            "why": "Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
           },
           {
             "text": "Investe i 300 € in qualcosa di rischioso per coprire gli interessi",
             "right": false,
-            "why": "B). Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
+            "why": "Ridurre un debito al 18% è come ottenere un rendimento certo del 18%, molto più alto del 2% del conto; il fondo evita di tornare a indebitarsi al primo imprevisto."
           }
         ],
         "explain": "Forme di debito molto care sono per esempio lo scoperto di conto e la rateizzazione di una carta ricaricabile a saldo (cifre e condizioni variano e vanno lette sul contratto)."
@@ -14821,17 +14821,17 @@ export const LESSONS = {
           {
             "text": "Lo compro subito a rate",
             "right": false,
-            "why": "B), se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
+            "why": ", se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
           },
           {
             "text": "Lo compro a rate e smetto di risparmiare",
             "right": false,
-            "why": "B), se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
+            "why": ", se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
           },
           {
             "text": "Lo compro a rate e uso i 50 € per altre spese",
             "right": false,
-            "why": "B), se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
+            "why": ", se il telefono attuale funziona. Se serve subito, un piano con meno interessi e un fondo intatto è meglio della rata più comoda."
           }
         ],
         "explain": "Pagare a rate toglie flessibilità: le rate sono impegni fissi per mesi. Guardare solo la rata («poco al mese») e non il totale; oppure sommare tanti acquisti a rate fino a non avere più margine nel budget mensile."
@@ -15121,7 +15121,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Chi affitta paga il canone: non costruisce un patrimonio ma ha flessibilità (si può cambiare città o casa) e pochi costi extra.",
+        "explain": "Chi compra paga la rata del mutuo, ma solo una parte della rata è costo vero: gli interessi; la parte restante è capitale che riduce il debito e diventa patrimonio.",
         "variants": [
           {
             "type": "scelta",
@@ -15148,7 +15148,7 @@ export const LESSONS = {
                 "why": "Il costo dell’affitto compra l’uso e la flessibilità."
               }
             ],
-            "explain": "Chi affitta paga il canone: non costruisce un patrimonio ma ha flessibilità (si può cambiare città o casa) e pochi costi extra."
+            "explain": "Chi compra paga la rata del mutuo, ma solo una parte della rata è costo vero: gli interessi; la parte restante è capitale che riduce il debito e diventa patrimonio."
           }
         ]
       },
@@ -15167,17 +15167,17 @@ export const LESSONS = {
           {
             "text": "Compro subito",
             "right": false,
-            "why": "B), in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta (L6)."
+            "why": ", in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta."
           },
           {
             "text": "Compro con un mutuo al 100%",
             "right": false,
-            "why": "B), in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta (L6)."
+            "why": ", in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta."
           },
           {
             "text": "Compro usando un anticipo preso a prestito",
             "right": false,
-            "why": "B), in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta (L6)."
+            "why": ", in genere. Comprare vincola e ha costi iniziali; senza stabilità e anticipo il rischio aumenta."
           }
         ],
         "explain": "Ci sono anche costi iniziali (imposte, notaio, eventuale agenzia) e vincoli (comprare riduce la flessibilità)."
@@ -15210,7 +15210,7 @@ export const LESSONS = {
             "why": "1.396,42 − 1.200 = 196,42 €."
           }
         ],
-        "explain": "Importi e tassi qui sono esempi; le imposte e le agevolazioni reali sulla prima casa vanno verificate con fonti ufficiali."
+        "explain": "Chi affitta paga il canone: non costruisce un patrimonio ma ha flessibilità (si può cambiare città o casa) e pochi costi extra."
       }
     ],
     "source": "C08-L04"
@@ -15478,7 +15478,7 @@ export const LESSONS = {
           {
             "text": "20 anni, anche se supera il budget",
             "right": false,
-            "why": "B). La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo (da verificare le regole sull’estinzione anticipata)."
+            "why": "La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo."
           },
           {
             "text": "25 anni, restando nel budget, magari con estinzione anticipata se il reddito cresce",
@@ -15487,15 +15487,15 @@ export const LESSONS = {
           {
             "text": "20 anni, togliendo il fondo di emergenza",
             "right": false,
-            "why": "B). La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo (da verificare le regole sull’estinzione anticipata)."
+            "why": "La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo."
           },
           {
             "text": "40 anni per abbassare la rata il più possibile",
             "right": false,
-            "why": "B). La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo (da verificare le regole sull’estinzione anticipata)."
+            "why": "La rata va tenuta nel budget; i vantaggi della durata breve non valgono la perdita del fondo."
           }
         ],
-        "explain": "Tassi e importi sono esempi, non offerte."
+        "explain": "Il tasso può essere fisso (la rata non cambia per tutta la durata) o variabile (segue un indice di mercato e la rata può salire o scendere)."
       },
       {
         "n": 7,
@@ -15730,7 +15730,7 @@ export const LESSONS = {
             "why": "876,89 − 672,93 = 203,96; 203,96 ÷ 672,93 = 30,3%."
           }
         ],
-        "explain": "Prima di firmare si controlla anche che resti il fondo di emergenza (Cap. 5) e si calcolano i costi iniziali.",
+        "explain": "Con un tasso variabile la rata può salire: si simula uno scenario con tasso più alto e si verifica se il budget regge ancora.",
         "variants": [
           {
             "type": "scelta",
@@ -15831,12 +15831,12 @@ export const LESSONS = {
           {
             "text": "Scelgo il variabile perché oggi costa meno",
             "right": false,
-            "why": "B). La rata iniziale non basta: conta cosa succede se i tassi salgono (da verificare i tipi di mutuo e le possibilità di surroga o rinegoziazione)."
+            "why": "La rata iniziale non basta: conta cosa succede se i tassi salgono."
           },
           {
             "text": "Scelgo a caso",
             "right": false,
-            "why": "B). La rata iniziale non basta: conta cosa succede se i tassi salgono (da verificare i tipi di mutuo e le possibilità di surroga o rinegoziazione)."
+            "why": "La rata iniziale non basta: conta cosa succede se i tassi salgono."
           },
           {
             "text": "Scelgo in base a quanto reggo nello scenario peggiore e alla stabilità del mio reddito, preferendo il fisso se un rialzo mi metterebbe in difficoltà",
@@ -15845,7 +15845,7 @@ export const LESSONS = {
           {
             "text": "Scelgo il fisso a prescindere perché è sempre migliore",
             "right": false,
-            "why": "B). La rata iniziale non basta: conta cosa succede se i tassi salgono (da verificare i tipi di mutuo e le possibilità di surroga o rinegoziazione)."
+            "why": "La rata iniziale non basta: conta cosa succede se i tassi salgono."
           }
         ],
         "explain": "Con un tasso variabile la rata può salire: si simula uno scenario con tasso più alto e si verifica se il budget regge ancora."
@@ -16045,36 +16045,7 @@ export const LESSONS = {
             "why": "150 + 1.000 = 1.150 €."
           }
         ],
-        "explain": "Pensare che un’obbligazione sia come un conto: sul conto i soldi restano tuoi e disponibili, con l’obbligazione li hai prestati fino alla scadenza.",
-        "variants": [
-          {
-            "type": "scelta",
-            "mentor": "Stessa obbligazione, durata 3 anni: quanto incassi in tutto tra cedole e rimborso?",
-            "table": null,
-            "options": [
-              {
-                "text": "560 €",
-                "right": true
-              },
-              {
-                "text": "60 €",
-                "right": false,
-                "why": "20 × 3 + 500 = 560 €."
-              },
-              {
-                "text": "520 €",
-                "right": false,
-                "why": "20 × 3 + 500 = 560 €."
-              },
-              {
-                "text": "500 €",
-                "right": false,
-                "why": "20 × 3 + 500 = 560 €."
-              }
-            ],
-            "explain": "L’obbligazione di esempio ha nominale 1.000 €, cedola annua 3% e scadenza a 5 anni: ogni anno paga 1.000 × 0,03 = 30 €."
-          }
-        ]
+        "explain": "Pensare che un’obbligazione sia come un conto: sul conto i soldi restano tuoi e disponibili, con l’obbligazione li hai prestati fino alla scadenza."
       },
       {
         "n": 5,
@@ -16146,17 +16117,17 @@ export const LESSONS = {
           {
             "text": "Li presti senza dire altro",
             "right": false,
-            "why": "B). Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
+            "why": "Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
           },
           {
             "text": "Rifiuti sempre qualsiasi prestito",
             "right": false,
-            "why": "B). Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
+            "why": "Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
           },
           {
             "text": "Ti fai promettere la restituzione a voce, senza date",
             "right": false,
-            "why": "B). Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
+            "why": "Un prestito chiaro ha le stesse parti di un’obbligazione (capitale, scadenza, interesse) e evita malintesi; senza regole non sai quando e se rivedrai i soldi."
           },
           {
             "text": "Concordi importo, data di restituzione ed eventuale interesse, anche con un messaggio scritto",
@@ -16473,7 +16444,7 @@ export const LESSONS = {
           {
             "text": "A, perché ha la cedola più alta",
             "right": false,
-            "why": "B). A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
+            "why": "A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
           },
           {
             "text": "B: guadagno 60 €, contro 0 € di A",
@@ -16482,12 +16453,12 @@ export const LESSONS = {
           {
             "text": "Sono uguali",
             "right": false,
-            "why": "B). A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
+            "why": "A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
           },
           {
             "text": "Non si può dire",
             "right": false,
-            "why": "B). A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
+            "why": "A dà 50 × 2 + 1.000 = 1.100 € e costa 1.100 €: guadagno 0 €. B dà 30 × 2 + 1.000 = 1.060 € e costa 1.000 €: guadagno 60 €. La cedola da sola non basta."
           }
         ],
         "table": {
@@ -16557,7 +16528,7 @@ export const LESSONS = {
             "why": "53,31 × 12 = 639,72 €."
           }
         ],
-        "explain": "Le obbligazioni si possono comprare e vendere prima della scadenza, e il loro prezzo può essere diverso dal nominale."
+        "explain": "Per confrontare titoli con prezzi e scadenze diverse si usa il rendimento a scadenza, un calcolo che mette insieme cedole, prezzo e tempo: per l’esempio qui sotto vale circa 4,83% l’anno, ricavato con uno script."
       }
     ],
     "source": "C09-L02"
@@ -16826,12 +16797,12 @@ export const LESSONS = {
           {
             "text": "Titolo a 10 anni da rivendere tra 4",
             "right": false,
-            "why": "B). Se la scadenza coincide con il momento in cui ti servono i soldi, non devi vendere sul mercato e il prezzo intermedio conta meno. Con a) venderesti a un prezzo che dipende dai tassi di allora. Resta il rischio che l’emittente non paghi (L4)."
+            "why": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende; quando i tassi scendono, sale."
           },
           {
             "text": "Contanti",
             "right": false,
-            "why": "B). Se la scadenza coincide con il momento in cui ti servono i soldi, non devi vendere sul mercato e il prezzo intermedio conta meno. Con a) venderesti a un prezzo che dipende dai tassi di allora. Resta il rischio che l’emittente non paghi (L4)."
+            "why": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende; quando i tassi scendono, sale."
           },
           {
             "text": "Titolo a 4 anni, da tenere fino alla fine",
@@ -16840,7 +16811,7 @@ export const LESSONS = {
           {
             "text": "Titolo a 2 anni da rinnovare due volte",
             "right": false,
-            "why": "B). Se la scadenza coincide con il momento in cui ti servono i soldi, non devi vendere sul mercato e il prezzo intermedio conta meno. Con a) venderesti a un prezzo che dipende dai tassi di allora. Resta il rischio che l’emittente non paghi (L4)."
+            "why": "Quando i tassi salgono, il prezzo delle obbligazioni già emesse scende; quando i tassi scendono, sale."
           }
         ],
         "explain": "Se la vendi prima della scadenza a tassi più alti, il prezzo può essere sotto quello pagato."
@@ -16873,7 +16844,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Giulia compra oggi un’obbligazione con cedola 3%."
+        "explain": "Con 4 anni residui e tassi al 5% la nostra obbligazione vale circa 929,08 €; con tassi all'1% vale circa 1.078,04 €."
       }
     ],
     "source": "C09-L03"
@@ -17099,7 +17070,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Esistono giudizi sull’affidabilità di Stati e aziende, i rating, espressi con lettere da parte di agenzie specializzate: sono un’indicazione, non una garanzia.",
+        "explain": "Se l’emittente fallisce, in genere si recupera solo una parte del capitale: qui supponiamo il 40%. Per questo gli emittenti più rischiosi offrono cedole più alte: la differenza con un emittente solido si chiama premio per il rischio (o spread).",
         "variants": [
           {
             "type": "scelta",
@@ -17126,7 +17097,7 @@ export const LESSONS = {
                 "why": "Il rischio dipende da chi ti deve ripagare."
               }
             ],
-            "explain": "Il modo più semplice per ridurre il rischio è non mettere tutto su un solo emittente (diversificazione). Una promessa di rendimento molto alto senza documenti verificabili è un segnale d’allarme, non un’opportunità."
+            "explain": "Se l’emittente fallisce, in genere si recupera solo una parte del capitale: qui supponiamo il 40%. Per questo gli emittenti più rischiosi offrono cedole più alte: la differenza con un emittente solido si chiama premio per il rischio (o spread)."
           }
         ]
       },
@@ -17141,12 +17112,12 @@ export const LESSONS = {
           {
             "text": "Accetti subito",
             "right": false,
-            "why": "B). Nessun rendimento è garantito oltre quello che l’emittente è in grado di pagare; senza documento e senza emittente verificabile non puoi valutare il rischio. Investire metà (c) lascia comunque a rischio una parte dei soldi."
+            "why": "Chi presta rischia di non essere ripagato."
           },
           {
             "text": "Investi solo metà della cifra",
             "right": false,
-            "why": "B). Nessun rendimento è garantito oltre quello che l’emittente è in grado di pagare; senza documento e senza emittente verificabile non puoi valutare il rischio. Investire metà (c) lascia comunque a rischio una parte dei soldi."
+            "why": "Chi presta rischia di non essere ripagato."
           },
           {
             "text": "Chiedi il documento informativo, verifichi chi è l’emittente e non investi se non trovi nulla di verificabile",
@@ -17155,7 +17126,7 @@ export const LESSONS = {
           {
             "text": "Chiedi a un amico se si fida",
             "right": false,
-            "why": "B). Nessun rendimento è garantito oltre quello che l’emittente è in grado di pagare; senza documento e senza emittente verificabile non puoi valutare il rischio. Investire metà (c) lascia comunque a rischio una parte dei soldi."
+            "why": "Chi presta rischia di non essere ripagato."
           }
         ],
         "explain": "Una promessa di rendimento molto alto senza documenti verificabili è un segnale d’allarme, non un’opportunità."
@@ -17389,7 +17360,7 @@ export const LESSONS = {
             "why": "26,25 × 5 = 131,25 €."
           }
         ],
-        "explain": "Poi c’è l’inflazione (Cap. 8): il rendimento reale è quanto cresce il potere d’acquisto dopo tasse e costi.",
+        "explain": "Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo.",
         "variants": [
           {
             "type": "scelta",
@@ -17465,7 +17436,7 @@ export const LESSONS = {
             "why": "131,25 − 10 = 121,25 €."
           }
         ],
-        "explain": "Non è un motivo per non comprare obbligazioni (possono servire per sicurezza e per avere i soldi a una data precisa), ma è un conto da sapere.",
+        "explain": "Sulle cedole si pagano tasse: l’importo che ricevi è la cedola netta. Si aggiungono eventuali costi, come le commissioni di acquisto (negli esempi 1% = 10 € su 1.000 €).",
         "variants": [
           {
             "type": "scelta",
@@ -17492,7 +17463,7 @@ export const LESSONS = {
                 "why": "1,03 ÷ 1,02 − 1 ≈ 0,98%."
               }
             ],
-            "explain": "Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo."
+            "explain": "Sulle cedole si pagano tasse: l’importo che ricevi è la cedola netta. Si aggiungono eventuali costi, come le commissioni di acquisto (negli esempi 1% = 10 € su 1.000 €)."
           }
         ]
       },
@@ -17507,12 +17478,12 @@ export const LESSONS = {
           {
             "text": "È sempre un buon affare perché 3% è positivo",
             "right": false,
-            "why": "B). Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
+            "why": "Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
           },
           {
             "text": "Lo vendi subito",
             "right": false,
-            "why": "B). Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
+            "why": "Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
           },
           {
             "text": "Il rendimento reale è negativo: ha senso solo per sicurezza o data certa, non per far crescere i soldi",
@@ -17521,10 +17492,10 @@ export const LESSONS = {
           {
             "text": "Lo compri anche a debito",
             "right": false,
-            "why": "B). Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
+            "why": "Lo scopo del titolo conta: per un obiettivo a data fissa può andare bene, per far crescere il potere d’acquisto no."
           }
         ],
-        "explain": "Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo."
+        "explain": "Poi c’è l’inflazione: il rendimento reale è quanto cresce il potere d’acquisto dopo tasse e costi."
       },
       {
         "n": 7,
@@ -17554,7 +17525,7 @@ export const LESSONS = {
             "why": "1.104,08 ÷ 1,03⁵ = 952,39 €."
           }
         ],
-        "explain": "Poi c’è l’inflazione (Cap. 8): il rendimento reale è quanto cresce il potere d’acquisto dopo tasse e costi. Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo."
+        "explain": "Poi c’è l’inflazione: il rendimento reale è quanto cresce il potere d’acquisto dopo tasse e costi. Con cedola 3% lorda, aliquota 12,5% e inflazione 3%, la cedola netta è 2,625% e il rendimento reale è negativo."
       }
     ],
     "source": "C09-L05"
@@ -17632,7 +17603,7 @@ export const LESSONS = {
             "why": "30 + 35 + 40 + 1.000 = 1.105 €."
           }
         ],
-        "explain": "Un titolo si può tenere fino alla scadenza o vendere prima: se non hai bisogno di vendere, il prezzo intermedio conta meno (L3), a patto che l’emittente sia solido."
+        "explain": "Un titolo si può tenere fino alla scadenza o vendere prima: se non hai bisogno di vendere, il prezzo intermedio conta meno, a patto che l’emittente sia solido."
       },
       {
         "n": 3,
@@ -17721,7 +17692,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Resta il rischio di emittente (L4): la scala non lo elimina, a meno che i titoli siano di emittenti diversi.",
+        "explain": "Resta il rischio di emittente: la scala non lo elimina, a meno che i titoli siano di emittenti diversi.",
         "variants": [
           {
             "type": "scelta",
@@ -17748,7 +17719,7 @@ export const LESSONS = {
                 "why": "Le scadenze sono scaglionate."
               }
             ],
-            "explain": "Resta il rischio di emittente (L4): la scala non lo elimina, a meno che i titoli siano di emittenti diversi."
+            "explain": "Resta il rischio di emittente: la scala non lo elimina, a meno che i titoli siano di emittenti diversi."
           }
         ]
       },
@@ -17807,7 +17778,7 @@ export const LESSONS = {
                 "why": "30 + 35 + 40 = 105 €."
               }
             ],
-            "explain": "Resta il rischio di emittente (L4): la scala non lo elimina, a meno che i titoli siano di emittenti diversi."
+            "explain": "Resta il rischio di emittente: la scala non lo elimina, a meno che i titoli siano di emittenti diversi."
           }
         ]
       },
@@ -17822,17 +17793,17 @@ export const LESSONS = {
           {
             "text": "Vendi per non perdere ancora",
             "right": false,
-            "why": "B). Se non devi vendere, incassi cedole e nominale come promesso e la differenza di prezzo non diventa una perdita vera. Vendere (a) la rende reale; c) aumenta il rischio."
+            "why": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse: ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo."
           },
           {
             "text": "Compri altri titoli con tutti i soldi che hai",
             "right": false,
-            "why": "B). Se non devi vendere, incassi cedole e nominale come promesso e la differenza di prezzo non diventa una perdita vera. Vendere (a) la rende reale; c) aumenta il rischio."
+            "why": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse: ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo."
           },
           {
             "text": "Lo vendi e compri un titolo a 10 anni",
             "right": false,
-            "why": "B). Se non devi vendere, incassi cedole e nominale come promesso e la differenza di prezzo non diventa una perdita vera. Vendere (a) la rende reale; c) aumenta il rischio."
+            "why": "Invece di mettere tutto su una sola scadenza, si possono distribuire i soldi su scadenze diverse: ogni anno una parte torna disponibile e il rischio di tasso si spalma nel tempo."
           },
           {
             "text": "Lo tieni fino alla scadenza, se l’emittente resta solido",
@@ -17869,7 +17840,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Pensare che diversificare le scadenze significhi diversificare il rischio di emittente: sono due cose diverse."
+        "explain": "Una scala di scadenze (in inglese ladder) divide la cifra in più obbligazioni che scadono a date diverse: ad esempio una a 1 anno, una a 2 e una a 3."
       }
     ],
     "source": "C09-L06"
@@ -17917,7 +17888,7 @@ export const LESSONS = {
           }
         ],
         "theory": "Un’azione è una piccola quota di una società: chi la compra diventa socio e partecipa ai risultati, buoni o cattivi. Non ha una scadenza né un rimborso promesso.",
-        "explain": "Se i conti vanno male, il prezzo può scendere e non c’è nessun obbligo di restituire i soldi: è la differenza fondamentale con l’obbligazione (Cap. 9), dove sei un creditore."
+        "explain": "Se i conti vanno male, il prezzo può scendere e non c’è nessun obbligo di restituire i soldi: è la differenza fondamentale con l’obbligazione, dove sei un creditore."
       },
       {
         "n": 2,
@@ -17947,7 +17918,7 @@ export const LESSONS = {
             "why": "100.000 ÷ 1.000 = 100 €."
           }
         ],
-        "explain": "Credere che un’azione «economica» (poche decine di euro) sia un affare e una «costosa» sia un rischio: il prezzo per azione dice poco, conta quanto vale la società nel suo insieme e quanto guadagna (L3)."
+        "explain": "Credere che un’azione «economica» (poche decine di euro) sia un affare e una «costosa» sia un rischio: il prezzo per azione dice poco, conta quanto vale la società nel suo insieme e quanto guadagna."
       },
       {
         "n": 3,
@@ -18137,12 +18108,12 @@ export const LESSONS = {
           {
             "text": "Accetti, l’idea sembra buona",
             "right": false,
-            "why": "B). Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
+            "why": "Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
           },
           {
             "text": "Accetti solo se promette per iscritto il raddoppio",
             "right": false,
-            "why": "B). Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
+            "why": "Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
           },
           {
             "text": "Chiedi i conti del negozio e investi solo una cifra che puoi permetterti di perdere",
@@ -18151,7 +18122,7 @@ export const LESSONS = {
           {
             "text": "Investi la metà senza chiedere nulla",
             "right": false,
-            "why": "B). Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
+            "why": "Un’azione non ha rendimento garantito e anche una promessa scritta non è una garanzia di risultato; senza numeri verificabili non puoi valutare, e i soldi devono essere quelli che puoi permetterti di perdere."
           }
         ],
         "explain": "Chi ne compra una è un azionista, cioè un socio: possiede una parte della società e, se i conti vanno bene, può incassare una parte degli utili (il dividendo, L4) o vedere salire il prezzo dell’azione."
@@ -18184,7 +18155,7 @@ export const LESSONS = {
             "why": "1.000 × 0,03 = 30 €."
           }
         ],
-        "explain": "L’altro errore è pensare che il prezzo salga sempre."
+        "explain": "Se i conti vanno male, il prezzo può scendere e non c’è nessun obbligo di restituire i soldi: è la differenza fondamentale con l’obbligazione, dove sei un creditore."
       }
     ],
     "source": "C10-L01"
@@ -18444,36 +18415,7 @@ export const LESSONS = {
           ],
           "ask": "Utile e margine?"
         },
-        "explain": "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi. I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse.",
-        "variants": [
-          {
-            "type": "scelta",
-            "mentor": "Nello stesso caso, margine?",
-            "table": null,
-            "options": [
-              {
-                "text": "90%",
-                "right": false,
-                "why": "40.000 ÷ 400.000 = 10%."
-              },
-              {
-                "text": "10%",
-                "right": true
-              },
-              {
-                "text": "1%",
-                "right": false,
-                "why": "40.000 ÷ 400.000 = 10%."
-              },
-              {
-                "text": "40%",
-                "right": false,
-                "why": "40.000 ÷ 400.000 = 10%."
-              }
-            ],
-            "explain": "Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato. Se i costi superano i ricavi c’è una perdita."
-          }
-        ]
+        "explain": "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi. I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse."
       },
       {
         "n": 5,
@@ -18567,17 +18509,17 @@ export const LESSONS = {
           {
             "text": "È sicuramente un buon segno, la compri",
             "right": false,
-            "why": "B). Il caso del Forno mostra ricavi in crescita con utile in calo."
+            "why": "Il caso del Forno mostra ricavi in crescita con utile in calo."
           },
           {
             "text": "Guardi solo il prezzo dell’azione",
             "right": false,
-            "why": "B). Il caso del Forno mostra ricavi in crescita con utile in calo."
+            "why": "Il caso del Forno mostra ricavi in crescita con utile in calo."
           },
           {
             "text": "Guardi solo se la società è famosa",
             "right": false,
-            "why": "B). Il caso del Forno mostra ricavi in crescita con utile in calo."
+            "why": "Il caso del Forno mostra ricavi in crescita con utile in calo."
           }
         ],
         "explain": "L’utile è la differenza: ricavi meno costi. Il margine è l’utile diviso per i ricavi, in percentuale: dice quanti centesimi restano ogni euro incassato."
@@ -18628,7 +18570,7 @@ export const LESSONS = {
           ],
           "ask": "Cedola netta?"
         },
-        "explain": "I ricavi sono i soldi che la società incassa vendendo i suoi prodotti o servizi. I costi sono tutto ciò che spende per produrre e funzionare: materie prime, stipendi, affitto, tasse."
+        "explain": null
       }
     ],
     "source": "C10-L02"
@@ -18952,7 +18894,7 @@ export const LESSONS = {
           {
             "text": "Compri A perché ha il P/E più basso",
             "right": false,
-            "why": "B). Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
+            "why": "Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
           },
           {
             "text": "Consideri il P/E solo come punto di partenza e cerchi di capire perché è basso o alto",
@@ -18961,12 +18903,12 @@ export const LESSONS = {
           {
             "text": "Compri B perché ha il P/E più alto",
             "right": false,
-            "why": "B). Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
+            "why": "Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
           },
           {
             "text": "Scegli a caso",
             "right": false,
-            "why": "B). Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
+            "why": "Il P/E non basta: A potrebbe costare poco perché l’utile sta calando."
           }
         ],
         "explain": "Un P/E di 20 significa che paghi 20 € per ogni euro che la società guadagna in un anno."
@@ -19017,7 +18959,7 @@ export const LESSONS = {
           ],
           "ask": "Rendimento corrente?"
         },
-        "explain": "Non c’è un valore giusto in assoluto: si confronta con società simili e nel tempo, e si guarda sempre il perché."
+        "explain": "Il rapporto prezzo/utili (P/E) è il prezzo dell’azione diviso per l’utile per azione: dice quanti euro paghi per ogni euro di utile annuo."
       }
     ],
     "source": "C10-L03"
@@ -19123,7 +19065,7 @@ export const LESSONS = {
           ],
           "ask": "Rendimento da dividendo?"
         },
-        "explain": "Scegliere il dividendo più alto senza guardare l’utile che lo sostiene. L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione (Cap. 9): non c’è nessun obbligo di pagarlo."
+        "explain": "Scegliere il dividendo più alto senza guardare l’utile che lo sostiene. L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione: non c’è nessun obbligo di pagarlo."
       },
       {
         "n": 3,
@@ -19225,7 +19167,7 @@ export const LESSONS = {
         "label": "Calcolare",
         "moment": "calcolare",
         "idea": null,
-        "mentor": "Hai 50 azioni e il dividendo è 2 €: quanto incassi lordo e netto (aliquota 26%, da verificare)?",
+        "mentor": "Hai 50 azioni e il dividendo è 2 €: quanto incassi lordo e netto?",
         "options": [
           {
             "text": "Lordo 100 €; netto 26 €",
@@ -19383,24 +19325,24 @@ export const LESSONS = {
           {
             "text": "Scegli A, rende di più",
             "right": false,
-            "why": "B). Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
+            "why": "Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
           },
           {
             "text": "Scegli quella con il prezzo più basso",
             "right": false,
-            "why": "B). Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
+            "why": "Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
           },
           {
             "text": "Scegli A perché l'8% è garantito",
             "right": false,
-            "why": "B). Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
+            "why": "Il dividendo di A è sopra l’utile e potrebbe essere tagliato; il rendimento alto qui è un segnale di cautela."
           },
           {
             "text": "Consideri B più sostenibile e ti chiedi se A potrà mantenere il dividendo",
             "right": true
           }
         ],
-        "explain": "Scegliere il dividendo più alto senza guardare l’utile che lo sostiene. L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione (Cap. 9): non c’è nessun obbligo di pagarlo."
+        "explain": "Scegliere il dividendo più alto senza guardare l’utile che lo sostiene. L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione: non c’è nessun obbligo di pagarlo."
       },
       {
         "n": 7,
@@ -19448,7 +19390,7 @@ export const LESSONS = {
           ],
           "ask": "Cedola netta?"
         },
-        "explain": "L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione (Cap. 9): non c’è nessun obbligo di pagarlo."
+        "explain": "L’altro errore è considerare il dividendo un interesse sicuro come la cedola di un’obbligazione: non c’è nessun obbligo di pagarlo."
       }
     ],
     "source": "C10-L04"
@@ -19557,7 +19499,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Il prezzo di un’azione cambia ogni giorno e, a differenza dell’obbligazione, non c’è una data in cui ti viene restituito un importo prefissato.",
+        "explain": "Se perdi il 30% sei a 70 ogni 100 e, per tornare a 100, serve un guadagno di 30 ÷ 70 = 42,86%: i cali pesano più dei rialzi.",
         "variants": [
           {
             "type": "scelta",
@@ -19717,12 +19659,12 @@ export const LESSONS = {
           {
             "text": "Li metti tutti in azioni, potrebbero salire",
             "right": false,
-            "why": "B). I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
+            "why": "I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
           },
           {
             "text": "Metti metà in azioni e metà al sicuro",
             "right": false,
-            "why": "B). I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
+            "why": "I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
           },
           {
             "text": "Li tieni in uno strumento sicuro e disponibile",
@@ -19731,10 +19673,10 @@ export const LESSONS = {
           {
             "text": "Li presti a un amico",
             "right": false,
-            "why": "B). I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
+            "why": "I soldi con una data vicina non vanno esposti a un calo che potrebbe capitare proprio prima della scadenza."
           }
         ],
-        "explain": "L’esperienza passata non è una garanzia per il futuro."
+        "explain": "Il prezzo di un’azione cambia ogni giorno e, a differenza dell’obbligazione, non c’è una data in cui ti viene restituito un importo prefissato."
       },
       {
         "n": 7,
@@ -20032,7 +19974,7 @@ export const LESSONS = {
           {
             "text": "Smetti di versare e vendi",
             "right": false,
-            "why": "B). Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
+            "why": "Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
           },
           {
             "text": "Continui il piano come previsto",
@@ -20041,15 +19983,15 @@ export const LESSONS = {
           {
             "text": "Versi tutti i risparmi in una volta",
             "right": false,
-            "why": "B). Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
+            "why": "Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
           },
           {
             "text": "Versi il doppio ogni mese",
             "right": false,
-            "why": "B). Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
+            "why": "Vendere realizza la perdita, e versare tutto in una volta aumenta il rischio. Se invece i soldi servissero prima, il piano andrebbe ripensato fin dall’inizio."
           }
         ],
-        "explain": "I rendimenti usati qui (5%, 4%, 3%) sono ipotesi per mostrare il meccanismo, non previsioni."
+        "explain": "L’altro errore è smettere di versare, o vendere tutto, subito dopo un calo, o all’opposto buttare tutti i risparmi in una volta sola."
       },
       {
         "n": 7,
@@ -20247,7 +20189,7 @@ export const LESSONS = {
             "why": "Quota 10,50 €; 50 × 10,50 = 525 € (+25 €)."
           }
         ],
-        "explain": "Un fondo non è per questo sicuro: il valore può scendere, e chi lo gestisce chiede dei costi (L3). Credere che un fondo sia un prodotto garantito perché «contiene tanti titoli».",
+        "explain": "Un fondo non è per questo sicuro: il valore può scendere, e chi lo gestisce chiede dei costi. Credere che un fondo sia un prodotto garantito perché «contiene tanti titoli».",
         "variants": [
           {
             "type": "scelta",
@@ -20274,7 +20216,7 @@ export const LESSONS = {
                 "why": "11 × 20 = 220 €."
               }
             ],
-            "explain": "Un fondo non è per questo sicuro: il valore può scendere, e chi lo gestisce chiede dei costi (L3). Credere che un fondo sia un prodotto garantito perché «contiene tanti titoli»."
+            "explain": "Un fondo non è per questo sicuro: il valore può scendere, e chi lo gestisce chiede dei costi. Credere che un fondo sia un prodotto garantito perché «contiene tanti titoli»."
           }
         ]
       },
@@ -20348,7 +20290,7 @@ export const LESSONS = {
           {
             "text": "Compri solo quella di cui parlano tutti",
             "right": false,
-            "why": "B). Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
+            "why": "Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
           },
           {
             "text": "Scegli un paniere con molte società per non dipendere da una sola scelta",
@@ -20357,15 +20299,15 @@ export const LESSONS = {
           {
             "text": "Aspetti di conoscerle tutte",
             "right": false,
-            "why": "B). Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
+            "why": "Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
           },
           {
             "text": "Compri tutte quelle che costano meno",
             "right": false,
-            "why": "B). Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
+            "why": "Il paniere riduce il rischio di aver scelto la società sbagliata, ma non elimina il rischio che il mercato scenda."
           }
         ],
-        "explain": "Immagina dieci amici che mettono 50 € ciascuno in una cassa comune per comprare insieme più cose invece di una sola: ognuno possiede una parte della cassa."
+        "explain": "Con una sola quota ottieni un po’ di tutto, senza dover scegliere e comprare ogni società. Il paniere ha dei pesi: la parte di patrimonio investita in ogni titolo."
       },
       {
         "n": 7,
@@ -20413,7 +20355,7 @@ export const LESSONS = {
           ],
           "ask": "P/E?"
         },
-        "explain": "Immagina dieci amici che mettono 50 € ciascuno in una cassa comune per comprare insieme più cose invece di una sola: ognuno possiede una parte della cassa."
+        "explain": null
       }
     ],
     "source": "C11-L01"
@@ -20491,7 +20433,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Un ETF non garantisce nulla: sale e scende con l’indice, meno i costi (L3). Credere che «ETF» significhi «sicuro» o «diversificato» per definizione: dipende dall’indice che replica."
+        "explain": "Un ETF non garantisce nulla: sale e scende con l’indice, meno i costi. Credere che «ETF» significhi «sicuro» o «diversificato» per definizione: dipende dall’indice che replica."
       },
       {
         "n": 3,
@@ -20548,7 +20490,7 @@ export const LESSONS = {
                 "why": "100 ÷ 2.000 = 5%."
               }
             ],
-            "explain": "Un ETF non garantisce nulla: sale e scende con l’indice, meno i costi (L3). Credere che «ETF» significhi «sicuro» o «diversificato» per definizione: dipende dall’indice che replica."
+            "explain": "Un ETF non garantisce nulla: sale e scende con l’indice, meno i costi. Credere che «ETF» significhi «sicuro» o «diversificato» per definizione: dipende dall’indice che replica."
           }
         ]
       },
@@ -20681,7 +20623,7 @@ export const LESSONS = {
           {
             "text": "Scegli il gestito perché promette di più",
             "right": false,
-            "why": "B). Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
+            "why": "Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
           },
           {
             "text": "Confronti i costi e ricordi che nessuna promessa è una garanzia",
@@ -20690,12 +20632,12 @@ export const LESSONS = {
           {
             "text": "Non guardi mai gli ETF",
             "right": false,
-            "why": "B). Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
+            "why": "Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
           },
           {
             "text": "Scegli quello che ti consiglia un amico",
             "right": false,
-            "why": "B). Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
+            "why": "Il fondo gestito parte con un costo più alto da recuperare e non ha garanzia di battere l’indice."
           }
         ],
         "explain": "L’altro errore è pensare che un fondo gestito dia sempre un risultato migliore perché è gestito da esperti."
@@ -20966,7 +20908,7 @@ export const LESSONS = {
             "why": "150 − 20 = 130 €."
           }
         ],
-        "explain": "Si aggiungono eventuali costi una tantum, come una commissione di ingresso quando compri, e i costi di negoziazione del tuo intermediario.",
+        "explain": "Pensare che 1,5% e 0,2% siano «poco», senza trasformarli in euro e in anni. L’altro errore è guardare il rendimento passato senza sottrarre i costi.",
         "variants": [
           {
             "type": "scelta",
@@ -21010,7 +20952,7 @@ export const LESSONS = {
                 "right": true
               }
             ],
-            "explain": "Si aggiungono eventuali costi una tantum, come una commissione di ingresso quando compri, e i costi di negoziazione del tuo intermediario."
+            "explain": "Pensare che 1,5% e 0,2% siano «poco», senza trasformarli in euro e in anni. L’altro errore è guardare il rendimento passato senza sottrarre i costi."
           }
         ]
       },
@@ -21084,12 +21026,12 @@ export const LESSONS = {
           {
             "text": "Scegli il fondo, te lo consiglia la banca",
             "right": false,
-            "why": "B). Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
+            "why": "Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
           },
           {
             "text": "Scegli a caso",
             "right": false,
-            "why": "B). Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
+            "why": "Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
           },
           {
             "text": "Calcoli in euro il costo del primo anno su 10.000 € e confronti: 350 € contro 20 €",
@@ -21098,7 +21040,7 @@ export const LESSONS = {
           {
             "text": "Scegli quello con il TER più alto perché è migliore",
             "right": false,
-            "why": "B). Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
+            "why": "Il consiglio non è un motivo se non conosci i costi: in euro il confronto è immediato."
           }
         ],
         "explain": "Si aggiungono eventuali costi una tantum, come una commissione di ingresso quando compri, e i costi di negoziazione del tuo intermediario."
@@ -21299,7 +21241,7 @@ export const LESSONS = {
             "why": "0,60 × 20% = 12%; 12% di 10.000 = 1.200 €."
           }
         ],
-        "explain": "Non esiste una diversificazione che elimini il rischio di mercato (Cap. 10 L5), ma una buona riduce quello di singole società e di singoli settori.",
+        "explain": "Non esiste una diversificazione che elimini il rischio di mercato, ma una buona riduce quello di singole società e di singoli settori.",
         "variants": [
           {
             "type": "scelta",
@@ -21326,7 +21268,7 @@ export const LESSONS = {
                 "right": true
               }
             ],
-            "explain": "Non esiste una diversificazione che elimini il rischio di mercato (Cap. 10 L5), ma una buona riduce quello di singole società e di singoli settori."
+            "explain": "Non esiste una diversificazione che elimini il rischio di mercato, ma una buona riduce quello di singole società e di singoli settori."
           }
         ]
       },
@@ -21400,7 +21342,7 @@ export const LESSONS = {
           {
             "text": "Sì, tre prodotti sono tanti",
             "right": false,
-            "why": "B). Conta il contenuto, non il numero di prodotti."
+            "why": "Conta il contenuto, non il numero di prodotti."
           },
           {
             "text": "Controlli cosa contengono: se si sovrappongono molto, non stai diversificando di più",
@@ -21409,12 +21351,12 @@ export const LESSONS = {
           {
             "text": "Ne compri un quarto",
             "right": false,
-            "why": "B). Conta il contenuto, non il numero di prodotti."
+            "why": "Conta il contenuto, non il numero di prodotti."
           },
           {
             "text": "Ne vendi due a caso",
             "right": false,
-            "why": "B). Conta il contenuto, non il numero di prodotti."
+            "why": "Conta il contenuto, non il numero di prodotti."
           }
         ],
         "explain": "Contare i fondi invece di guardare cosa contengono."
@@ -21447,7 +21389,7 @@ export const LESSONS = {
             "why": "300 ÷ 700 = 42,86%."
           }
         ],
-        "explain": "La diversificazione funziona se i titoli non si muovono tutti insieme. Un fondo può contenere centinaia di società ma avere la maggior parte del peso in poche: la concentrazione dei pesi conta più del numero di titoli."
+        "explain": null
       }
     ],
     "source": "C11-L04"
@@ -21495,7 +21437,7 @@ export const LESSONS = {
           }
         ],
         "theory": "Un ETF ampio riduce il rischio di una singola società, ma non protegge da un calo del mercato, dalle oscillazioni del cambio o dai piccoli scostamenti dall’indice. Non è un prodotto sicuro.",
-        "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30% (Cap. 10 L5). La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
+        "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30%. La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
       },
       {
         "n": 2,
@@ -21700,7 +21642,7 @@ export const LESSONS = {
                 "why": "Il rischio di mercato resta."
               }
             ],
-            "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30% (Cap. 10 L5). La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
+            "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30%. La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
           }
         ]
       },
@@ -21715,12 +21657,12 @@ export const LESSONS = {
           {
             "text": "Lo metti in un ETF mondiale, perché è molto diversificato",
             "right": false,
-            "why": "B). La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
+            "why": "La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
           },
           {
             "text": "Scegli un ETF di un solo settore",
             "right": false,
-            "why": "B). La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
+            "why": "La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
           },
           {
             "text": "Non è adatto: il rischio di mercato può farti trovare un valore basso proprio quando ti servono",
@@ -21729,10 +21671,10 @@ export const LESSONS = {
           {
             "text": "Lo compri con un prestito",
             "right": false,
-            "why": "B). La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
+            "why": "La diversificazione non elimina il rischio di mercato e l’orizzonte è breve."
           }
         ],
-        "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30% (Cap. 10 L5). La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
+        "explain": "Il rischio di mercato resta: se l’indice scende del 30%, l’ETF scende circa del 30%. La differenza dall’indice (in inglese tracking difference) è lo scostamento tra il risultato dell’ETF e quello dell’indice, dovuto ai costi e a come è costruito."
       },
       {
         "n": 7,
@@ -21858,7 +21800,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Gli scenari non sono previsioni: sono esempi di cosa potrebbe succedere. Dal documento si capisce se il prodotto è adatto: l’indicatore di rischio e il periodo raccomandato vanno confrontati con il tuo orizzonte e con quanto puoi permetterti di perdere."
+        "explain": "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli."
       },
       {
         "n": 3,
@@ -21888,7 +21830,7 @@ export const LESSONS = {
             "why": "5.000 × 0,009 = 45 €."
           }
         ],
-        "explain": "Leggere solo il rendimento e non l’indicatore di rischio e lo scenario sfavorevole. L’altro errore è prendere gli scenari come previsioni.",
+        "explain": "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli.",
         "variants": [
           {
             "type": "scelta",
@@ -22006,7 +21948,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli.",
+        "explain": "Dal documento si capisce se il prodotto è adatto: l’indicatore di rischio e il periodo raccomandato vanno confrontati con il tuo orizzonte e con quanto puoi permetterti di perdere.",
         "variants": [
           {
             "type": "scelta",
@@ -22048,12 +21990,12 @@ export const LESSONS = {
           {
             "text": "Lo compri comunque, il rendimento sembra buono",
             "right": false,
-            "why": "B). Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
+            "why": "Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
           },
           {
             "text": "Lo compri e poi lo guardi ogni giorno",
             "right": false,
-            "why": "B). Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
+            "why": "Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
           },
           {
             "text": "Non è adatto: rischio alto e orizzonte più breve di quello consigliato",
@@ -22062,7 +22004,7 @@ export const LESSONS = {
           {
             "text": "Lo compri e ignori il periodo raccomandato",
             "right": false,
-            "why": "B). Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
+            "why": "Il documento serve proprio a confrontare il prodotto con il tuo orizzonte e con quanto puoi permetterti di perdere."
           }
         ],
         "explain": "Dal documento si capisce se il prodotto è adatto: l’indicatore di rischio e il periodo raccomandato vanno confrontati con il tuo orizzonte e con quanto puoi permetterti di perdere."
@@ -22095,7 +22037,7 @@ export const LESSONS = {
             "why": "5.000 × 0,70 = 3.500 €."
           }
         ],
-        "explain": "Una scheda ben fatta contiene l’obiettivo del prodotto, un indicatore di rischio su una scala da 1 a 7 (più è alto, più il valore può oscillare), i costi (annuo e una tantum), il periodo di detenzione raccomandato e degli scenari con esiti stimati, anche sfavorevoli."
+        "explain": null
       }
     ],
     "source": "C11-L06"
@@ -22262,7 +22204,7 @@ export const LESSONS = {
             "why": "55 ÷ 1,20 = 45,83 €."
           }
         ],
-        "explain": "Per questo un prezzo in valuta estera non è «basso» o «alto» finché non lo converti. Moltiplicare invece di dividere (o il contrario) e ritrovarsi con un prezzo sbagliato.",
+        "explain": "Se 1 € = 1,10 $ (cambio fittizio) significa che con un euro ottieni 1,10 dollari; per convertire dollari in euro si divide per 1,10, per convertire euro in dollari si moltiplica.",
         "variants": [
           {
             "type": "scelta",
@@ -22363,24 +22305,24 @@ export const LESSONS = {
           {
             "text": "Quello in euro costa meno perché 52 è vicino a 55",
             "right": false,
-            "why": "B). Va sempre convertito, e poi vanno aggiunti i costi (L2)."
+            "why": "Va sempre convertito, e poi vanno aggiunti i costi."
           },
           {
             "text": "Scegli quello con il numero più alto",
             "right": false,
-            "why": "B). Va sempre convertito, e poi vanno aggiunti i costi (L2)."
+            "why": "Va sempre convertito, e poi vanno aggiunti i costi."
           },
           {
             "text": "Scegli sempre il sito in euro",
             "right": false,
-            "why": "B). Va sempre convertito, e poi vanno aggiunti i costi (L2)."
+            "why": "Va sempre convertito, e poi vanno aggiunti i costi."
           },
           {
             "text": "Converti: 55 $ sono 50 € al cambio di 1,10, quindi il sito in dollari costa 2 € in meno prima di spedizione e costi di cambio",
             "right": true
           }
         ],
-        "explain": "Se 1 € = 1,10 $ (cambio fittizio) significa che con un euro ottieni 1,10 dollari; per convertire dollari in euro si divide per 1,10, per convertire euro in dollari si moltiplica."
+        "explain": "Per questo un prezzo in valuta estera non è «basso» o «alto» finché non lo converti. Moltiplicare invece di dividere (o il contrario) e ritrovarsi con un prezzo sbagliato."
       },
       {
         "n": 7,
@@ -22410,7 +22352,7 @@ export const LESSONS = {
             "why": "5.000 × 0,002 = 10 €."
           }
         ],
-        "explain": "Il cambio è il prezzo di una valuta in un’altra. Se 1 € = 1,10 $ (cambio fittizio) significa che con un euro ottieni 1,10 dollari; per convertire dollari in euro si divide per 1,10, per convertire euro in dollari si moltiplica."
+        "explain": null
       }
     ],
     "source": "C12-L01"
@@ -22679,7 +22621,7 @@ export const LESSONS = {
           {
             "text": "Scegli B, non ha commissioni",
             "right": false,
-            "why": "B). «Senza commissioni» non vuol dire senza costi: qui A conviene."
+            "why": "«Senza commissioni» non vuol dire senza costi: qui A conviene."
           },
           {
             "text": "Calcoli quanti dollari ricevi: A dà 214,50 $, B dà 210 $",
@@ -22688,12 +22630,12 @@ export const LESSONS = {
           {
             "text": "Scegli quello con il cambio più alto",
             "right": false,
-            "why": "B). «Senza commissioni» non vuol dire senza costi: qui A conviene."
+            "why": "«Senza commissioni» non vuol dire senza costi: qui A conviene."
           },
           {
             "text": "Scegli a caso",
             "right": false,
-            "why": "B). «Senza commissioni» non vuol dire senza costi: qui A conviene."
+            "why": "«Senza commissioni» non vuol dire senza costi: qui A conviene."
           }
         ],
         "explain": "I valori reali di spread e commissioni cambiano da servizio a servizio e vanno verificati."
@@ -22805,7 +22747,7 @@ export const LESSONS = {
             "why": "80 ÷ 1,10 = 72,73 €."
           }
         ],
-        "explain": "A differenza di un’obbligazione (Cap. 9) o di un’azione con dividendo (Cap. 10), un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
+        "explain": "A differenza di un’obbligazione o di un’azione con dividendo, un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
       },
       {
         "n": 3,
@@ -22835,7 +22777,7 @@ export const LESSONS = {
             "why": "60 ÷ 1,10 = 54,55 €."
           }
         ],
-        "explain": "Molte si pagano in dollari, quindi il prezzo in euro dipende anche dal cambio (L1).",
+        "explain": "Molte si pagano in dollari, quindi il prezzo in euro dipende anche dal cambio.",
         "variants": [
           {
             "type": "scelta",
@@ -22862,7 +22804,7 @@ export const LESSONS = {
                 "why": "90 ÷ 1,20 = 75 €."
               }
             ],
-            "explain": "Molte si pagano in dollari, quindi il prezzo in euro dipende anche dal cambio (L1)."
+            "explain": "Molte si pagano in dollari, quindi il prezzo in euro dipende anche dal cambio."
           }
         ]
       },
@@ -22980,7 +22922,7 @@ export const LESSONS = {
                 "why": "Non hanno cedola né dividendo."
               }
             ],
-            "explain": "A differenza di un’obbligazione (Cap. 9) o di un’azione con dividendo (Cap. 10), un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
+            "explain": "A differenza di un’obbligazione o di un’azione con dividendo, un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
           }
         ]
       },
@@ -22995,7 +22937,7 @@ export const LESSONS = {
           {
             "text": "Ci metti tutto",
             "right": false,
-            "why": "B). Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
+            "why": "Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
           },
           {
             "text": "Ricordi che il prezzo oscilla con domanda, offerta e cambio, senza garanzie, e non ci metti soldi che ti servono",
@@ -23004,15 +22946,15 @@ export const LESSONS = {
           {
             "text": "Lo compri solo se lo dicono i giornali",
             "right": false,
-            "why": "B). Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
+            "why": "Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
           },
           {
             "text": "Ci metti metà dei risparmi",
             "right": false,
-            "why": "B). Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
+            "why": "Nessun prezzo è prevedibile e non c’è un interesse a compensare il rischio."
           }
         ],
-        "explain": "Una materia prima è un bene che si scambia in grandi quantità e serve a produrre altro o come riserva di valore."
+        "explain": "Non esiste un prezzo «giusto» prevedibile. Pensare che un bene «fisico» sia più sicuro di uno finanziario: il prezzo oscilla comunque."
       },
       {
         "n": 7,
@@ -23042,7 +22984,7 @@ export const LESSONS = {
             "why": "10.000 × 0,015 = 150 €."
           }
         ],
-        "explain": "A differenza di un’obbligazione (Cap. 9) o di un’azione con dividendo (Cap. 10), un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
+        "explain": "A differenza di un’obbligazione o di un’azione con dividendo, un barile di petrolio o un lingotto non pagano interessi né dividendi: tenerli ha un costo (custodia, assicurazione) e il guadagno dipende solo dal prezzo di rivendita."
       }
     ],
     "source": "C12-L03"
@@ -23209,36 +23151,7 @@ export const LESSONS = {
             "why": "100 × 1,50 = 150 €."
           }
         ],
-        "explain": "Le cripto-attività (spesso chiamate cripto) sono rappresentazioni digitali registrate su un sistema condiviso, chiamato in generale blockchain, senza un’autorità centrale come una banca.",
-        "variants": [
-          {
-            "type": "scelta",
-            "mentor": "Il prezzo sale a 6 €: nuovo valore e variazione?",
-            "table": null,
-            "options": [
-              {
-                "text": "300 €; +150%",
-                "right": false,
-                "why": "50 × 6 = 300; 100 ÷ 200 = +50%."
-              },
-              {
-                "text": "600 €; +50%",
-                "right": false,
-                "why": "50 × 6 = 300; 100 ÷ 200 = +50%."
-              },
-              {
-                "text": "56 €; +50%",
-                "right": false,
-                "why": "50 × 6 = 300; 100 ÷ 200 = +50%."
-              },
-              {
-                "text": "300 €; +50%",
-                "right": true
-              }
-            ],
-            "explain": "Il loro prezzo cambia in base a quanti le vogliono comprare e vendere, spesso molto in fretta. Non pagano interessi o dividendi e non hanno un’azienda dietro che produce utili, quindi il guadagno dipende solo dal prezzo a cui rivendi."
-          }
-        ]
+        "explain": "Esistono tipi molto diversi: questo capitolo non ne raccomanda nessuno, e per gli esempi usa un «gettone Z» fittizio."
       },
       {
         "n": 5,
@@ -23268,7 +23181,7 @@ export const LESSONS = {
             "why": "(150 − 300) ÷ 300 = −50%; (150 − 200) ÷ 200 = −25%."
           }
         ],
-        "explain": "Per conservarle servono delle chiavi: se le perdi, di norma non puoi recuperare nulla.",
+        "explain": "Esistono tipi molto diversi: questo capitolo non ne raccomanda nessuno, e per gli esempi usa un «gettone Z» fittizio.",
         "variants": [
           {
             "type": "scelta",
@@ -23310,7 +23223,7 @@ export const LESSONS = {
           {
             "text": "Compri subito",
             "right": false,
-            "why": "B). L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
+            "why": "L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
           },
           {
             "text": "Ti chiedi cos’è, chi lo emette, quali costi e rischi ha, e non compri solo perché lo fanno gli altri",
@@ -23319,12 +23232,12 @@ export const LESSONS = {
           {
             "text": "Compri solo se sta salendo",
             "right": false,
-            "why": "B). L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
+            "why": "L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
           },
           {
             "text": "Compri per non perdere l’occasione",
             "right": false,
-            "why": "B). L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
+            "why": "L’effetto gregge non è un motivo, e nessuna autorità garantisce il prezzo."
           }
         ],
         "explain": "L’altro errore è comprare perché «è salita» o «tutti la comprano»."
@@ -23357,7 +23270,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Regole, tassazione e tutele cambiano e vanno verificate. Pensare che una cripto-attività sia come un conto in euro in versione digitale."
+        "explain": null
       }
     ],
     "source": "C12-L04"
@@ -23436,7 +23349,7 @@ export const LESSONS = {
             "why": "1.000 → 500 → 750 €."
           }
         ],
-        "explain": "Il rischio di prezzo è molto alto: un calo dell'80% lascia il 20% del valore, e per tornare al punto di partenza serve +400%."
+        "explain": null
       },
       {
         "n": 3,
@@ -23466,7 +23379,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Un calo del 50% seguito da un rialzo del 50% non ti riporta pari: lasci per strada il 25%. Oltre al prezzo ci sono rischi pratici: chiavi perse o rubate, piattaforme che chiudono senza restituire i soldi, truffe.",
+        "explain": null,
         "variants": [
           {
             "type": "scelta",
@@ -23525,7 +23438,7 @@ export const LESSONS = {
             "right": true
           }
         ],
-        "explain": "Un rendimento del 20% al mese, ripetuto per 12 mesi, farebbe diventare 1.000 € più di 8.900 €: nessuna attività reale può mantenerlo.",
+        "explain": "Un calo del 50% seguito da un rialzo del 50% non ti riporta pari: lasci per strada il 25%. Oltre al prezzo ci sono rischi pratici: chiavi perse o rubate, piattaforme che chiudono senza restituire i soldi, truffe.",
         "variants": [
           {
             "type": "scelta",
@@ -23584,7 +23497,7 @@ export const LESSONS = {
             "why": "1.000 × 1,2¹² = 8.916,10 €."
           }
         ],
-        "explain": "I segnali vanno verificati su fonti ufficiali (Consob, Banca d’Italia). Pensare che chi propone un guadagno alto sia «un esperto che vuole aiutarti».",
+        "explain": "Un rendimento del 20% al mese, ripetuto per 12 mesi, farebbe diventare 1.000 € più di 8.900 €: nessuna attività reale può mantenerlo.",
         "variants": [
           {
             "type": "scelta",
@@ -23611,7 +23524,7 @@ export const LESSONS = {
                 "why": "Rischio e rendimento vanno insieme."
               }
             ],
-            "explain": "I segnali vanno verificati su fonti ufficiali (Consob, Banca d’Italia). Pensare che chi propone un guadagno alto sia «un esperto che vuole aiutarti»."
+            "explain": "Le truffe di investimento hanno segnali ricorrenti: rendimento garantito (nessun investimento serio lo garantisce), guadagni alti e rapidi, urgenza («devi decidere oggi»), segretezza, pagamenti in forme difficili da rintracciare, sistemi che premiano chi porta altri partecipanti."
           }
         ]
       },
@@ -23626,24 +23539,24 @@ export const LESSONS = {
           {
             "text": "Provi con una cifra piccola",
             "right": false,
-            "why": "B). Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
+            "why": "Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
           },
           {
             "text": "Coinvolgi gli amici così guadagni anche tu",
             "right": false,
-            "why": "B). Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
+            "why": "Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
           },
           {
             "text": "Chiedi al mittente di mandarti altri dettagli e poi decidi",
             "right": false,
-            "why": "B). Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
+            "why": "Rendimento garantito, guadagni altissimi e bonus per chi porta altri sono segnali tipici di truffa."
           },
           {
             "text": "Non investi, non dai dati, verifichi l’offerta su fonti ufficiali e la segnali",
             "right": true
           }
         ],
-        "explain": "L’altro errore è aggiungere altri soldi dopo un calo per «recuperare»."
+        "explain": "I segnali vanno verificati su fonti ufficiali (Consob, Banca d’Italia). Pensare che chi propone un guadagno alto sia «un esperto che vuole aiutarti»."
       },
       {
         "n": 7,
@@ -23673,7 +23586,7 @@ export const LESSONS = {
             "why": "10.000 × 0,70 = 7.000 €."
           }
         ],
-        "explain": "Il rischio di prezzo è molto alto: un calo dell'80% lascia il 20% del valore, e per tornare al punto di partenza serve +400%."
+        "explain": null
       }
     ],
     "source": "C12-L05"
@@ -23780,7 +23693,7 @@ export const LESSONS = {
             "why": "500 × 0,70 × 0,90 = 315 €."
           }
         ],
-        "explain": "Secondo: in che valuta e quanto vale in euro (L1).",
+        "explain": "Secondo: in che valuta e quanto vale in euro.",
         "variants": [
           {
             "type": "scelta",
@@ -23940,12 +23853,12 @@ export const LESSONS = {
           {
             "text": "Investi 500 €, il caso sfavorevole è solo ipotetico",
             "right": false,
-            "why": "B). Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
+            "why": "Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
           },
           {
             "text": "Prendi in prestito la differenza",
             "right": false,
-            "why": "B). Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
+            "why": "Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
           },
           {
             "text": "Riduci l’importo a 300 € o meno, oppure rinunci",
@@ -23954,10 +23867,10 @@ export const LESSONS = {
           {
             "text": "Investi 500 € ma tieni da parte 300 € per le emergenze",
             "right": false,
-            "why": "B). Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
+            "why": "Il limite serve a evitare di perdere più di quanto puoi permetterti; un prestito aggiunge rischio."
           }
         ],
-        "explain": "Primo: cos’è e chi risponde (chi lo emette, chi garantisce, se esiste una scheda informativa)."
+        "explain": "Quinto: quanto puoi permetterti di perdere: negli esempi una regola prudente del 10% dei risparmi, solo come ipotesi dell’esercizio, non una norma."
       },
       {
         "n": 7,
@@ -23987,7 +23900,7 @@ export const LESSONS = {
             "why": "1.000 × 0,03 = 30 €."
           }
         ],
-        "explain": "L’altro errore è usare soldi che servono a breve (Cap. 10 L5)."
+        "explain": "Questo metodo vale per un’obbligazione, un’azione, un ETF, una valuta, una materia prima o una cripto-attività."
       }
     ],
     "source": "C12-L06"

@@ -2059,6 +2059,12 @@ html:not([data-app]) .pf-head::after {
   gap: 12px;
   padding: 4px 0 18px;
 }
+/* what the Tu brings into view stops above the bar, not under it (22/11/2026: the question of «Ricomincia da capo»
+   opened with «Annulla» half under the bar and «Cancella tutto» out of sight, because the page was scrolled as far as
+   its own bottom edge, which the bar covers) */
+.view.me {
+  scroll-padding-bottom: calc(var(--safe-b) + 112px);
+}
 .wipe-ask[hidden] {
   display: none;
 }
@@ -3610,7 +3616,9 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 .who-traits div {
   display: grid;
-  grid-template-columns: 76px 1fr;
+  /* the column of «Pregio» and «Trappola» grows with the text of the phone (22/11/2026: at 76 px, with the text at its
+     largest, «TRAPPOLA» ran into what it says: «TRAPPOLAScambiare») */
+  grid-template-columns: calc(76px * var(--fs)) 1fr;
   gap: 10px;
   align-items: baseline;
 }
@@ -4224,16 +4232,18 @@ body.in-lesson .toast {
 .lz-cell[data-pair]::after {
   content: attr(data-pair);
   position: absolute;
-  top: -8px;
-  right: -6px;
+  /* the number is all that says which two go together: large enough to be read at a glance (22/11/2026, from the
+     album: at 22 px with a 12 px figure three readers called it «un numerino») */
+  top: -10px;
+  right: -8px;
   display: grid;
   place-items: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--ink);
   color: var(--page);
-  font-size: calc(12px * var(--fs));
+  font-size: calc(14px * var(--fs));
   font-weight: 800;
 }
 .lz-cell.right[data-pair]::after {
@@ -4498,12 +4508,16 @@ body.in-lesson .toast {
   gap: 6px;
   margin: 0 -8px;
 }
-.lz-cols-3 .lz-col {
-  padding: 6px 5px;
+/* and as little as possible between the edge of a column and the words of its items: every point given back here is
+   a longer word that stays whole («Abbonamento», 22/11/2026; wholeWords in lezione.js does the rest). Written so that
+   it holds whatever the fit of the page says (#lezione[data-fit] .lz-col below gives the padding back) */
+#lezione .lz-cols.lz-cols-3 .lz-col {
+  padding-left: 3px;
+  padding-right: 3px;
 }
-.lz-cols-3 .lz-chip {
-  padding-left: 5px;
-  padding-right: 5px;
+#lezione .lz-cols.lz-cols-3 .lz-col .lz-chip {
+  padding-left: 3px;
+  padding-right: 3px;
 }
 .lz-col {
   display: flex;
@@ -4564,6 +4578,39 @@ body.in-lesson .toast {
   background: var(--no-soft);
   box-shadow: 0 3px 0 var(--no-line);
   color: var(--no);
+}
+/* right and wrong say so with a sign too, not with green and red alone (22/11/2026, from the album: after «Verifica»
+   the right answer and the one given differed only by colour, and who cannot tell the two apart could not see which
+   was which; WCAG 1.4.1). A small round sign on the corner of the answer, the tick and the cross of the sheet below:
+   on the corner, so that the words of the answer stay where they are. The pairs keep their number there instead. */
+.lz-opt:is(.right, .wrong),
+.lz-chip:is(.right, .wrong) {
+  position: relative;
+}
+.lz-opt:is(.right, .wrong)::after,
+.lz-chip:is(.right, .wrong)::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  right: -7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ok) center / 15px 15px no-repeat
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 12.5l4.2 4.2 8.8-9.4'/%3E%3C/svg%3E");
+  box-shadow: 0 0 0 2px var(--page);
+}
+.lz-opt.wrong::after,
+.lz-chip.wrong::after {
+  background-color: var(--no);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 7l10 10M17 7L7 17'/%3E%3C/svg%3E");
+}
+.lz-chip:is(.right, .wrong)::after {
+  top: -7px;
+  right: -5px;
+  width: 20px;
+  height: 20px;
+  background-size: 12px 12px;
 }
 /* the slider */
 .lz-slider {
@@ -5028,6 +5075,10 @@ ol.lz-right-list li::before {
   grid-template-columns: 1fr 1.4fr;
   gap: 10px;
   margin-top: 4px;
+}
+/* a question with nothing for «Spiegami» to open has «Continua» alone, as wide as the two were (22/11/2026) */
+.lz-sheet-acts > .pill:only-child {
+  grid-column: 1 / -1;
 }
 /* in the feedback sheet the two buttons stay in reach while a long explanation scrolls behind them (11/11/2026: on a
    small phone with large text, «Spiegami» open, «Continua» was under the screen and had to be looked for). Only
