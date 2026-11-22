@@ -36,8 +36,9 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
-# generated native folders
+# generated native folders (ios is a link to ios.nosync, out of iCloud: scripts/fuori-da-icloud.mjs)
 /ios
+/ios.nosync
 /android
 
 # vercel (prove online)
