@@ -6,7 +6,7 @@ import { inkOn, motion, buzz } from './kit.js';
 import { TROPHIES, emblem } from './trophies.js';
 import { PEOPLE } from './people.js';
 import { FIGURES } from './figures.js';
-import { miniMap, signSvg } from './avvio.js';
+import { stage, signSvg } from './avvio.js';
 import { IN_APP } from './app.js';
 import { reminders } from './avvisi.js';
 import { canIcon, iconNow, onIcon, setIcon } from './icona.js';
@@ -69,10 +69,10 @@ export function makeMe(api) {
           <button class="who-chip" data-act="map" aria-expanded="${mapOpen}" aria-controls="who-map"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 4v16M4 12h16"/></svg><span>${p.what.split(' · ').map((w, i, a) => `<span class="nw">${w}${i < a.length - 1 ? ' ·' : ''}</span>`).join(' ')}</span></button>
         </div>
       </div>
-      <div class="who-map" id="who-map"${mapOpen ? '' : ' hidden'}>${miniMap(who)}</div>
+      <div class="who-map" id="who-map"${mapOpen ? '' : ' hidden'}>${stage(who)}</div>
       <dl class="who-traits">
         <div class="good"><dt>Pregio</dt><dd>${p.pregio}</dd></div>
-        <div class="trap"><dt>Trappola</dt><dd>${p.trappola} <span>Ne parliamo a ${where}.</span></dd></div>
+        <div class="trap"><dt>Occhio a</dt><dd>${p.trappola} <span>Ne parliamo a ${where}.</span></dd></div>
       </dl>
       <div class="who-partner">
         <span class="who-face"><img src="${PEOPLE[who.partner]}" alt="" /></span>

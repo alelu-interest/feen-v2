@@ -73,7 +73,9 @@ export function whoOf(s) {
   return { ...r, profile: p, me: s.pick, partner, partnerWord: WOMEN.has(partner) ? 'la tua socia' : 'il tuo socio', sign: s.sign, signed: s.signed };
 }
 
-/** The little map of the four types with your point (reveal and Tu). */
+/** The little map of the four types with your point. Not used since 22/11/2026, when the Tu took the map of the reveal
+ *  (stage, below; D7 of the bots): kept so that the Tu can have it back with one line (me.js, `stage(who)` →
+ *  `miniMap(who)`). */
 export function miniMap(who, { label = true, names = true } = {}) {
   // The names sit on the outer edge of each quadrant; your point lives in the free field of your quadrant, between
   // its names and the middle, so at any text size it never covers them (09/11/2026: at the far corners it used to
@@ -104,8 +106,10 @@ export function miniMap(who, { label = true, names = true } = {}) {
  *  the opening, each pair in its quadrant, instead of four empty boxes. They come back whole, six step back and the two
  *  of your type stay, lit, with «Tu» over their heads; the two ends of the axes that are yours turn blue (they say what
  *  the small label under the motto said). No names here (10/11/2026) and no point: how far from the middle you are
- *  stays in the Tu (miniMap). At the choice these two shadows walk into the two figures and take their colours. */
-function stage(who) {
+ *  is not said any more (until 22/11/2026 the Tu had it, on miniMap). At the choice these two shadows walk into the two
+ *  figures and take their colours. Since 22/11/2026 the Tu shows this map too, still (me.js; the user, D7 of the bots:
+ *  the same idea had two looks): without .av-tada nothing moves, and the six are already back. */
+export function stage(who) {
   const [risk, style] = who.quadrant.split('-');
   // the hidden picture gives each shadow its size, as in the opening
   const shadow = (n) => `<i class="av-sil" style="--m:url('${FIGURES[n]}')"><img src="${FIGURES[n]}" alt="" /></i>`;

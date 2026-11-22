@@ -3679,6 +3679,13 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .who-map:not([hidden]) {
   animation: av-pop 0.45s cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
 }
+/* the map of the reveal, still, in the Tu (22/11/2026, D7 of the bots; avvio.js stage): in the reveal it takes the height
+   the page leaves, here it has its own, and the shadows are measured on it */
+.who-map .av-stage {
+  flex: none;
+  height: min(88vw, 360px);
+  margin: 0;
+}
 .me-who .who-name h2 {
   margin: 0;
   font-size: calc(30px * var(--fs-l));
