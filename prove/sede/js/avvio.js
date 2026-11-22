@@ -349,7 +349,7 @@ export function makeAvvio(api) {
     const cards = p.names
       .map(
         (n) =>
-          `<button class="av-person" data-pick="${n}" aria-pressed="${s.pick === n}" aria-label="${n}"><span class="av-figure"><img src="${FIGURES[n]}" alt="" /><i class="av-unveil" style="--m:url('${FIGURES[n]}')"></i></span><b>${n}</b></button>`,
+          `<button class="av-person" data-pick="${n}" aria-pressed="${s.pick === n}" aria-label="${s.pick && s.pick !== n ? `${n}, il tuo socio` : n}"><span class="av-figure"><img src="${FIGURES[n]}" alt="" /><i class="av-unveil" style="--m:url('${FIGURES[n]}')"></i></span><b>${n}</b><small class="av-role" aria-hidden="true">il tuo socio</small></button>`,
       )
       .join('');
     screen(
@@ -618,7 +618,12 @@ export function makeAvvio(api) {
       // figures keep their place and their breathing)
       s.pick = b.dataset.pick;
       save();
-      for (const x of root.querySelectorAll('.av-person')) x.setAttribute('aria-pressed', String(x === b));
+      for (const x of root.querySelectorAll('.av-person')) {
+        x.setAttribute('aria-pressed', String(x === b));
+        // who is not picked becomes the partner, and says so under the name (the user, 22/11/2026, D3 of the bots:
+        // whoever did not read thought the choice had gone wrong when the other one came on as the partner)
+        x.setAttribute('aria-label', x === b ? x.dataset.pick : `${x.dataset.pick}, il tuo socio`);
+      }
       root.classList.add('picked');
       root.querySelector('[data-act="pick"]').textContent = `Gioco con ${s.pick}`;
       return;

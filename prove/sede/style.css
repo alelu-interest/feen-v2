@@ -3176,8 +3176,26 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 .av-person:active .av-figure img {
   transform: scale(0.97);
 }
-.av-pick.picked .av-person[aria-pressed='false'] {
+/* the one not picked steps back, the figure and the name; under them «il tuo socio» stays at full ink (22/11/2026,
+   D3 of the bots: the button used to fade whole, and a line in it would have faded too) */
+.av-pick.picked .av-person[aria-pressed='false'] :is(.av-figure, b) {
   opacity: 0.38;
+}
+.av-person b,
+.av-person .av-figure {
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.av-role {
+  margin-top: -8px;
+  font-family: var(--text);
+  font-size: calc(15px * var(--fs));
+  font-weight: 600;
+  color: var(--ink-2);
+  visibility: hidden;
+}
+.av-pick.picked .av-person[aria-pressed='false'] .av-role {
+  visibility: visible;
+  animation: rise 0.3s var(--ease) both;
 }
 /* only the figure steps forward or back, from its feet: the two names stay on one line */
 .av-pick.picked .av-person[aria-pressed='false'] .av-figure {
