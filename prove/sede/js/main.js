@@ -9,7 +9,7 @@ import { IN_APP } from './app.js'; // first: the page knows at once whether it i
 import * as THREE from 'three';
 import { C, manager, updateTweens, tween, wait, ease, sfx, sound, buzz, haptics, motion, sphere, canvasTexture, strokeText, rbox, mat, inkOn } from './kit.js';
 import { B, FLOORS, floorY, makeSky, makeCampus, makeFloorShell, makeRoofSite } from './world.js';
-import { ROOMS, furnishRoom } from './office.js';
+import { ROOMS, furnishRoom, stageNum, stageLabel } from './office.js';
 import { makePath } from './path.js';
 import { makeMe } from './me.js';
 import { makeAvvio } from './avvio.js';
@@ -561,7 +561,7 @@ function onPick(pick) {
       openCard(n, i, false).then(unshow);
     } else {
       if (!looking) go('interior', n);
-      toast(arrives(built.get(n).office.stages[i], i));
+      toast(arrives(built.get(n).office.stages[i], n, i));
     }
     return;
   }
@@ -578,10 +578,11 @@ function onPick(pick) {
 // provisional, Claude's (the texts of the launch are open, CLAUDE.md §11)
 const ROOF_SAYS = 'Il tetto del lancio: sul palco salirete tu, il mentore e i colleghi.';
 /** What a stand says: which stage brings its object. The stage's title goes in quotes, as a title. */
-function arrives(st, i) {
-  const by = st.tag === 'Caso' ? 'il Caso' : st.tag === 'Prova sul campo' ? 'la Prova sul campo' : 'la ' + st.tag.toLowerCase();
+function arrives(st, n, i) {
+  // the number is the circle's in the Percorso, and the lesson has no number of its own (22/11/2026, stageLabel)
+  const by = st.tag === 'Caso' ? 'il Caso' : st.tag === 'Prova sul campo' ? 'la Prova sul campo' : 'la lezione';
   const title = st.title.startsWith('«') ? st.title : `«${st.title}»`;
-  return `Tappa ${i + 1} · arriva con ${by}: ${title}`;
+  return `Tappa ${stageNum(n, i)} · arriva con ${by}: ${title}`;
 }
 
 // ---------- UI helpers ----------
@@ -690,7 +691,7 @@ function renderA11y() {
     }
     const i = +b.dataset.i;
     const st = built.get(n).office.stages[i];
-    b.textContent = i < done ? `${st.object} · ${st.tag}: apri la scheda` : arrives(st, i);
+    b.textContent = i < done ? `${st.object} · ${stageLabel(n, i)}: apri la scheda` : arrives(st, n, i);
     b.hidden = state.view === 'overview' || state.viewFloor !== n;
   }
 }
@@ -711,8 +712,8 @@ function renderCta() {
     // the first stage of a floor with a new colleague starts with the interview;
     // looking into another floor, the pill says which floor its stage belongs to
     const hire = state.earned === 0 && room.hire;
-    if (plateFloor() !== n) $('cta-tag').textContent = `${FLOORS[n - 1].name} · ${hire ? 'Colloquio' : st.tag}`;
-    else $('cta-tag').textContent = hire ? `Colloquio · ${st.tag}` : st.tag;
+    if (plateFloor() !== n) $('cta-tag').textContent = `${FLOORS[n - 1].name} · ${hire ? 'Colloquio' : `Tappa ${stageNum(n, state.earned)}`}`;
+    else $('cta-tag').textContent = hire ? `Colloquio · ${stageLabel(n, state.earned)}` : stageLabel(n, state.earned);
     $('cta-title').textContent = st.title;
   } else {
     $('cta-tag').textContent = 'Piano completato';
@@ -825,7 +826,7 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
     else persist();
   }
   paintFloor($('card'), FLOORS[n - 1]); // the card of an object takes its floor's colours, not the floor in progress
-  $('card-tag').textContent = s.tag;
+  $('card-tag').textContent = stageLabel(n, i);
   $('card-title').textContent = s.title;
   $('card-object').textContent = s.object ?? '';
   $('card-object-row').hidden = !s.object; // a lesson without an object: no line
@@ -1272,7 +1273,7 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     }
   } else if (pretend) {
     const hire = i === 0 ? ROOMS[n].hire : null;
-    $('fake-tag').textContent = s.tag;
+    $('fake-tag').textContent = stageLabel(n, i);
     $('fake-title').textContent = s.title;
     $('fake-note').textContent = hire ? `Prima il colloquio per scegliere ${hire}, poi la lezione. Facciamo finta che sia tutto fatto…` : 'Facciamo finta che tu l’abbia appena finita…';
     $('fake-bar').style.transform = 'scaleX(0)';

@@ -112,6 +112,17 @@ const GLOBE = { x: -1.05, z: -0.15, r: 0.27, y: 0.98 };
 // on a wall; `size` the box the object is fitted to) and the pose each takes in the card.
 // Only stage 1, the Case and the Field test bring an object; the other stages colour the
 // room. The key ideas are placeholder lines.
+/** The number of stage i of floor n: the one on its circle in the Percorso, from 1 on and never back to 1 (floor 1 is
+ *  1–8, floor 2 is 9–16…). */
+export const stageNum = (n, i) => (n - 1) * 8 + i + 1;
+/** What a stage is called on the screen: its number and its kind, «Tappa 5 · Lezione», «Tappa 4 · Caso» (the user,
+ *  22/11/2026, D1 of the bots: the card said «Lezione 4» under the circle «5», because the circles count the Caso too).
+ *  The tag stays «Lezione 4» in the data: the lessons are found by it. */
+export const stageLabel = (n, i) => {
+  const tag = ROOMS[n]?.stages[i]?.tag ?? '';
+  return `Tappa ${stageNum(n, i)} · ${/^Lezione\b/.test(tag) ? 'Lezione' : tag}`;
+};
+
 export const ROOMS = {
   1: {
     stages: [
@@ -403,7 +414,9 @@ function standTexture(n, next, color) {
       roundRect(g, 8, 8, w - 16, h - 16, 8);
       g.fill();
     }
-    strokeText(g, String(n), w / 2, h / 2 + 28, 400, { fill: next ? inkOn(color) : '#867F75' });
+    // two figures from floor 2 on (12, 16…): smaller, to stay inside the square
+    const size = String(n).length > 1 ? 280 : 400;
+    strokeText(g, String(n), w / 2, h / 2 + size * 0.07, size, { fill: next ? inkOn(color) : '#867F75' });
   }, { aniso: 16 });
 }
 
@@ -4070,7 +4083,8 @@ export function furnishRoom(floorGroup, info, world) {
     fitInPlace(inner, place.size, place.wall);
     obj.position.set(...place.at);
     holder.add(obj);
-    const stand = makeStand(place.stage + 1, place.wall);
+    // the number of the Percorso's circle (12 and 16 on floor 2), as the card and the toast say it (22/11/2026)
+    const stand = makeStand(stageNum(info.n, place.stage), place.wall);
     stand.position.set(...place.at);
     holder.add(stand);
     return { stage: place.stage, holder, obj, stand, place, home: obj.position.clone() };

@@ -17,7 +17,7 @@ import * as THREE from 'three';
 import { roundRect, inkOn, sfx } from './kit.js';
 import { EGGS } from './eggs.js';
 import { FLOORS } from './world.js';
-import { ROOMS } from './office.js';
+import { ROOMS, stageNum, stageLabel } from './office.js';
 import { FIGURES } from './figures.js';
 import { IN_APP } from './app.js';
 
@@ -510,7 +510,7 @@ export function makePath(api) {
       // the number of the stage, from 1 on and never back to 1: floor 1 is 1–8, floor 2 is 9–16… (the user,
       // 10/11/2026 sera: «leva le icone nelle palle e metti i numeri da 1 a infinito»); a prize keeps its object, with
       // the number in a small round badge
-      const num = (n - 1) * 8 + i + 1;
+      const num = stageNum(n, i);
       const face = el('span', 'pn-face');
       if (prize) {
         const img = el('img', 'pn-obj');
@@ -522,7 +522,7 @@ export function makePath(api) {
       b.append(face);
       const soon = api.soon?.(n);
       const what = st === 'done' ? 'fatta' : st === 'next' ? (soon ? 'in arrivo con il prossimo aggiornamento' : 'da fare adesso') : 'non ancora aperta';
-      b.setAttribute('aria-label', `Tappa ${num}, ${s.tag}: ${s.title}, ${what}${s.object ? `. Porta ${s.object.toLowerCase()}` : ''}`);
+      b.setAttribute('aria-label', `${stageLabel(n, i)}: ${s.title}, ${what}${s.object ? `. Porta ${s.object.toLowerCase()}` : ''}`);
       b.setAttribute('aria-expanded', 'false');
       const below = y + size + EDGE; // read now: `y` goes on growing with the stages after this one
       b.onclick = (ev) => {
@@ -539,7 +539,7 @@ export function makePath(api) {
         const go = el('button', 'pn-start', soon ? 'In arrivo' : 'Inizia');
         go.style.left = `calc(50% + ${x}px)`;
         go.style.top = `${y - 12}px`;
-        go.setAttribute('aria-label', `${s.tag}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
+        go.setAttribute('aria-label', `${stageLabel(n, i)}: ${s.title}. ${soon ? 'In arrivo con il prossimo aggiornamento' : 'Inizia, 3 minuti'}`);
         go.onclick = (ev) => {
           ev.stopPropagation();
           start(n);
@@ -670,7 +670,7 @@ export function makePath(api) {
     pop.className = `pop pop--${st}`;
     pop.style.top = `${below + 14}px`;
     pop.style.setProperty('--tip', `${x}px`);
-    pop.innerHTML = `<span class="pop-tag">${s.tag}</span><span class="pop-title">${s.title}</span>`;
+    pop.innerHTML = `<span class="pop-tag">${stageLabel(n, i)}</span><span class="pop-title">${s.title}</span>`;
     if (st === 'locked') {
       const before = list[i - 1]?.title;
       pop.append(el('span', 'pop-note', before ? `Si apre dopo «${before}».`.replace('««', '«').replace('»»', '»') : 'Si apre con il piano.'));
