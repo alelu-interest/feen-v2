@@ -12,6 +12,7 @@
 // on the phone: closing the app brings you back to the step you reached. Welcome, partner and contract texts are
 // Claude's, provisional.
 import { QUESTIONS, SCALE, TIEBREAKS, PROFILES, score } from './quiz.js';
+import { interestBy } from './interest-logo.js';
 import { PEOPLE } from './people.js';
 import { FIGURES } from './figures.js';
 import { FLOORS } from './world.js';
@@ -205,7 +206,7 @@ export function makeAvvio(api) {
     const shadow = (n, k, col) => `<i class="av-sil" style="--m:url('${FIGURES[n]}');--k:${k};--c:${col}"><img src="${FIGURES[n]}" alt="" /></i>`;
     // high risk on top, innovative on the left; --c is the column, for the light that passes from left to right
     const pairs = ORDER.map((q, i) => `<div class="av-pair">${PROFILES[q].names.map((n, j) => shadow(n, i * 2 + j, (i % 2) * 2 + j)).join('')}</div>`).join('');
-    screen('av-open', `<h1>Che investitore sei?</h1><div class="av-shadows" aria-hidden="true">${pairs}</div>`);
+    screen('av-open', `<h1>Che investitore sei?</h1><div class="av-shadows" aria-hidden="true">${pairs}</div>${interestBy()}`);
     // the shadows, the title and the clock start together, once the phone can show them (av-go)
     whenSmooth(() => {
       if (!root.classList.contains('av-open')) return;
@@ -479,7 +480,7 @@ export function makeAvvio(api) {
     const draw = () => {
       const r = cv.getBoundingClientRect();
       ctx.clearRect(0, 0, r.width, r.height);
-      ctx.strokeStyle = '#0f70e0'; // the app's blue, like a pen (as the contract in the Tu)
+      ctx.strokeStyle = '#015488'; // the app's blue, like a pen (as the contract in the Tu)
       ctx.lineWidth = 2.6;
       ctx.lineCap = ctx.lineJoin = 'round';
       // curves through the midpoints, like a pen, not straight segments (10/11/2026, a tester: «spezzati come un grafico»)

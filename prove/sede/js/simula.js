@@ -19,9 +19,9 @@ import { PEOPLE } from './people.js';
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 // FEEN's colours on the names the pages use (style.css, :root), and the two typefaces
-const THEME = `:root{--bg:#f4f8fd;--ink:#14213d;--muted:#4e5d78;--line:#dce5f0;--blue:#0f70e0;--blue-soft:#eaf4fe;--blue-dark:#0a57b3}
-html,body{font-family:'Hanken Grotesk',system-ui,sans-serif}
-h1,h2,h3,.btn{font-family:'Bricolage Grotesque','Hanken Grotesk',system-ui,sans-serif}
+const THEME = `:root{--bg:#f5f9fd;--ink:#0b0b0c;--muted:#3476a0;--line:#dbe7ee;--blue:#015488;--blue-soft:#eaf2fb;--blue-dark:#0b0b0c}
+html,body{font-family:'Montserrat',Arial,sans-serif}
+h1,h2,h3,.btn{font-family:'Montserrat',Arial,sans-serif}
 .cases,.c-reset,.top .kicker{display:none!important}
 .wrap{padding-top:6px;padding-bottom:calc(28px + env(safe-area-inset-bottom,0px))}
 /* the look of the lessons (style.css): the pills on their deeper edge, sinking when pressed */

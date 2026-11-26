@@ -37,7 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#F4F8FD"
+          "backgroundColor": "#F5F9FD"
         }
       ],
       "expo-status-bar",

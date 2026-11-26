@@ -39,4 +39,4 @@ La sede si può guardare anche nel browser, servendo la cartella `prove/sede/` c
 
 ## Licenza
 
-Il codice è MIT (`LICENSE`). Testi, test, disegni dei personaggi e icona sono CC BY-SA 4.0 (`LICENSE-CONTENUTI.md`), dove trovi anche le licenze di three.js, Fluent Emoji e dei due caratteri.
+Il codice è MIT (`LICENSE`). Testi, test, disegni dei personaggi e icona sono CC BY-SA 4.0 (`LICENSE-CONTENUTI.md`), dove trovi anche le licenze di three.js, Fluent Emoji e di Montserrat. Il marchio interest resta di Interest Edufin APS.

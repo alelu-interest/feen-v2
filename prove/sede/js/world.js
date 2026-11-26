@@ -38,7 +38,7 @@ export const floorY = (n) => B.plinth + (n - 1) * B.floorH; // top of the floor 
 // on them stage by stage: both a step from the light towards the base, so a new palette repaints the rooms by itself.
 export const FLOORS = [
   { n: 1, name: 'Direzione', the: 'la Direzione', ready: 'La Direzione è pronta', light: '#FAEAE1', color: '#E97F4F', deep: '#944219' },
-  { n: 2, name: 'Tesoreria', the: 'la Tesoreria', ready: 'La Tesoreria è pronta', light: '#E2F0F9', color: '#61ACE2', deep: '#205985' },
+  { n: 2, name: 'Tesoreria', the: 'la Tesoreria', ready: 'La Tesoreria è pronta', light: '#EAF2FB', color: '#89B7E9', deep: '#015488' },
   { n: 3, name: 'Gaming', the: 'il Gaming', ready: 'Il Gaming è pronto', light: '#F0ECFC', color: '#A18AF1', deep: '#5F43B2' },
   { n: 4, name: 'Marketing', the: 'il Marketing', ready: 'Il Marketing è pronto', light: '#FBE8EF', color: '#EE78A5', deep: '#962C58' },
   { n: 5, name: 'Pianificazione', the: 'la Pianificazione', ready: 'La Pianificazione è pronta', light: '#E5F4E6', color: '#57B65C', deep: '#266D2C' },

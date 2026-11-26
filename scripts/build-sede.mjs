@@ -20,7 +20,7 @@ const out = join(root, 'assets/sede');
 const fontsDir = join(out, 'fonts');
 
 const FONTS_URL =
-  'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap';
+  'https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap';
 // Google answers with woff2 only to a browser it knows
 const UA =
   'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
@@ -101,7 +101,8 @@ function swap(html, find, replacement) {
 if (process.argv.includes('--fonts')) await fetchFonts();
 
 let html = await readFile(join(src, 'index.html'), 'utf8');
-const css = await readFile(join(src, 'style.css'), 'utf8');
+// style.css, then the Interest branding on top of it (brand-interest.css, 26/11/2026)
+const css = (await readFile(join(src, 'style.css'), 'utf8')) + '\n' + (await readFile(join(src, 'brand-interest.css'), 'utf8'));
 const [js, fonts] = await Promise.all([bundle(), fontsInline()]);
 
 // what the page took from the web or from files next to it: in the app it is inside, or not needed
@@ -112,11 +113,13 @@ html = html.replace(/\s*<script type="importmap">[\s\S]*?<\/script>/, '');
 // the check looks at the page only: the scripts may build src="${…}" for images they carry inline (js/people.js)
 const shell = html
   .replace('<link rel="stylesheet" href="style.css" />', '')
+  .replace('<link rel="stylesheet" href="brand-interest.css" />', '')
   .replace('<script type="module" src="js/main.js"></script>', '');
 if (/(src|href)="(?!#|data:)/.test(shell)) throw new Error('index.html still points to a file outside');
 // the file the phone carries is the app: no Demo, no line about the prova (js/app.js, 09/11/2026)
 html = swap(html, '<html lang="it">', '<html lang="it" data-app>');
 html = swap(html, '<link rel="stylesheet" href="style.css" />', `<style>\n${fonts}\n${css}\n</style>`);
+html = swap(html, '<link rel="stylesheet" href="brand-interest.css" />', '');
 html = swap(html, '<script type="module" src="js/main.js"></script>', `<script type="module">${js}</script>`);
 
 await mkdir(out, { recursive: true });

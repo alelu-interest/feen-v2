@@ -1,0 +1,179 @@
+/* FEEN · branding Interest (26/11/2026)
+   Un livello sopra style.css: si carica DOPO style.css e cambia solo token e pochi dettagli.
+   Principio: FEEN resta FEEN (piani colorati, personaggi, 3D, forme morbide); da Interest prende
+   il carattere (Montserrat), i due blu e il nero, gli accenti corallo e verde per giusto/sbagliato,
+   e una firma discreta («un progetto di interest») in tre punti: apertura, Tu, privacy.
+   Fonte: Interest Brand Manual 2.0, nov 2026 (colori p. 15-18, tipografia p. 19-22). */
+
+:root {
+  /* ---------- carattere unico: Montserrat 400 / 600 / 700 / 800 (manuale p. 19) ---------- */
+  --title: 'Montserrat', Arial, sans-serif;
+  --text: 'Montserrat', Arial, sans-serif;
+
+  /* ---------- principali: Blu #015488, Azzurro #89B7E9, Nero #0B0B0C, Bianco ---------- */
+  --ink: #0b0b0c;
+  --ink-2: #0b0b0c; /* i paragrafi sono testo corrente: Nero (manuale p. 15) */
+  --muted: #3476a0; /* Blu 80%: didascalie e note, 4,9:1 su bianco */
+  --line: #dbe7ee; /* Blu 14%: filetti e bordi */
+  --surface: #ffffff;
+  --surface-2: #eaf2fb; /* Azzurro 18%: fondi tenui */
+  --page: #f5f9fd; /* metà strada tra bianco e Azzurro 18%: il bianco resta la superficie */
+
+  --brand: #015488;
+  --brand-soft: #eaf2fb;
+  --brand-ink: #015488;
+  --action: #015488;
+  --action-edge: #0b0b0c; /* il bordo dei bottoni che affonda: il Nero della palette, nessuna tinta inventata */
+  --on-action: #ffffff;
+  --on-action-muted: #ffffff;
+
+  /* la scala blu di FEEN ricondotta alla palette */
+  --blue-50: #eaf2fb;
+  --blue-100: #dbe7ee;
+  --blue-200: #99bbcf;
+  --blue-300: #89b7e9;
+  --blue-400: #3476a0;
+  --blue-500: #015488;
+  --blue-600: #015488;
+  --blue-700: #015488;
+  --blue-800: #015488;
+  --blue-900: #0b0b0c;
+
+  /* ---------- accenti: verde = giusto, corallo = sbagliato (manuale p. 16) ----------
+     mai testo colorato: le parole restano nere, il colore sta nel segno e nei bordi */
+  --correct: #49caa6;
+  --correct-soft: color-mix(in srgb, #49caa6 14%, #ffffff);
+  --correct-ink: #0b0b0c;
+  --error: #ff717f;
+  --error-soft: color-mix(in srgb, #ff717f 13%, #ffffff);
+  --error-ink: #0b0b0c;
+  --orange: #ff717f;
+  --orange-soft: color-mix(in srgb, #ff717f 13%, #ffffff);
+  --orange-ink: #0b0b0c;
+
+  /* ricompense e traguardi: niente giallo e viola, i due blu */
+  --reward: #89b7e9;
+  --reward-soft: #eaf2fb;
+  --reward-ink: #015488;
+  --achievement: #015488;
+  --achievement-soft: #eaf2fb;
+  --achievement-ink: #015488;
+
+  --paper-ink: #0b0b0c;
+  --paper-ink-2: #3476a0;
+  --paper-line: #dbe7ee;
+
+  --shadow: 0 10px 30px rgba(1, 84, 136, 0.1), 0 1px 3px rgba(11, 11, 12, 0.06);
+  --shadow-sm: 0 4px 14px rgba(1, 84, 136, 0.08);
+  --scrim: rgba(11, 11, 12, 0.22);
+  --veil: rgba(245, 249, 253, 0.75);
+  --paper-edge: rgba(11, 11, 12, 0.08);
+}
+
+/* ---------- tipografia: Montserrat è più largo, i titoli si stringono appena (manuale p. 20) ---------- */
+h1,
+h2,
+h3,
+.view-head h1,
+.lz-verdict h3 {
+  letter-spacing: -0.01em;
+}
+/* i titoli delle viste (Percorso, Tu) in Blu, come i titoli Interest */
+.view-head h1 {
+  color: var(--brand);
+}
+/* 500 non è nel sistema: diventa 600 */
+[style*='font-weight: 500'],
+.pill-light {
+  font-weight: 700;
+}
+
+/* ---------- giusto / sbagliato: il segno nel colore d'accento, la parola in nero ---------- */
+.lz-sheet.ok .lz-mark {
+  background: var(--correct);
+}
+.lz-sheet.no .lz-mark {
+  background: var(--error);
+}
+.lz-sheet.ok .lz-mark svg,
+.lz-sheet.no .lz-mark svg {
+  stroke: #0b0b0c; /* sul verde e sul corallo il testo e i segni sono neri (9,6:1 e 7,4:1) */
+}
+.lz-sheet.ok {
+  border-top: 3px solid var(--correct);
+}
+.lz-sheet.no {
+  border-top: 3px solid var(--error);
+}
+
+/* «Ricomincia da capo»: niente testo corallo, il nero con la sottolineatura corallo */
+.link.danger {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--error);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* ---------- la firma: «un progetto di interest» ---------- */
+/* il logotipo è sempre il file ufficiale (Brand/Logo), mai ridisegnato, mai animato, mai sotto 88 px di larghezza */
+.interest-by {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--ink-2);
+  font-size: calc(12px * var(--fs));
+  font-weight: 600;
+}
+.interest-by svg {
+  display: block;
+  width: 96px;
+  height: auto;
+}
+/* nell'apertura: in basso, fermo, mentre le ombre e il titolo si muovono */
+.avvio.av-open .interest-by {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--safe-b) + 28px);
+  transition: none;
+  transform: none;
+  animation: none;
+}
+.avvio.av-open:not(.av-go) .interest-by {
+  visibility: visible; /* il marchio non aspetta l'animazione: c'è e basta */
+}
+
+/* nel Tu: l'ultima scheda, sotto le impostazioni */
+.me-card.me-interest {
+  text-align: left;
+}
+.me-interest .interest-logo {
+  display: block;
+  width: 120px;
+  height: auto;
+  margin: 2px 0 12px;
+}
+.me-interest p {
+  margin: 0 0 10px;
+  color: var(--ink);
+  font-size: calc(14px * var(--fs));
+  line-height: 1.5;
+}
+.me-interest .motto {
+  margin: 14px 0 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--brand);
+  font-weight: 800;
+  font-size: calc(13px * var(--fs));
+  letter-spacing: 0.02em;
+}
+
+/* la formula su una riga: Montserrat è più largo di Bricolage, il corpo scende di due punti */
+.fx {
+  font-size: calc(16px * var(--fs-l));
+  letter-spacing: -0.01em;
+}

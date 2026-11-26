@@ -81,7 +81,7 @@ const rrect = (g, x, y, w, h, r) => {
   g.stroke();
 };
 const glyph = (g, t, x, y, size) => {
-  g.font = `800 ${size}px "Bricolage Grotesque"`;
+  g.font = `800 ${size}px "Montserrat"`;
   g.textAlign = 'center';
   g.textBaseline = 'middle';
   g.fillText(t, x, y);

@@ -24,7 +24,7 @@ const page = require('../../../assets/sede/sede.html');
 
 // the page's own background (--page in style.css), the same as the splash in app.json: nothing flashes while it opens.
 // The v1 is light only (the user, 10/11/2026): the dark one, #0D1529, waits with prove/sede/scuro.css
-const BG = '#F4F8FD';
+const BG = '#F5F9FD';
 
 /** Runs before the page: the size of the text, the copy of the save, the app's icon (app-icon.ts), and the vibration
  *  iOS does not give to a web page. */

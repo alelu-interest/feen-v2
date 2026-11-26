@@ -1,6 +1,7 @@
 // FEEN · la sede — Tu (28/10/2026): your character, the contract you signed, the milestones as a diary, the
 // settings (CLAUDE.md §7). Since 07/11/2026 the character is the one of the test of the first start (avvio.js).
 import { ROOMS } from './office.js';
+import { INTEREST_LOGO } from './interest-logo.js';
 import { FLOORS } from './world.js';
 import { inkOn, motion, buzz } from './kit.js';
 import { TROPHIES, emblem } from './trophies.js';
@@ -173,6 +174,7 @@ export function makeMe(api) {
   /** What FEEN keeps and what it does not (cubotto 9.8, 09/11/2026; CLAUDE.md §1 and §8): open under its row. */
   function privacy() {
     return `<div class="privacy" id="privacy"${privacyOpen ? '' : ' hidden'}>
+      <p><b>Chi lo fa.</b> FEEN è un progetto di Interest Edufin APS, associazione di promozione sociale (ente del Terzo settore).</p>
       <p><b>Niente account.</b> FEEN non ti chiede nome, email, età o password.</p>
       <p><b>Tutto resta qui.</b> Progressi, personaggio e firma stanno su questo telefono. Nessun dato esce: FEEN non ha un server e non raccoglie statistiche su chi gioca.</p>
       <p><b>Il backup.</b> La tua azienda vive su questo telefono, e nel suo backup se è acceso. Il backup va al tuo iCloud o al tuo account Google, mai a FEEN.</p>
@@ -182,8 +184,19 @@ export function makeMe(api) {
     </div>`;
   }
 
+  /** Chi c'è dietro FEEN: l'ultima scheda del Tu, sotto le impostazioni (branding Interest, 26/11/2026). */
+  function interestCard() {
+    return `<section class="me-card me-interest" aria-labelledby="me-interest-t">
+      <h2 id="me-interest-t">Chi c’è dietro FEEN</h2>
+      <span class="interest-logo">${INTEREST_LOGO}</span>
+      <p>FEEN è fatto da Interest, un’associazione di studenti universitari che porta l’educazione finanziaria nelle scuole, da pari a pari.</p>
+      <p>Non vendiamo prodotti e non diamo consulenza: non abbiamo niente da guadagnare dalle tue scelte.</p>
+      <p class="motto">Curiosa. Giovane. No profit</p>
+    </section>`;
+  }
+
   function render() {
-    body.innerHTML = character() + contract() + milestones() + settingsCard();
+    body.innerHTML = character() + contract() + milestones() + settingsCard() + interestCard();
     // the floor you are on by its name, no number on a square (10/11/2026, review)
     const top = FLOORS[api.state.floor - 1];
     document.getElementById('me-sub').innerHTML = `<span class="me-dot" style="background:${top.color}"></span>${top.name}`;

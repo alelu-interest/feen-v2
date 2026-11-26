@@ -134,7 +134,7 @@ export function roundRect(ctx, x, y, w, h, r) {
 }
 
 /** Lettering for textures: the titles' typeface, optionally outlined. */
-export function strokeText(ctx, text, x, y, size, { fill = C.ink, stroke = C.ink, line = 0, font = 'Bricolage Grotesque', weight = 800, align = 'center' } = {}) {
+export function strokeText(ctx, text, x, y, size, { fill = C.ink, stroke = C.ink, line = 0, font = 'Montserrat', weight = 800, align = 'center' } = {}) {
   ctx.font = `${weight} ${size}px "${font}", system-ui, sans-serif`;
   ctx.textAlign = align;
   ctx.textBaseline = 'middle';

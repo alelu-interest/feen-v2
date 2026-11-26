@@ -2007,7 +2007,7 @@ manager.onProgress = (_, loaded, total) => {
 
 async function start() {
   resize();
-  await Promise.all([document.fonts.load('800 40px "Bricolage Grotesque"'), document.fonts.load('700 40px "Bricolage Grotesque"'), document.fonts.load('500 16px "Hanken Grotesk"')]).catch(() => {});
+  await Promise.all([document.fonts.load('800 40px "Montserrat"'), document.fonts.load('700 40px "Montserrat"'), document.fonts.load('400 16px "Montserrat"')]).catch(() => {});
   $('load-bar').style.transform = 'scaleX(1)'; // everything is made in code: nothing else to load
 
   sky = makeSky();

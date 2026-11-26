@@ -21,7 +21,8 @@ Questi pezzi hanno la licenza dei loro autori, che si trova accanto a loro:
 
 - **three.js** (`prove/sede/vendor/three/`): MIT, vedi `prove/sede/vendor/three/LICENSE`.
 - **Fluent Emoji** di Microsoft (`assets/office/`): MIT, vedi `assets/office/LICENSE-fluentui-emoji.txt`.
-- **Bricolage Grotesque** e **Hanken Grotesk** (`assets/sede/fonts/`): SIL Open Font License 1.1, vedi `OFL-BricolageGrotesque.txt` e `OFL-HankenGrotesk.txt` nella stessa cartella.
+- **Montserrat** (`assets/sede/fonts/`): SIL Open Font License 1.1, vedi `OFL-Montserrat.txt` nella stessa cartella.
+- **Il marchio interest** (logotipo e simbolo, in `prove/sede/js/interest-logo.js`): è il marchio di Interest Edufin APS e non rientra nella licenza CC BY-SA 4.0 dei contenuti. Si usa solo per dire che FEEN è un progetto di Interest, nei file originali e senza modifiche.
 
 `assets/sede/sede.html` è costruito da `scripts/build-sede.mjs` e mette insieme tutti i pezzi qui sopra: ognuno resta con la sua licenza.
 
