@@ -52,7 +52,7 @@ export function makeMe(api) {
     </section>`;
   }
 
-  /** Your character, from the test of the first start (07/11/2026, CLAUDE.md §7). Since 10/11/2026 (Davide: «la pagina tu
+  /** Your character, from the test of the first start (07/11/2026, CLAUDE.md §7). Since 10/11/2026 (review: «la pagina tu
    *  è troppo lunga… il personaggio diamogli aria in png non in quadrato»): the whole figure, free, beside its name and
    *  motto; the pregio and the trappola in a line each; the map opens from the type, under it; the partner in a line. */
   function yours(who) {
@@ -104,7 +104,7 @@ export function makeMe(api) {
   /** The Traguardi, in two groups (28/10/2026, the user: «raggrupperei i traguardi… tipo i traguardi di FIFA»): the
    *  trophies, with a name and a line of their own, and under them the diary of what happened. No counters. */
   function milestones() {
-    // a grid of emblems with their names (10/11/2026, Davide: the Tu too long): a touch tells what it is (toast)
+    // a grid of emblems with their names (10/11/2026, review: the Tu too long): a touch tells what it is (toast)
     const cards = TROPHIES.map((t) => {
       const on = api.trophies.has(t.id);
       const name = on || !t.secret ? t.name : 'Segreto';
@@ -121,7 +121,7 @@ export function makeMe(api) {
   function diary() {
     const rows = [['Hai firmato il contratto tra soci', 'Il primo giorno nell’azienda', null]];
     for (let n = 1; n <= api.state.floor; n++) {
-      // the floors by name, «Livello 2» as its level: no «Piano 2» (Davide, 10/11/2026)
+      // the floors by name, «Livello 2» as its level: no «Piano 2» (review, 10/11/2026)
       if (HIRED[n]) rows.push([`Hai assunto ${HIRED[n]}`, `Il colloquio ${ofFloor(FLOORS[n - 1])}`, null]);
       if (api.earnedOn(n) === 8) rows.push([FLOORS[n - 1].ready, `Livello ${n}`, ROOMS[n].share ? n : null, FLOORS[n - 1].color]);
     }
@@ -184,12 +184,12 @@ export function makeMe(api) {
 
   function render() {
     body.innerHTML = character() + contract() + milestones() + settingsCard();
-    // the floor you are on by its name, no number on a square (10/11/2026, Davide)
+    // the floor you are on by its name, no number on a square (10/11/2026, review)
     const top = FLOORS[api.state.floor - 1];
     document.getElementById('me-sub').innerHTML = `<span class="me-dot" style="background:${top.color}"></span>${top.name}`;
   }
 
-  // the time of the reminders, chosen again from here (10/11/2026, Luca: after the first start it stayed at 18:00 for
+  // the time of the reminders, chosen again from here (10/11/2026, a tester: after the first start it stayed at 18:00 for
   // good, while «l'orario lo sceglie il ragazzo», CLAUDE.md §5)
   body.addEventListener('change', (e) => {
     if (e.target.id !== 'set-ora' || !e.target.value) return;

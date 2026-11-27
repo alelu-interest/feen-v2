@@ -1,8 +1,8 @@
 // FEEN · la sede, prova in stile «Clash of Clans corporate» (24/10/2026),
-// asciugata nello stile di Bending Spoons dopo il parere di Davide (strada A).
+// asciugata nello stile di Bending Spoons dopo il parere della revisione (strada A).
 // I piani arredati salgono uno alla volta (25/10/2026: Direzione e Tesoreria), con la sede intorno,
 // da aprire sul telefono.
-// 25/10/2026 pomeriggio, dopo il parere di Davide: niente zoom né giro intorno al palazzo;
+// 25/10/2026 pomeriggio, dopo il parere della revisione: niente zoom né giro intorno al palazzo;
 // l'angolo è fisso e il dito porta su e giù nel palazzo, da fuori e da vicino.
 
 import { IN_APP } from './app.js'; // first: the page knows at once whether it is the app (no Demo) or the prova
@@ -180,7 +180,7 @@ function go(name, arg, { instant = false, keepZoom = false } = {}) {
   showSigns();
 }
 
-/** Every floor shows its name (10/11/2026, Davide: no numbers like a bingo card), bigger from outside so it reads;
+/** Every floor shows its name (10/11/2026, review: no numbers like a bingo card), bigger from outside so it reads;
  *  inside a floor the plate at the top adds its level. */
 function showSigns() {
   const inside = state.view !== 'overview';
@@ -604,7 +604,7 @@ function toast(text, { low = false } = {}) {
   void t.offsetWidth;
   t.style.animation = '';
   clearTimeout(toastTimer);
-  // long enough to read slowly (10/11/2026: Kevin and Chiara lost «Si apre dopo…» after 3.6 s): about 75 ms a letter,
+  // long enough to read slowly (10/11/2026: two testers lost «Si apre dopo…» after 3.6 s): about 75 ms a letter,
   // never under 4 s; a touch closes it earlier
   toastTimer = setTimeout(() => (t.hidden = true), Math.max(4000, 2000 + text.length * 75));
   say(text);
@@ -625,7 +625,7 @@ const plateFloor = () => (state.view === 'overview' ? state.floor : state.viewFl
 
 // ---------- the first touch (22/11/2026, D4 of the bots) ----------
 // From outside nothing said that a floor opens at a touch: the line «Scorri su e giù · Tocca un piano per entrarci» went
-// on 10/11/2026 (Davide: let the screen say it). Until a finger first opens a floor, a ring spreads from the room of the
+// on 10/11/2026 (review: let the screen say it). Until a finger first opens a floor, a ring spreads from the room of the
 // floor in progress, without words; once a floor has been opened by touch it never comes back (saved, `hinted`).
 let hinted = false;
 const hintAt = new THREE.Vector3();
@@ -677,7 +677,7 @@ function renderPlate() {
   platedFloor = plateFloor();
   const f = FLOORS[platedFloor - 1];
   paintFloor($('plate'), f);
-  // the name, never a number on its own (10/11/2026, Davide: «sti numeri così mi sanno di tombola»); the level comes
+  // the name, never a number on its own (10/11/2026, review: «sti numeri così mi sanno di tombola»); the level comes
   // when you go into the floor, as a building tapped in a city game tells its level (showSigns)
   $('plate-level').textContent = `Livello ${f.n}`;
   $('plate-title').textContent = f.name;
@@ -885,7 +885,7 @@ function openCard(n, i, fresh, { result = '', prizes = [] } = {}) {
   $('card-got').hidden = !s.object && !won.length;
   $('card-idea').textContent = s.idea;
   // at the end of a stage the card says how it went and what you took (CLAUDE.md §6); the idea in a line belongs to
-  // the object's card, opened from the Ufficio (§7): here it was a sixth thing to read (11/11/2026, Davide: less text)
+  // the object's card, opened from the Ufficio (§7): here it was a sixth thing to read (11/11/2026, review: less text)
   $('card-idea').hidden = fresh;
   // «Ripassa» only where there is something to play again (the review, below): a lesson, a Caso, a Prova sul campo
   $('card-review').hidden = fresh || !canReview(n, i);
@@ -1218,7 +1218,7 @@ function lessonFor(n, s) {
 function comingSoon(n) {
   return IN_APP && n > 1 && !Object.keys(LESSONS).some((k) => k.startsWith(`p${n}-`));
 }
-// by its name, as everywhere since Davide's «sti numeri così mi sanno di tombola» (10/11/2026)
+// by its name, as everywhere since the review's «sti numeri così mi sanno di tombola» (10/11/2026)
 const SOON = (n) => `${cap(FLOORS[n - 1].the)} è in costruzione: la gru ci lavora, apre con il prossimo aggiornamento di FEEN.`;
 /** The Caso of the team for stage s of floor n (17/11/2026): the first of that floor's two Casi where the Caso is, the
  *  second where the Prova sul campo is. A floor's Casi come as one page with both, or as a page each (floor 1), see
@@ -1334,7 +1334,7 @@ async function completeNext({ pretend = true, fromPath = false, real = false } =
     await wait(hire ? 2.2 : 1.35);
     $('fake-lesson').hidden = true;
   }
-  // The stage is done: it is saved now, before the flight to the office (10/11/2026, Luca's test: the save came at
+  // The stage is done: it is saved now, before the flight to the office (10/11/2026, a tester's game: the save came at
   // the end of the flight, 2–3.5 s after the last «Continua», and closing the app in between lost the whole lesson).
   // The flight and the card are only the show: from here on, closing the app loses nothing that counts.
   const place = office.slotOf(i);
@@ -1470,7 +1470,7 @@ async function floorComplete() {
   const info = FLOORS[n - 1];
   go('overview');
   await wait(0.8);
-  banner(`Livello ${n} completato`, info.ready); // «Livello», as the plate and the Percorso say (Davide, 10/11/2026)
+  banner(`Livello ${n} completato`, info.ready); // «Livello», as the plate and the Percorso say (review, 10/11/2026)
   sfx.fanfare();
   buzz(40);
   confetti(new THREE.Vector3(0, floorY(n) + B.ih + 0.6, 1.2), info);
@@ -1540,7 +1540,7 @@ async function floorComplete() {
   renderPlate();
   renderCta();
   sfx.reward();
-  toast(`Si apre ${FLOORS[n].the}`); // by its name (Davide, 10/11/2026)
+  toast(`Si apre ${FLOORS[n].the}`); // by its name (review, 10/11/2026)
   state.busy = false;
 }
 
@@ -1551,7 +1551,7 @@ async function floorComplete() {
 // when it waits for an update of the app), the next floor rising now, or after the last floor the roof. No dates,
 // no guilt, never what the launch is, nothing male or female about whoever plays (CLAUDE.md §4, §8).
 const toFloor = (f) => f.the.replace(/^la /, 'alla ').replace(/^il /, 'al '); // «alla Tesoreria», «al piano dei Soci»
-// How far the launch is, in the words of the partner (10/11/2026: Tommaso and five more did not know how much was
+// How far the launch is, in the words of the partner (10/11/2026: six testers did not know how much was
 // left; the floor waiting for an update said «la gru lavora già» and then the Percorso «arriva con il prossimo
 // aggiornamento dell'app», two stories at once: now the partner says both, once, and the Percorso the same)
 const COUNT = ['Un piano', 'Due piani', 'Tre piani', 'Quattro piani', 'Cinque piani', 'Sei piani', 'Sette piani', 'Otto piani', 'Nove piani', 'Dieci piani', 'Undici piani'];
@@ -1750,7 +1750,7 @@ $('btn-demo').onclick = () => {
   sfx.tap();
   openSheet($('demo-wrap'));
 };
-// the sounds are switched in the Tu's settings only (10/11/2026, Davide: «togliere il pulsante del sound»)
+// the sounds are switched in the Tu's settings only (10/11/2026, review: «togliere il pulsante del sound»)
 function toggleSound() {
   sound.on = !sound.on;
   persist();
@@ -1905,7 +1905,7 @@ function setTab(t) {
     $('me').scrollTop = 0;
   }
   // no hint on the first visit any more («Scorri su e giù · Tocca un piano per entrarci»): the screen says it by
-  // itself (revisione della grafica, 10/11/2026 sera, after Davide: «fare capire cose tramite l'UI anziché scriverle»)
+  // itself (revisione della grafica, 10/11/2026 sera, after the review: «fare capire cose tramite l'UI anziché scriverle»)
 }
 /** The stage to do now, started from the Percorso: the lesson, then its end in the Ufficio, then back. */
 async function play() {
@@ -2117,7 +2117,7 @@ async function start() {
   // - A step down that leaves the gap as it was is taken back, and the probe ends there: it was not the pixels.
   // Until 11/11/2026 the probe held the gap against a fixed 24 ms: an iPhone in Low Power Mode looked like a slow
   // phone, and its Office went down to 1.5 for good, with a quarter of the screen's pixels and not one frame gained
-  // (the user: «l'ufficio sembra sfocato sul telefono»; Davide the day before: «i numeri sono sfocati», when the probe
+  // (the user: «l'ufficio sembra sfocato sul telefono»; a review the day before: «i numeri sono sfocati», when the probe
   // also counted the loading).
   const sorted = (list) => [...list].sort((a, b) => a - b);
   const probe = { step: 0, skip: 60, gaps: [], was: null, done: SHARP.length < 2 };

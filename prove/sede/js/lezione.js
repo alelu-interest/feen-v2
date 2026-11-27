@@ -155,7 +155,7 @@ export function makeLesson(api) {
     tip.style.left = `${left}px`;
     tip.style.setProperty('--x', `${Math.min(Math.max(18, r.left + r.width / 2 - left), width - 18)}px`);
     // under the whole text the word is in, not under the word: right under the word it covered the next lines of the
-    // question, often the numbers it is about (10/11/2026, Kevin and the album, A-002). Over the text when there is
+    // question, often the numbers it is about (10/11/2026, a tester and the album, A-002). Over the text when there is
     // no room below. The arrow still points at the word.
     const para = (b.closest('p, li, .lz-q, .lz-say, .lz-opt, .lz-sentence') ?? b).getBoundingClientRect();
     const h = tip.offsetHeight;
@@ -329,7 +329,7 @@ export function makeLesson(api) {
     }
     // the help line of a new type: the first time only, not in «Ci riprovi»
     const help = e.help && !retry ? `<p class="lz-help"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a6 6 0 0 1 3.5 10.9V17h-7v-2.6A6 6 0 0 1 12 3.5zM9.5 20.5h5"/></svg>${esc(e.help)}</p>` : '';
-    // one instruction on a screen, not two or three (11/11/2026, Davide: less text): what to do is said by the mentor's
+    // one instruction on a screen, not two or three (11/11/2026, review: less text): what to do is said by the mentor's
     // line and by the screen itself (two columns, a gap in the sentence, the place of the first step). How to touch
     // stays for the screen reader, which does not see the screen.
     const hint = TYPE_ASK[e.type] && e.type !== 'vf' && !help ? `<p class="sr-only">${TYPE_ASK[e.type]}</p>` : '';

@@ -43,6 +43,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "lezioni": "node scripts/lezioni.mjs",
+    "indizi": "node scripts/indizi.mjs",
     "build:sede": "node scripts/lezioni.mjs && node scripts/build-sede.mjs"
   },
   "private": true,

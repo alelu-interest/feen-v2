@@ -1,11 +1,11 @@
-// Copied as it is from Dorigo's work (1. LAVORO/test/originale/quiz.js, 07/11/2026): change it there first. In the
+// Copied as it is from the team's original (1. LAVORO/test/originale/quiz.js, 07/11/2026): change it there first. In the
 // prova it drives the test of the first start (avvio.js) and the character of the Tu (me.js).
 // FEEN · il test dei personaggi (03/11/2026): the 12 statements of the Tu, how they are scored, the point on the
 // map and the four types with their pregio and trappola. Statements in the style of 16personalities: one per screen,
 // seven circles from «D’accordo» (+3) to «In disaccordo» (−3). Six statements per axis, three keyed each way, so
 // whoever agrees with everything lands in the middle, not in a quadrant. The words never say «he» or «she» about
 // whoever plays (CLAUDE.md §8): no adjective about the player is ever gendered.
-// The statements never talk about money (Davide, 03/11/2026: «domande che sembrano distanti… rivelare»): everyday
+// The statements never talk about money (review, 03/11/2026: «domande che sembrano distanti… rivelare»): everyday
 // life, one area each, and the result reveals the type with money. Rischio: thrills, stakes, margins of safety,
 // guessing. Tradizione: rituals, routines, re-watching versus new food, new music, new versions of an app.
 

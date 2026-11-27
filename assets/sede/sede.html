@@ -221,7 +221,7 @@ svg {
   border-radius: 20px;
   box-shadow: var(--shadow-sm);
 }
-/* the floor's colour as a short band inside the left edge, like the sign on the building (no number: Davide) */
+/* the floor's colour as a short band inside the left edge, like the sign on the building (no number: the review) */
 .plate::before {
   content: '';
   position: absolute;
@@ -236,7 +236,7 @@ svg {
   animation: pop 0.4s var(--ease);
 }
 /* the level, only once you are in the floor, after the name on its line, so the plate keeps its height (10/11/2026,
-   Davide: «Direzione, e poi se clicchi "livello 1"») */
+   the review: «Direzione, e poi se clicchi "livello 1"») */
 .plate-head {
   display: flex;
   align-items: baseline;
@@ -460,7 +460,7 @@ svg {
   width: 100%;
 }
 /* a button not ready yet («Firmo», «Verifica», «Tocca chi ti somiglia»): grey and flat, but its words read, because
-   they say what to do (10/11/2026, Chiara: white on light blue at 0.4 opacity was under 2:1). A solid grey, not a dashed
+   they say what to do (10/11/2026, a tester: white on light blue at 0.4 opacity was under 2:1). A solid grey, not a dashed
    outline: the dashes looked broken (revisione della grafica, 10/11/2026 sera). */
 .pill-dark[disabled] {
   background: var(--line);
@@ -1969,7 +1969,7 @@ html:not([data-app]) .pf-head::after {
   grid-template-columns: repeat(3, 1fr); /* four to a row broke the names with a hyphen («Capita an-che») */
   gap: 18px 8px;
 }
-/* an emblem and its name; a touch tells what it is (me.js, 10/11/2026: the Tu shorter, Davide) */
+/* an emblem and its name; a touch tells what it is (me.js, 10/11/2026: the Tu shorter, review) */
 .trophy {
   width: 100%;
   min-height: 44px;
@@ -2247,7 +2247,7 @@ html:not([data-app]) .pf-head::after {
   color: var(--ink);
 }
 
-/* ---------- the first start (07/11/2026, js/avvio.js): welcome, Dorigo's test, reveal, choice, partner, contract ---------- */
+/* ---------- the first start (07/11/2026, js/avvio.js): welcome, the team's test, reveal, choice, partner, contract ---------- */
 :root {
   /* the scale of the test in the palette (the user's choice, 07/11/2026): blue towards «D'accordo», grey-blue towards
      «In disaccordo», the middle lighter; not the green and purple of the reference */
@@ -2496,7 +2496,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
-/* the statement up top, the circles in the middle of the screen (10/11/2026, Davide) */
+/* the statement up top, the circles in the middle of the screen (10/11/2026, review) */
 .avvio h2.av-q {
   margin-top: 28px;
   font-size: calc(26px * var(--fs-l));
@@ -2566,7 +2566,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   --c: var(--agree);
 }
 .av-dot.d3 {
-  --s: 28px; /* 22 px was hard to see (10/11/2026, Chiara) */
+  --s: 28px; /* 22 px was hard to see (10/11/2026, a tester) */
   --c: var(--mid);
 }
 .av-dot.d4,
@@ -2652,7 +2652,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
 }
 
 /* the reveal: the motto is the title, the two axes under it as a small label (09/11/2026, revisione UX, stanza 3);
-   since 10/11/2026 (Davide) the pregio in one line and the map rising under it, on the same screen */
+   since 10/11/2026 (review) the pregio in one line and the map rising under it, on the same screen */
 .av-good {
   margin: 0;
   font-size: calc(17px * var(--fs));
@@ -3125,7 +3125,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   }
 }
 
-/* the choice of the character (10/11/2026, Davide): the two figures standing free, their names under them. They
+/* the choice of the character (10/11/2026, review): the two figures standing free, their names under them. They
    breathe, a little out of step, so they look touchable; the one touched steps forward on its light, the other steps
    back; then the button comes up with the name. Over them one question (17/11/2026, the user: «ci sono soltanto loro
    due»; until then nothing was written): centred and as large as the question of the opening, «Che investitore sei?»,
@@ -3641,7 +3641,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   border-radius: 12px;
   padding: 6px 10px;
 }
-/* the character in the Tu (10/11/2026, Davide): the whole figure, free, with room round it; name, motto and type
+/* the character in the Tu (10/11/2026, review): the whole figure, free, with room round it; name, motto and type
    beside it; the map opens from the type; the pregio and the trappola a line each */
 .me-who {
   display: grid;
@@ -3780,7 +3780,7 @@ body[data-avvio]:not([data-avvio='lezione']) .top {
   flex: none;
   width: 52px;
   height: 52px;
-  border-radius: 50%; /* a face, not a square (10/11/2026, Davide) */
+  border-radius: 50%; /* a face, not a square (10/11/2026, review) */
 }
 .who-partner div {
   display: grid;
@@ -5154,7 +5154,9 @@ body.in-lesson .toast {
 .lz-right,
 .lz-why,
 .lz-explain {
-  margin: 0;
+  /* top and bottom only: in the sheet the sides stay «auto» (.lz-sheet > *), so on a wide screen the answer and its
+     reason sit in the middle column with «Non è così», not against the left edge (27/11/2026) */
+  margin-block: 0;
   font-size: calc(16px * var(--fs));
   line-height: 1.45;
   color: var(--ink);

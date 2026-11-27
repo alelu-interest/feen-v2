@@ -12,7 +12,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { B, FLOORS, LEAVES, TRUNK, leafBall, leafMat } from './world.js';
 
 // ---------- a hairline chamfer on every box of the rooms ----------
-// Davide, 10/11/2026: «il setup dell'ufficio a livello macro è molto bello ma a livello micro vanno alzate la qualità
+// Review of 10/11/2026: «il setup dell'ufficio a livello macro è molto bello ma a livello micro vanno alzate la qualità
 // degli oggetti». Every box in a room keeps its square edges (the rule of the elements), cut by a flat 45° chamfer
 // a few millimetres wide: from the room's view it is under a pixel, close up each edge catches a thin line of light,
 // as a real piece of furniture does. The building and the city outside stay sharp (they use kit.js's box).
@@ -407,7 +407,7 @@ const NIGHT_BLUE_LIGHT = tone(12, 0.5);
 // ---------- textures ----------
 /** The stage number on a stand: grey, or on the floor's colour for the next stage. It fills the face, so it reads from the room's view. */
 function standTexture(n, next, color) {
-  // 512 px a side since 10/11/2026 (Davide: «i numeri sono sfocati»): at 256 the figure went soft on a phone up close
+  // 512 px a side since 10/11/2026 (review: «i numeri sono sfocati»): at 256 the figure went soft on a phone up close
   return canvasTexture(512, 512, (g, w, h) => {
     if (next) {
       g.fillStyle = color;
@@ -516,7 +516,7 @@ function disc(r, t, material, at = [0, 0, 0]) {
   return d;
 }
 
-/** A gold coin lying flat, its face up. Its edge is rounded and catches the light (10/11/2026, Davide's «micro»:
+/** A gold coin lying flat, its face up. Its edge is rounded and catches the light (10/11/2026, the review's «micro»:
  *  before, a plain cylinder). */
 const coinCache = new Map();
 function coinBody(r, t) {
@@ -625,7 +625,7 @@ function seam(points, material, { step = 0.0042, w = 0.0011, t = 0.0007 } = {}) 
 }
 
 /** Stage 1: the empty card holder (28/10/2026, from the meeting: a thin, elegant card case instead of a fat wallet
- *  spilling coins). Redone close up on 10/11/2026 (Davide: «a livello micro vanno alzate la qualità degli oggetti»;
+ *  spilling coins). Redone close up on 10/11/2026 (review: «a livello micro vanno alzate la qualità degli oggetti»;
  *  before, a square slab with three flat strips, it read as a crate): leather a deeper peach than the walls, with its
  *  grain and a pale stitched seam all round; three pockets in steps, each with the thumb's curve cut in its top, as
  *  on a real card case; all three empty, and out of the middle one sticks only a receipt with a torn edge: that is
@@ -730,7 +730,7 @@ function whiteboard() {
   const cols = [-0.32, 0, 0.32];
   const signY = 0.1;
 
-  // the three departments, as small raised signs (10/11/2026, Davide's «micro»: before, a cylinder for the
+  // the three departments, as small raised signs (10/11/2026, the review's «micro»: before, a cylinder for the
   // megaphone, eight little blocks round a disc for the gear; now each is one clean shape with soft edges)
   const raised = (shape, depth = 0.022) => {
     const geo = new THREE.ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: 0.004, bevelSize: 0.0035, bevelSegments: 3, curveSegments: 24 });
@@ -819,7 +819,7 @@ function whiteboard() {
 /** The Field test: the month's piggy bank (28/10/2026, from the meeting: a classic piggy bank, see-through so the
  *  money shows). A clear body a third full of coins, snout, ears, legs and tail in the floor's peach, a coin halfway
  *  into the slot on its back. The inside of the glass a touch cloudier than the outside, as for every glass here, so
- *  its outline holds against the wall. Close up (10/11/2026, Davide's «micro»): two eyes, round soft ears instead of
+ *  its outline holds against the wall. Close up (10/11/2026, the review's «micro»): two eyes, round soft ears instead of
  *  three-sided cones, a rim on the snout with oval nostrils, a dark slot under the coin, rounder feet. */
 function piggyBank() {
   const g = new THREE.Group();
@@ -2808,7 +2808,7 @@ function squareDesk() {
 }
 
 /** Your chair, behind the desk and turned towards you. Above the desk only its back shows: until 10/11/2026 two tall
- *  posts and a wooden rail framed a cream panel, and from the room it read as a picture frame (Davide's «micro»).
+ *  posts and a wooden rail framed a cream panel, and from the room it read as a picture frame (the review's «micro»).
  *  Now the back is one thick upholstered cushion, square-edged, with two stitched seams across it, held from behind
  *  by two short wooden posts that the cushion hides, in a wooden shell that outlines it; the legs stop under the seat. */
 function squareChair() {

@@ -1,9 +1,9 @@
 // The campus around the company, kept quiet: sky, lawn, plaza, a few trees, the
 // pool, a bench and two lamp posts; and the shell of each floor.
-// 25/10/2026, after Davide's note («più squadrato, quasi seguendo le leggi di Wright»): the building is
+// 25/10/2026, after a review note («più squadrato, quasi seguendo le leggi di Wright»): the building is
 // a trunk and its branches. A stone core on the right rises the whole height and every floor comes out of
 // it as a thin plate, with no columns in front; edges are sharp, the garden is squared like the building.
-// 30/10/2026, Nello's idea and the user's choice (strada A of three sketches, `1. LAVORO/citta/`): the campus is a
+// 30/10/2026, a team idea and the user's choice (strada A of three sketches, `1. LAVORO/citta/`): the campus is a
 // green block in a city, with streets round it and low buildings beyond. Always by day: FEEN is never set at night
 // (the user, 10/11/2026); the evening, its lit windows, lamp pools and glowing plates are gone.
 
@@ -155,7 +155,7 @@ function stoneMats(w, h, d) {
 export function signTexture(info) {
   // the same band as the floor's in the Percorso: its colour, the name, a deeper edge under it (revisione della grafica,
   // 10/11/2026 sera; before, a dark navy plate with a stripe of the colour, heavy on the white slab). No number on a
-  // square, which looked like a bingo card (10/11/2026, Davide). Twice the old size, so it stays sharp close up.
+  // square, which looked like a bingo card (10/11/2026, review). Twice the old size, so it stays sharp close up.
   return canvasTexture(1024, 224, (g, w, h) => {
     const edge = 22;
     g.fillStyle = info.deep;
@@ -222,7 +222,7 @@ function pool(x, z, w, d) {
   return g;
 }
 
-// Trees are like the ones in an architect's model (the user's choice, 30/10/2026, sketch A «sfere», after Nello's
+// Trees are like the ones in an architect's model (the user's choice, 30/10/2026, sketch A «sfere», after a team member's
 // «magari lo sfondo e gli alberi»): smooth crowns on a thin round trunk of light wood. Before, faceted crowns on a
 // square trunk. Their greens are deeper than the lawn, so they never melt into it.
 export const LEAVES = ['#86BF73', '#79B56C', '#93C780'];
@@ -528,7 +528,7 @@ function facadeBox(w, h, depth, ou, ov) {
   return geo;
 }
 
-// The towers (Nello: «farei magari anche qualche grattacielo altrimenti quando sali è così»; the user's choice,
+// The towers (a team member: «farei magari anche qualche grattacielo altrimenti quando sali è così»; the user's choice,
 // 30/10/2026, sketch B «ai lati» with remedy 2 «da in alto», `1. LAVORO/grattacieli/`): two groups, left and right,
 // behind the sede, the sky behind it left free. With floor 1 the camera is low and close and they would fill the
 // sky, so they come up in the haze as the camera climbs (`fadeTowers` in main.js). Each one steps in once near the

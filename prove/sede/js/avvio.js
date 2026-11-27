@@ -1,12 +1,12 @@
 // FEEN · la sede — the first start (07/11/2026, CLAUDE.md §5): test → your type with the map → the choice of the
 // character → the empty company with the partner → the contract → the first lesson → the reminders → Percorso.
-// 10/11/2026, Davide (his word is law): no welcome screens, the test explains itself; no icons on the statements, the
+// 10/11/2026, the lead review (its word is law): no welcome screens, the test explains itself; no icons on the statements, the
 // statement up top and the circles in the middle; your type and the map on one screen, the map rising under it; no
 // «gioco, non diagnosi»; the two characters standing free, their names under them, nothing written to say «choose»
 // (until 17/11/2026: the user, in front of the screen, found «soltanto loro due», and one question went back over them).
 // And everywhere less text: the screen says it, not a sentence. 10/11/2026, the user: before the first statement an
 // animated opening, «Che investitore sei?» over the eight shadows (apertura; not a welcome: nothing is explained).
-// The test is Dorigo's (quiz.js); the user's choices of 07/11/2026: a touch on a circle moves on by itself, there is
+// The test is the team's (quiz.js); the user's choices of 07/11/2026: a touch on a circle moves on by itself, there is
 // no way back to the question before, no «Rifai il test». 09/11/2026, the user: no «Salta» on the welcome, and no
 // trappola screen in the reveal (it stays in the Tu and in the mentor's line of the Caso). Every step is kept
 // on the phone: closing the app brings you back to the step you reached. Welcome, partner and contract texts are
@@ -81,7 +81,7 @@ export function miniMap(who, { label = true, names = true } = {}) {
   // its names and the middle, so at any text size it never covers them (09/11/2026: at the far corners it used to
   // sit on the description). Still in proportion: the further from the middle on the map, the further from the
   // middle in the field; near the middle (an axis broken by the tie cards) it keeps a little way inside its quadrant,
-  // never on the crossing (revisione UX 09/11/2026, problema 7). quiz.js stays Dorigo's.
+  // never on the crossing (revisione UX 09/11/2026, problema 7). quiz.js stays as the team wrote it.
   const sx = who.quadrant.endsWith('tradizionale') ? 1 : -1;
   const sy = who.quadrant.startsWith('alto') ? 1 : -1;
   // the distance from the middle line, as a share of the field (style.css keeps the point whole inside it)
@@ -91,7 +91,7 @@ export function miniMap(who, { label = true, names = true } = {}) {
   // «Tu» beside the point, on the side of the quadrant with more room
   const side = left > 50 ? ' to-left' : '';
   const you = `<i class="mm-field"><i class="mm-you${side}" style="--x:${left.toFixed(1)}%;--y:${top.toFixed(1)}%">${label ? '<span>Tu</span>' : ''}</i></i>`;
-  // only the names in the quadrants: the axes around already say what each one is (10/11/2026, Davide: less text);
+  // only the names in the quadrants: the axes around already say what each one is (10/11/2026, review: less text);
   // in the reveal not even the names (10/11/2026, the user: «elimina i nomi degli 8 personaggi qua»): your quadrant
   // and your point, the two characters come on the next screen
   const cells = ORDER.map((k) => `<div class="mm-q${k === who.quadrant ? ' me' : ''}">${names ? `<b>${keep(PROFILES[k].names.join(' · '))}</b>` : ''}${k === who.quadrant ? you : ''}</div>`).join('');
@@ -252,7 +252,7 @@ export function makeAvvio(api) {
       .join('');
     const ends = [`<span class="yes">${SCALE.left}</span>`, `<span class="no">${SCALE.right}</span>`];
     if (AGREE_RIGHT) ends.reverse();
-    // the statement up top, the circles in the middle of the screen (10/11/2026, Davide)
+    // the statement up top, the circles in the middle of the screen (10/11/2026, review)
     screen(
       'av-page av-test',
       `<div class="av-progress" aria-hidden="true"><div class="av-pips">${pips}</div><span>${s.i + 1} / ${QUESTIONS.length}</span></div>
@@ -318,7 +318,7 @@ export function makeAvvio(api) {
     questionRoom(root.querySelector('.av-q'));
   }
 
-  /** Your type and, rising under it, the map (10/11/2026, Davide: «molto più lean», the map «sotto come pop-up»).
+  /** Your type and, rising under it, the map (10/11/2026, review: «molto più lean», the map «sotto come pop-up»).
    *  Since 17/11/2026 the map is the eight shadows of the opening (stage): the opening asked, here two of them answer. */
   function pregio() {
     const who = whoOf({ ...s, pick: '-' });
@@ -345,7 +345,7 @@ export function makeAvvio(api) {
 
   /** The two versions of your type, standing free: a touch brings one forward, the button says who you play with.
    *  Over them one question, in the user's words (17/11/2026: «non c'è più scegli chi dei due ti rappresenta, ci sono
-   *  soltanto loro due»; from 10/11 to then nothing was written here, on Davide's word: the screen alone did not say it). */
+   *  soltanto loro due»; from 10/11 to then nothing was written here, on the review's word: the screen alone did not say it). */
   function scelta() {
     const p = whoOf({ ...s, pick: '-' }).profile;
     // coming from the map, the two shadows walk from where they stood into the figures (17/11/2026)
@@ -482,7 +482,7 @@ export function makeAvvio(api) {
       ctx.strokeStyle = '#0f70e0'; // the app's blue, like a pen (as the contract in the Tu)
       ctx.lineWidth = 2.6;
       ctx.lineCap = ctx.lineJoin = 'round';
-      // curves through the midpoints, like a pen, not straight segments (10/11/2026, Aurora: «spezzati come un grafico»)
+      // curves through the midpoints, like a pen, not straight segments (10/11/2026, a tester: «spezzati come un grafico»)
       for (const st of strokes) {
         const p = st.map(([x, y]) => [x * r.width, y * r.height]);
         ctx.beginPath();
@@ -539,7 +539,7 @@ export function makeAvvio(api) {
     if ((await api.firstLesson()) === false) return looking();
     go('avvisi');
   }
-  /** Leaving the first lesson with the X (17/11/2026, Dorigo: «non posso uscire dalle domande e vedere la mia
+  /** Leaving the first lesson with the X (17/11/2026, a review: «non posso uscire dalle domande e vedere la mia
    *  azienda»): until the first lesson is done there is no bar and no Ufficio, so whoever left it could only start it
    *  again. Here the sede is under the finger as in the Ufficio (scroll, zoom, into the floor, the stands say what
    *  arrives), and of the first start only the button that starts the lesson stays, at the bottom. Since 22/11/2026
@@ -591,8 +591,8 @@ export function makeAvvio(api) {
       s.answers[s.i] = Number(b.dataset.val);
       for (const d of root.querySelectorAll('.av-dot')) d.setAttribute('aria-pressed', String(d === b));
       save();
-      // the circle taken stays in sight a moment before the next statement (10/11/2026, Chiara: at 260 ms she could
-      // not see which one she had touched)
+      // the circle taken stays in sight a moment before the next statement (10/11/2026, a tester: at 260 ms they could
+      // not see which one they had touched)
       setTimeout(() => {
         if (s.i < QUESTIONS.length - 1) return go('domande', { i: s.i + 1 });
         go(score(s.answers).ask.length ? 'spareggio' : 'pregio', { tie: {} });
@@ -656,7 +656,7 @@ export function makeAvvio(api) {
       }
       root.querySelector('.av-paper')?.classList.add('stamped');
       root.classList.add('av-signed'); // «Rifai» and «Firmo con un tocco» go: the contract is signed
-      // and the button says so, instead of looking switched off as if something had gone wrong (10/11/2026, Aurora)
+      // and the button says so, instead of looking switched off as if something had gone wrong (10/11/2026, a tester)
       const done = root.querySelector('[data-act="sign"]');
       if (done) done.textContent = 'Firmato';
       root.querySelectorAll('[data-act]').forEach((x) => (x.disabled = true));
@@ -665,7 +665,7 @@ export function makeAvvio(api) {
       root.querySelector('.av-stamp')?.scrollIntoView({ block: 'nearest', behavior: calm ? 'auto' : 'smooth' });
       api.sfx.reward?.();
       api.buzz(25);
-      // signed is signed: the step is saved now, not when the stamp has finished (10/11/2026, Luca's test: closing the
+      // signed is signed: the step is saved now, not when the stamp has finished (10/11/2026, a tester's game: closing the
       // app during the 2 s of the stamp meant signing again). The stamp is the show.
       Object.assign(s, { step: 'lezione', sign, signed: today() });
       save();
