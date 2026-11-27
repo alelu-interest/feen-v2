@@ -177,3 +177,25 @@ h3,
   font-size: calc(16px * var(--fs-l));
   letter-spacing: -0.01em;
 }
+/* when a lesson tightens, style.css sets the formula's size again and wins: a long name («Rapporto prezzo/utili»)
+   then pushed the fraction onto a second row. The fraction stays whole and the name goes to a second line beside it,
+   so the formula keeps one row: name = fraction (27/11/2026, measured on the eight phones of lezione-misura.sh) */
+.fx:has(.fx-frac) {
+  flex-wrap: nowrap;
+}
+.fx:has(.fx-frac) > .fx-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  text-wrap: balance;
+}
+.fx-frac span,
+.fx-sign {
+  flex: none;
+  white-space: nowrap;
+}
+/* only where the lesson is at its tightest: Montserrat's lines need a little less air for the page to stay still
+   (the screen before the questions of the Soci's lesson 3 scrolled by 7 px with the text at 1,35) */
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-brief p,
+#lezione:is([data-fit='3'], [data-fit='scroll']) .lz-sub {
+  line-height: 1.3;
+}
