@@ -47,7 +47,7 @@ const chars = (t) => [...String(t).trim()].length;
 // a figure, with at most a short unit: «70 €», «1.200 €», «12%», «6», «Circa 531 €»
 const isFigure = (t) => /\d/.test(t) && t.replace(/[\d\s.,€%+\-−–×x÷=()/]/g, '').length <= 6;
 const REASON = /:\s|;\s|\s[—–]\s|\bperché\b|\bquindi\b|\bcioè\b|\bovvero\b|\bcosì da\b|\bin modo da\b/i;
-const HEDGE = /\bdipende\b|\bdi solito\b|\bdi norma\b|\bspesso\b|\bin genere\b|\bin parte\b|\bnon sempre\b|\bnon c['’]è (una )?risposta unica\b|\bpuò\b|\bpossono\b/i;
+const HEDGE = /\bdipende\b|\bdi solito\b|\bdi norma\b|\bspesso\b|\bin genere\b|\bin parte\b|\bnon sempre\b|\bnon c['’]è (una )?risposta unica\b|(?<!\bsi )\bpuò\b|(?<!\bsi )\bpossono\b/i;
 const ABSOLUTE = /\bsempre\b|\bmai\b|\bsolo\b|\bsoltanto\b|\btutt[ie]\b|\bnessun[oa]?\b|\bsicuramente\b|\bgarantit[oaie]\b|\bin ogni caso\b|\bqualsiasi\b/i;
 
 /** The tells of one question: { tells: [...], verdict: 'riscrivi' | 'guarda' | null, right, longestWrong }. */
